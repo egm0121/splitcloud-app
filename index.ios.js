@@ -9,19 +9,56 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  TouchableOpacity
 } from 'react-native';
 import { ReactNativeAudioStreaming, Player } from 'react-native-audio-streaming';
 
-const url = 'http://lacavewebradio.chickenkiller.com:8000/stream.mp3';
+
+const songAssetOneUrl = 'http://egm0121-split-cloud.herokuapp.com/asset/booba_scarface.mp3';
+const songAssetTwoUrl = 'http://egm0121-split-cloud.herokuapp.com/asset/kaaris_charge.mp3';
 
 class Example extends Component {
+  constructor(){
+    super();
+    this._onSideOnePress = this._onSideOnePress.bind(this);
+    this._onSideTwoPress = this._onSideTwoPress.bind(this);
+    this.state = {play:false};
+  }
+  _onSideOnePress(){
+    if(this.state.play){
+      ReactNativeAudioStreaming.stop();
+      this.setState({play:false});
+    } else {
+      ReactNativeAudioStreaming.play(songAssetOneUrl);
+      this.setState({play:true});
+    }
+
+  }
+  _onSideTwoPress(){
+    if(this.state.play){
+      ReactNativeAudioStreaming.stop();
+      this.setState({play:false});
+    } else {
+      ReactNativeAudioStreaming.play(songAssetTwoUrl);
+      this.setState({play:true});
+    }
+
+  }
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
+      
+        <TouchableOpacity style={styles.container} onPress={this._onSideOnePress}>
+          <Text style={styles.welcome}>
+            toggle song one
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.container} onPress={this._onSideTwoPress}>
+          <Text style={styles.welcome}>
+            toggle song two
+          </Text>
+        </TouchableOpacity>
         <Text style={styles.instructions}>
           To get started, edit index.ios.js
         </Text>
@@ -30,7 +67,8 @@ class Example extends Component {
           Cmd+D or shake for dev menu
         </Text>
 
-        <Player url={url} />
+
+
       </View>
     );
   }
