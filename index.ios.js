@@ -23,40 +23,40 @@ class Example extends Component {
     super();
     this._onSideOnePress = this._onSideOnePress.bind(this);
     this._onSideTwoPress = this._onSideTwoPress.bind(this);
-    this.state = {play:false};
+    this.state = {playSideA:false, playSideB:false};
   }
   _onSideOnePress(){
-    if(this.state.play){
-      ReactNativeAudioStreaming.stop();
-      this.setState({play:false});
+    if(this.state.playSideA){
+      ReactNativeAudioStreaming.destroywithKey(1);
+      this.setState({playSideA:false});
     } else {
-      ReactNativeAudioStreaming.play(songAssetOneUrl);
-      this.setState({play:true});
+      ReactNativeAudioStreaming.play(songAssetOneUrl,1);
+      this.setState({playSideA:true});
     }
 
   }
   _onSideTwoPress(){
-    if(this.state.play){
-      ReactNativeAudioStreaming.stop();
-      this.setState({play:false});
+    if(this.state.playSideB){
+      ReactNativeAudioStreaming.stopwithKey(2);
+      this.setState({playSideB:false});
     } else {
-      ReactNativeAudioStreaming.play(songAssetTwoUrl);
-      this.setState({play:true});
+      ReactNativeAudioStreaming.play(songAssetTwoUrl,2);
+      this.setState({playSideB:true});
     }
 
   }
   render() {
     return (
       <View style={styles.container}>
-      
+
         <TouchableOpacity style={styles.container} onPress={this._onSideOnePress}>
           <Text style={styles.welcome}>
-            toggle song one
+            {this.state.playSideA ? 'Stop' : 'Play'} side A
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.container} onPress={this._onSideTwoPress}>
           <Text style={styles.welcome}>
-            toggle song two
+            {this.state.playSideB ? 'Stop' : 'Play'} side B
           </Text>
         </TouchableOpacity>
         <Text style={styles.instructions}>
