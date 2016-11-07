@@ -15,6 +15,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { ReactNativeAudioStreaming, Player } from 'react-native-audio-streaming';
+import SongPicker from './components/songPicker';
 const SC_CLIENT_ID = "54921f38ed5d570772c094534b9f50b5";
 const songAssetOneUrl = 'http://api.soundcloud.com/tracks/267983531/stream?client_id=54921f38ed5d570772c094534b9f50b5';
 const songAssetTwoUrl = 'http://api.soundcloud.com/tracks/258502248/stream?client_id=54921f38ed5d570772c094534b9f50b5';
@@ -32,19 +33,17 @@ class SplitCloudApp extends Component {
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
     this.state = {
+      songPickerRequester:null,
+      isSongPickerVisible:false,
       playSideA:false,
       playSideB:false,
       playerATrack: {
-        url:songAssetOneUrl
+        url: songAssetOneUrl
       },
       playerBTrack: {
-        url:songAssetTwoUrl
-      },
-      searchInput: '',
-      pureList : [],
-      renderList: this.ds.cloneWithRows([{label:'No results'}])
+        url: songAssetTwoUrl
+      }
     };
-
   }
   _onSearchChange(text){
     this.performSouncloudApiSearch(text).then(this.updateResultList)
@@ -62,10 +61,9 @@ class SplitCloudApp extends Component {
       renderList : this.ds.cloneWithRows(tracks)
     })
   }
-  _onSongSelected(rowData,playerName){
-    if(playerName == 'A') {
+  _onSongSelected(rowData){
+    if(this.state.songPickerRequester == 'A') {
       this.setState({
-
         playerATrack: rowData,
         playSideA : false
       });
@@ -78,6 +76,18 @@ class SplitCloudApp extends Component {
       ReactNativeAudioStreaming.stopwithKey(2);
     }
 
+  }
+  _onPickerToggle(activeSide){
+    this.setState({
+      songPickerRequester : activeSide,
+      isSongPickerVisible : true
+    });
+  }
+  _onSongPickerClose(){
+    this.setState({
+      songPickerRequester : false,
+      isSongPickerVisible : false
+    });
   }
   _onSideOnePress(){
     if(this.state.playSideA){
@@ -115,33 +125,36 @@ class SplitCloudApp extends Component {
         </TouchableOpacity>
     </View>);
   }
+
   render() {
+    let songPickerVisible = {
+      display: this.state.isSongPickerVisible ? 'flex' : 'none'
+    };
     return (
       <View style={styles.container}>
+        <SongPicker style={songPickerVisible}
+          onSongSelected={this._onSongSelected.bind(this)}
+          onClose={this._onSongPickerClose.bind(this)} />
         <Text style={styles.header}>
            SplitCloud
         </Text>
-        <TextInput
-          style={{height: 40}}
-          placeholder="Search songs:"
-          onChangeText={this._onSearchChange}
-        />
-
-        <ListView contentContainerStyle={styles.list}
-          dataSource={this.state.renderList}
-          renderRow={this.renderRowWithData.bind(this)}
-        />
+        <Text style={styles.welcome}>{this.state.playerATrack.label}</Text>
         <TouchableOpacity style={styles.container} onPress={this._onSideOnePress}>
-          <Text style={styles.welcome}>{this.state.playerATrack.label}</Text>
           <Text style={styles.welcome}>
             {this.state.playSideA ? 'Stop' : 'Play'}
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.container} onPress={this._onPickerToggle.bind(this,'A')}>
+          <Text>Load Song</Text>
+        </TouchableOpacity>
+        <Text style={styles.welcome}>{this.state.playerBTrack.label}</Text>
         <TouchableOpacity style={styles.container} onPress={this._onSideTwoPress}>
-          <Text style={styles.welcome}>{this.state.playerBTrack.label}</Text>
           <Text style={styles.welcome}>
             {this.state.playSideB ? 'Stop' : 'Play'}
           </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.container} onPress={this._onPickerToggle.bind(this,'B')}>
+          <Text>Load Song</Text>
         </TouchableOpacity>
       </View>
     );
@@ -170,26 +183,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
-  },
-  list:{
-    alignItems: 'flex-start',
-    backgroundColor: '#F50',
-    flexDirection:'column'
-  },
-  row : {
-    borderColor: '#FFFFFF',
-    flex: 1,
-    flexDirection:'row'
-  },
-  rowLabel : {
-    flex: 4,
-    color: '#FFFFFF',
-    lineHeight:20,
-    height: 20
-  },
-  rowAction : {
-    flex: 1,
-    color: '#FFFFFF'
   }
 });
 

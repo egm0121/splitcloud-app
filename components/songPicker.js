@@ -4,7 +4,7 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, { PropTypes, Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
@@ -24,6 +24,7 @@ class SongPicker extends Component {
     this._onSearchChange = this._onSearchChange.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
+    this._onClose = this._onClose.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
     this.state = {
@@ -49,16 +50,20 @@ class SongPicker extends Component {
     })
   }
   _onSongSelected(rowData){
-    this.props._onSongSelected(rowData);
+    this.props.onSongSelected(rowData);
+  }
+  _onClose(){
+    this.props.onClose();
   }
   renderRowWithData(rowData) {
     return (
       <View style={styles.row}>
         <Text style={styles.rowLabel}>{rowData.label} </Text>
-        <TouchableOpacity onPress={this.onSongSelected.bind(this,rowData)}>
+        <TouchableOpacity onPress={this._onSongSelected.bind(this,rowData)}>
           <Text style={styles.rowAction}>+</Text>
         </TouchableOpacity>
-    </View>);
+      </View>
+    );
   }
   render() {
     return (
@@ -66,12 +71,14 @@ class SongPicker extends Component {
         <TextInput
           style={{height: 40}}
           placeholder="Search songs:"
-          onChangeText={this._onSearchChange}
-        />
+          onChangeText={this._onSearchChange} />
         <ListView contentContainerStyle={styles.list}
           dataSource={this.state.renderList}
-          renderRow={this.renderRowWithData.bind(this)}
-        />
+          renderRow={this.renderRowWithData.bind(this)} />
+
+        <TouchableOpacity onPress={this._onClose.bind(this)}>
+          <Text style={styles.closeAction}>Close</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -102,10 +109,18 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#FFFFFF',
     fontWeight: 'bold'
+  },
+  closeAction : {
+    flex: 1,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    height: 40
   }
 });
+
 SongPicker.propTypes = {
-  onSongSelected: PropTypes.function.isRequired,
+  onSongSelected: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
 };
 
-AppRegistry.registerComponent('SongPicker', () => SongPicker);
+export default SongPicker;
