@@ -8,7 +8,6 @@
   "dependencies": {
     "react": "15.2.1",
     "react-native": "0.30.0",
-    "react-native-audio-streaming": "git+https://git@github.com/egm0121/react-native-audio-streaming.git#feature/multiple-instances",
-    "react-native-autocomplete-input": "^2.0.0"
+    "react-native-audio-streaming": "git+https://git@github.com/egm0121/react-native-audio-streaming.git#feature/multiple-instances"
   }
 }

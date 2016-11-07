@@ -20,7 +20,7 @@ const songAssetOneUrl = 'http://api.soundcloud.com/tracks/267983531/stream?clien
 const songAssetTwoUrl = 'http://api.soundcloud.com/tracks/258502248/stream?client_id=54921f38ed5d570772c094534b9f50b5';
 
 
-class Example extends Component {
+class SplitCloudApp extends Component {
   constructor(){
     super();
     this._onSideOnePress = this._onSideOnePress.bind(this);
@@ -193,4 +193,4 @@ const styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('Example', () => Example);
+AppRegistry.registerComponent('SplitCloudApp', () => SplitCloudApp);
