@@ -12,13 +12,11 @@ import {
   TextInput,
   ListView,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Navigator
 } from 'react-native';
 import { ReactNativeAudioStreaming, Player } from 'react-native-audio-streaming';
 import SongPicker from './components/songPicker';
-const SC_CLIENT_ID = "54921f38ed5d570772c094534b9f50b5";
-const songAssetOneUrl = 'http://api.soundcloud.com/tracks/267983531/stream?client_id=54921f38ed5d570772c094534b9f50b5';
-const songAssetTwoUrl = 'http://api.soundcloud.com/tracks/258502248/stream?client_id=54921f38ed5d570772c094534b9f50b5';
 
 
 class SplitCloudApp extends Component {
@@ -26,11 +24,7 @@ class SplitCloudApp extends Component {
     super();
     this._onSideOnePress = this._onSideOnePress.bind(this);
     this._onSideTwoPress = this._onSideTwoPress.bind(this);
-    this._onSearchChange = this._onSearchChange.bind(this);
-    this.updateResultList = this.updateResultList.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
-
-    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
     this.state = {
       songPickerRequester:null,
@@ -38,29 +32,14 @@ class SplitCloudApp extends Component {
       playSideA:false,
       playSideB:false,
       playerATrack: {
-        url: songAssetOneUrl
+        url: null
       },
       playerBTrack: {
-        url: songAssetTwoUrl
+        url: null
       }
     };
   }
-  _onSearchChange(text){
-    this.performSouncloudApiSearch(text).then(this.updateResultList)
-    this.setState({searchInput:text});
-  }
-  performSouncloudApiSearch(term){
-    return fetch(`http://api.soundcloud.com/tracks?q=${term}&client_id=${SC_CLIENT_ID}`, {method: 'GET'})
-      .then((resp) => resp.json());
-  }
-  updateResultList(resp){
-    let tracks = resp.filter((t) => t.streamable == true)
-        .map((t) => ({label :t.title,streamUrl:`${t.stream_url}?client_id=${SC_CLIENT_ID}`}));
-    this.setState({
-      pureList : tracks,
-      renderList : this.ds.cloneWithRows(tracks)
-    })
-  }
+
   _onSongSelected(rowData){
     if(this.state.songPickerRequester == 'A') {
       this.setState({
@@ -113,18 +92,7 @@ class SplitCloudApp extends Component {
     }
 
   }
-  renderRowWithData(rowData) {
-    return (
-      <View style={styles.row}>
-        <Text style={styles.rowLabel}>{rowData.label} </Text>
-        <TouchableOpacity onPress={this._onSongSelected.bind(this,rowData,'A')}>
-          <Text style={styles.rowAction}>Load A</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={this._onSongSelected.bind(this,rowData,'B')}>
-          <Text style={styles.rowAction}> Load B</Text>
-        </TouchableOpacity>
-    </View>);
-  }
+
 
   render() {
     let songPickerVisible = {
