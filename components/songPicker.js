@@ -13,8 +13,6 @@ import {
   TouchableOpacity
 } from 'react-native';
 
-const SC_CLIENT_ID = "54921f38ed5d570772c094534b9f50b5";
-
 class SongPicker extends Component {
   constructor(){
     super();
@@ -24,24 +22,34 @@ class SongPicker extends Component {
     this._onSongSelected = this._onSongSelected.bind(this);
     this._onClose = this._onClose.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-
+    this.SC_CLIENT_ID = null;
     this.state = {
       searchInput: '',
       pureList : [],
       renderList: this.ds.cloneWithRows([{label:'No results'}])
     };
   }
+  componentWillMount(){
+    this.SC_CLIENT_ID = this.props.scClientId;
+    this.scResultLimit = this.props.scResultLimit;
+    this.showStreamableOnly = this.props.showStreamableOnly;
+  }
   _onSearchChange(text){
     this.performSouncloudApiSearch(text).then(this.updateResultList)
     this.setState({searchInput:text});
   }
   performSouncloudApiSearch(term){
-    return fetch(`http://api.soundcloud.com/tracks?q=${term}&client_id=${SC_CLIENT_ID}`, {method: 'GET'})
+    return fetch(`http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
+      {method: 'GET'})
       .then((resp) => resp.json());
   }
   updateResultList(resp){
-    let tracks = resp.filter((t) => t.streamable == true)
-        .map((t) => ({label :t.title,streamUrl:`${t.stream_url}?client_id=${SC_CLIENT_ID}`}));
+    let tracks = resp.map((t) => (
+      {label : t.title,
+       streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
+       artwork : t.artwork_url
+      })
+    );
     this.setState({
       pureList : tracks,
       renderList : this.ds.cloneWithRows(tracks)
@@ -66,10 +74,12 @@ class SongPicker extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.searchInputView}>
         <TextInput
-          style={{height: 40}}
+          style={styles.searchInput}
           placeholder="Search songs:"
           onChangeText={this._onSearchChange} />
+        </View>
         <ListView contentContainerStyle={styles.list}
           dataSource={this.state.renderList}
           renderRow={this.renderRowWithData.bind(this)} />
@@ -85,7 +95,16 @@ class SongPicker extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 20,
     backgroundColor: '#F50'
+  },
+  searchInput : {
+    height: 40,
+    color: 'white'
+  },
+  searchInputView :{
+    borderColor : 'white',
+    borderBottomWidth :1
   },
   list:{
     alignItems: 'flex-start',
@@ -95,7 +114,8 @@ const styles = StyleSheet.create({
   row : {
     borderColor: '#FFFFFF',
     flex: 1,
-    flexDirection:'row'
+    flexDirection:'row',
+    height:30
   },
   rowLabel : {
     flex: 4,
@@ -106,7 +126,8 @@ const styles = StyleSheet.create({
   rowAction : {
     flex: 1,
     color: '#FFFFFF',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontSize: 20
   },
   closeAction : {
     flex: 1,
