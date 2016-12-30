@@ -10,7 +10,7 @@ import {
   Navigator
 } from 'react-native';
 
-import AudioPlayerContainer from './containers/audioPlayerContainer';
+import MainSceneContainer from './containers/mainSceneContainer';
 
 class SplitCloudApp extends Component {
   constructor(){
@@ -22,7 +22,7 @@ class SplitCloudApp extends Component {
   }
   render() {
     return ( <Navigator
-        initialRoute={{ title: 'Initial screen', index: 0, component: AudioPlayerContainer }}
+        initialRoute={{ title: 'Initial screen', index: 0, component: MainSceneContainer }}
         renderScene={(route, navigator) =>{
           let Component = route.component;
             return <Component title={route.title} navigator={navigator} {...route.passProps} />

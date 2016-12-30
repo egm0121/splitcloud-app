@@ -40,11 +40,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.m"
-            timestampString = "497020489.682882"
+            timestampString = "503283318.523696"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "136"
-            endingLineNumber = "136"
+            startingLineNumber = "138"
+            endingLineNumber = "138"
             landmarkName = "RCT_EXPORT_METHOD()"
             landmarkType = "9">
          </BreakpointContent>
@@ -56,11 +56,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.m"
-            timestampString = "497020489.682882"
+            timestampString = "503283318.523696"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
+            startingLineNumber = "137"
+            endingLineNumber = "137"
             landmarkName = "RCT_EXPORT_METHOD()"
             landmarkType = "9">
          </BreakpointContent>

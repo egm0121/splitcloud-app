@@ -7,49 +7,56 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  TextInput,
-  ListView,
+  Slider,
   View,
   TouchableOpacity,
 } from 'react-native';
-import { ReactNativeAudioStreaming, Player } from 'react-native-audio-streaming';
+import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 
 
 class AudioPlayerContainer extends Component {
-  constructor(){
-    super();
-    this._onSideOnePress = this._onSideOnePress.bind(this);
-    this._onSideTwoPress = this._onSideTwoPress.bind(this);
+  constructor(props){
+    super(props);
+    this._onPlayToggleOnePress = this._onPlayToggleOnePress.bind(this);
+    this._onStopToggleOnePress = this._onStopToggleOnePress.bind(this);
+    this._onPickerToggle = this._onPickerToggle.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
+    this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
+
+    this.playerAObj = new ReactNativeStreamingPlayer();
 
     this.state = {
       songPickerRequester:null,
       playSideA:false,
-      playSideB:false,
       playerATrack: {
         url: null
       },
-      playerBTrack: {
-        url: null
-      }
+      volume:100,
+      userVolume:100,
+      pan : this.props.pan,
+      muted : this.props.muted
     };
+
+    this.playerAObj.setPan(this.state.pan);
+    this.playerAObj.setVolume(this.state.volume);
+
+   console.log("player instance Id:",this.playerAObj._nativeInstanceId);
+   this.playerAObj.getPan((err,pan) =>{
+     console.log("player instance getPan():",pan);
+   });
+   this.playerAObj.getVolume((err,vol) =>{
+     console.log("player  instance getVolume():",vol);
+   });
+
   }
   _onSongSelected(rowData){
-    if(this.state.songPickerRequester == 'A') {
       this.setState({
         playerATrack: rowData,
         playSideA : false
       });
-      ReactNativeAudioStreaming.stopwithKey(1);
-    } else {
-      this.setState({
-        playerBTrack : rowData,
-        playSideB : false
-      });
-      ReactNativeAudioStreaming.stopwithKey(2);
-    }
-
+      this.playerAObj.stop();
+      this.playerAObj.setSoundUrl(rowData.streamUrl);
   }
   _onPickerToggle(activeSide){
     this.setState({
@@ -73,76 +80,117 @@ class AudioPlayerContainer extends Component {
       songPickerRequester : false
     });
   }
-  _onSideOnePress(){
+  _onStopToggleOnePress(){
     if(this.state.playSideA){
-      ReactNativeAudioStreaming.stopwithKey(1);
+      this.playerAObj.stop();
+      this.setState({playSideA:false});
+    }
+  }
+  _onPlayToggleOnePress(){
+    //@TODO: refactor to use only internal state player from within getStatus callback
+    if(this.state.playSideA){
+      this.playerAObj.pause();
       this.setState({playSideA:false});
     } else {
-      ReactNativeAudioStreaming.createPlayer(1);
-      ReactNativeAudioStreaming.setPan(1,-1);
-      ReactNativeAudioStreaming.playUrl(this.state.playerATrack.streamUrl,1);
+      this.playerAObj.getStatus((err,playbackStatus) => {
+        console.log('playerA status is ',playbackStatus)
+        playbackStatus.status == "PAUSED" ?
+        this.playerAObj.resume() :
+        this.playerAObj.play();
+      });
       this.setState({playSideA:true});
     }
 
   }
-  _onSideTwoPress(){
-    if(this.state.playSideB){
-      ReactNativeAudioStreaming.stopwithKey(2);
-      this.setState({playSideB:false});
-    } else {
-      ReactNativeAudioStreaming.createPlayer(2);
-      ReactNativeAudioStreaming.setPan(2,1);
-      ReactNativeAudioStreaming.playUrl(this.state.playerBTrack.streamUrl,2);
-      this.setState({playSideB:true});
-    }
-
+  _onVolumeValueChange(value) {
+    const volume = Math.ceil(value*100);
+    this.setState({
+      volume: volume,
+      userVolume: volume
+    });
   }
-
-
+  _onPlayerMuteChange(muted){
+    if(muted){
+      this.playerAObj.setVolume(0);
+      this.playerAObj.isPlaying((isPlaying) => {
+        if(isPlaying) this.playerAObj.pause();
+      });
+      this.setState({playSideA:false,muted:true});
+    } else {
+      this.setState({playSideA:false,muted:false});
+      this.playerAObj.setVolume(this.state.userVolume);
+    }
+  }
+  componentWillReceiveProps(newProps){
+    this.setState({
+      pan:newProps.pan,
+      muted:newProps.muted
+    });
+  }
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.volume !== this.state.volume && !this.state.muted){
+      this.playerAObj.setVolume(this.state.volume);
+    }
+    if(prevState.pan !== this.state.pan){
+      this.playerAObj.setPan(this.state.pan);
+    }
+    if(prevState.muted !== this.state.muted){
+      this._onPlayerMuteChange(this.state.muted);
+    }
+  }
   render() {
-    let songPickerVisible = {
-      display: this.state.isSongPickerVisible ? 'flex' : 'none'
-    };
+    const trackLabelPlaceholder = 'No track selected - tap to load';
     return (
-      <View style={styles.container}>
-        <Text style={styles.header}>
-           SplitCloud
-        </Text>
-        <Text style={styles.trackname}>{this.state.playerATrack.label}</Text>
-        <TouchableOpacity style={styles.container} onPress={this._onSideOnePress}>
-          <Text style={styles.welcome}>
-            {this.state.playSideA ? 'Stop' : 'Play'}
+      <View style={styles.mainContainer}>
+        <TouchableOpacity style={styles.container} onPress={this._onPickerToggle}>
+          <Text style={styles.trackname}>
+            {
+              this.state.playerATrack.label ?
+              this.state.playerATrack.label :
+              trackLabelPlaceholder
+            }
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.container} onPress={this._onPickerToggle.bind(this,'A')}>
-          <Text>Load Song</Text>
-        </TouchableOpacity>
-        <Text style={styles.trackname}>{this.state.playerBTrack.label}</Text>
-        <TouchableOpacity style={styles.container} onPress={this._onSideTwoPress}>
-          <Text style={styles.welcome}>
-            {this.state.playSideB ? 'Stop' : 'Play'}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.container} onPress={this._onPickerToggle.bind(this,'B')}>
-          <Text>Load Song</Text>
-        </TouchableOpacity>
+        <View style={styles.horizontalContainer}>
+          <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
+            <Text style={styles.welcome}>
+              {this.state.playSideA ? 'Pause' : 'Play'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.container} onPress={this._onStopToggleOnePress}>
+            <Text style={styles.welcome}>
+              Stop
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.volumeSlider}>
+          <Slider  onValueChange={this._onVolumeValueChange} value={this.state.volume} />
+        </View>
+
       </View>
     );
   }
 }
-
+const volumeMarginSide = 40;
 const styles = StyleSheet.create({
+  mainContainer:{
+    flex:1
+  },
   container: {
     flex: 1,
     backgroundColor: '#F50',
-    paddingTop: 20
   },
-  header: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#FFFFFF',
-    margin: 10,
+  horizontalContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#F50',
+  },
+  volumeSlider:{
+    marginLeft:volumeMarginSide,
+    marginRight:volumeMarginSide,
+    flex:1,
+    alignItems: 'stretch',
+    justifyContent: 'center'
   },
   welcome: {
     fontSize: 20,
@@ -155,14 +203,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#FFFFFF',
     margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   }
 });
+AudioPlayerContainer.propTypes = {
 
+};
 AppRegistry.registerComponent('AudioPlayerContainer', () => AudioPlayerContainer);
 
 export default AudioPlayerContainer;
