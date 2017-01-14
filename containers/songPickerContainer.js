@@ -14,22 +14,12 @@ import {
 } from 'react-native';
 
 import SongPicker from '../components/songPicker';
-
+const DEBOUNCE_MILLISEC = 300;
 const SC_CLIENT_ID = "54921f38ed5d570772c094534b9f50b5";
 const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {
   constructor(){
     super();
-    this.state = {};
-    this._onSongSelected = this._onSongSelected.bind(this);
-    this._onSongPickerClose = this._onSongPickerClose.bind(this);
-  }
-
-  _onSongSelected(rowData){
-    this.props.onSongSelected(rowData);
-  }
-  _onSongPickerClose(){
-    this.props.onClose();
   }
   render() {
 
@@ -39,8 +29,10 @@ class SongPickerContainer extends Component {
             scClientId={SC_CLIENT_ID}
             scResultLimit={SC_RESULT_LIMIT}
             showStreamableOnly={true}
-            onSongSelected={this._onSongSelected}
-            onClose={this._onSongPickerClose}
+            debounceWait={DEBOUNCE_MILLISEC}
+            onSongSelected={this.props.onSongSelected}
+            onSongQueued={this.props.onSongQueued}
+            onClose={this.props.onClose}
             />
       </View>
     );

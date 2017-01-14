@@ -35,9 +35,11 @@ class MainSceneContainer extends Component {
     return {
       players : [{
         pan : firstPan,
+        side : 'L',
         muted : firstMute
       },{
         pan : secondPan,
+        side : 'R',
         muted : secondMute
       }]
     };
@@ -53,35 +55,32 @@ class MainSceneContainer extends Component {
     this.setState(this._createPanAndMuteState(modeToPanAndMute[mode]))
     this.setState({mode:mode});
   }
+  renderPlayer(player){
+    return <AudioPlayerContainer style={styles.player}
+       side={player.side}
+       pan={player.pan}
+       navigator={this.props.navigator}
+       muted={player.muted} />
+  }
   render() {
-
     return (
       <View style={styles.container}>
         <Text style={styles.header}>
            SplitCloud
         </Text>
-        {
-          this.state.players.map((player,i) => {
-           return <AudioPlayerContainer style={styles.player}
-              side={player.side}
-              pan={player.pan}
-              navigator={this.props.navigator}
-              muted={player.muted}
-              key={i} />
-          })
-        }
+        {this.renderPlayer(this.state.players[0])}
         <View style={styles.horizontalContainer}>
           <TouchableOpacity style={styles.container} onPress={this._onSideSelectorPressed.bind(this,'S')}>
-            <Text style={styles.textCenter} >Split</Text>
+            <Text style={styles.textCenter}>Split</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.container} onPress={this._onSideSelectorPressed.bind(this,'L')}>
-            <Text style={styles.textCenter} >Top</Text>
+            <Text style={styles.textCenter}>Top</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.container} onPress={this._onSideSelectorPressed.bind(this,'R')}>
-            <Text style={styles.textCenter} >Bottom</Text>
+            <Text style={styles.textCenter}>Bottom</Text>
           </TouchableOpacity>
         </View>
-        <Text>playback mode : {this.state.mode}</Text>
+      {this.renderPlayer(this.state.players[1])}
       </View>
 
     );

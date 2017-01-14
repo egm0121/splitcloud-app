@@ -6,8 +6,11 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "es2015-event-emitter": "0.0.3",
+    "lodash.debounce": "^4.0.8",
     "react": "15.2.1",
     "react-native": "0.30.0",
-    "react-native-audio-streaming": "git+https://git@github.com/egm0121/react-native-audio-streaming.git#feature/multiple-instances"
+    "react-native-audio-streaming": "git+https://git@github.com/egm0121/react-native-audio-streaming.git#feature/multiple-instances",
+    "react-native-multi-slider": "^0.3.5"
   }
 }

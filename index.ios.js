@@ -18,7 +18,10 @@ class SplitCloudApp extends Component {
     this.configureScene = this.configureScene.bind(this);
   }
   configureScene(route, routeStack){
-    return Navigator.SceneConfigs.VerticalUpSwipeJump ;
+    return {
+      ...Navigator.SceneConfigs.VerticalUpSwipeJump,
+      gestures: {}, // or null
+    };
   }
   render() {
     return ( <Navigator
