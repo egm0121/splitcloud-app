@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 import SongPicker from '../components/songPicker';
-const DEBOUNCE_MILLISEC = 300;
+const DEBOUNCE_MILLISEC = 250;
 const SC_CLIENT_ID = "54921f38ed5d570772c094534b9f50b5";
 const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {

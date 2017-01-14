@@ -84,7 +84,12 @@ class AudioPlayerContainer extends Component {
   }
   _onPlayerStopped(evt){
     console.log('_onPlayerStopped',evt);
-
+    if(evt.progress == 0 &&
+       evt.duration == 0 &&
+       evt.prevStatus == 'ERROR'){
+         console.log('track end detected. go to next track');
+         this._goToNextTrack();
+       }
   }
   _onSongSelected(rowData){
       this.setState({
@@ -285,7 +290,7 @@ class AudioPlayerContainer extends Component {
     if(this._isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
     }
-    trackLabelPlaceholder = `T-IDX:${trackIndex}` + trackLabelPlaceholder;
+    //trackLabelPlaceholder = `T-IDX:${trackIndex}` + trackLabelPlaceholder;
     return (
       <View style={styles.mainContainer}>
         <TouchableOpacity style={styles.container} onPress={this._onPickerToggle}>
