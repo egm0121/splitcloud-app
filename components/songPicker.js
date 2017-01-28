@@ -12,7 +12,9 @@ import {
   View,
   TouchableOpacity
 } from 'react-native';
-import debounce from 'lodash.debounce';
+import throttle from 'lodash.throttle';
+import axios from 'axios';
+import THEME from '../styles/variables';
 const EMPTY_RESULT_ROW =  [{label:'No results',isEmpty:true}];
 const SEARCH_INPUT_PLACEHOLDER = '';
 class SongPicker extends Component {
@@ -37,10 +39,12 @@ class SongPicker extends Component {
     this.SC_CLIENT_ID = this.props.scClientId;
     this.scResultLimit = this.props.scResultLimit;
     this.showStreamableOnly = this.props.showStreamableOnly;
-    this._onSearchTermsChange = debounce(this._onSearchTermsChange.bind(this),this.props.debounceWait);
+    this._onSearchTermsChange = throttle(this._onSearchTermsChange.bind(this),this.props.debounceWait);
   }
   _onSearchTermsChange(text){
-    this.performSoundcloudApiSearch(text).then(this.updateResultList);
+    this.performSoundcloudApiSearchWithAxios(text).then(this.updateResultList,(err) => {
+      console.log('ignore as old term request',err)
+    });
   }
   _onSearchChange(text){
     if(text){
@@ -50,10 +54,13 @@ class SongPicker extends Component {
     }
     this.setState({searchInput:text});
   }
-  performSoundcloudApiSearch(term){
-    return fetch(`http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
-      {method: 'GET'})
-      .then((resp) => resp.json());
+  performSoundcloudApiSearchWithAxios(term){
+    if(this.prevQueryCancelToken){
+      this.prevQueryCancelToken.cancel('Old Query, invalidate request');
+    }
+    this.prevQueryCancelToken = axios.CancelToken.source();
+    return axios.get(`http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,{cancelToken: this.prevQueryCancelToken.token})
+    .then((resp) => resp.data);
   }
   updateResultList(resp){
     // in case of empty results or no search terms
@@ -75,21 +82,26 @@ class SongPicker extends Component {
     })
   }
   _onSongSelected(rowData){
-    this.props.onSongSelected(rowData);
+    if(!rowData.isEmpty){
+        this.props.onSongSelected(rowData);
+    }
   }
   _onSongQueued(rowData){
-    this.props.onSongQueued(rowData);
+    if(!rowData.isEmpty){
+      this.props.onSongQueued(rowData);
+    }
   }
   _onClose(){
     this.props.onClose();
   }
   renderRowWithData(rowData) {
+    const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
     return (
       <View style={styles.row}>
-        <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-          <Text style={styles.rowLabelText}>{rowData.label} </Text>
+          <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
+            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >{rowData.label} </Text>
           </TouchableOpacity>
-          <View style={styles.rowAction}>
+        <View style={styles.rowAction}>
           <TouchableOpacity onPress={this._onSongQueued.bind(this,rowData)}>
             {rowData.isEmpty ? null : <Text style={styles.rowActionText}>+</Text>}
           </TouchableOpacity>
@@ -104,6 +116,7 @@ class SongPicker extends Component {
         <TextInput
           style={styles.searchInput}
           placeholder="Search songs:"
+          placeholderTextColor={THEME.mainColor}
           onChangeText={this._onSearchChange} />
         </View>
         <ListView contentContainerStyle={styles.list}
@@ -123,50 +136,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 20,
-    backgroundColor: '#F50'
+    backgroundColor: THEME.mainBgColor
   },
   searchInput : {
     height: 40,
-    color: 'white',
+    color: THEME.mainHighlightColor,
     paddingLeft: 10
   },
   searchInputView :{
-    borderColor : 'white',
+    borderColor : THEME.contentBorderColor,
     borderBottomWidth :1
   },
   list:{
     alignItems: 'flex-start',
-    backgroundColor: '#F50',
+    backgroundColor: THEME.contentBgColor,
     flexDirection:'column'
   },
   row : {
-    borderColor: '#FFFFFF',
     flex: 1,
     flexDirection:'row',
     height:40,
     paddingLeft: 20
   },
   rowLabel : {
-    flex: 10
+    flex: 9,
+    height: 40,
+    borderColor: THEME.listBorderColor,
+    borderBottomWidth:0.5
   },
   rowLabelText: {
-    color: '#FFFFFF',
+    color: THEME.mainHighlightColor,
     lineHeight:30,
-    height: 40,
-    fontSize: 17,
-    paddingTop:5,
-    paddingBottom:5
+    fontSize: 17
+  },
+  placeholderRowText:{
+    textAlign :'center',
+    color:THEME.mainColor
   },
   rowAction : {
-    flex: 1
+    flex: 1,
   },
   rowActionText :{
-    color: '#FFFFFF',
+    color: THEME.mainHighlightColor,
     fontSize: 30,
-    lineHeight:40
+    lineHeight:38,
+    textAlign : 'center'
   },
   footer : {
-    borderColor : 'white',
+    borderColor : THEME.contentBorderColor,
     borderTopWidth :1
   },
   closeAction : {

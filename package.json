@@ -9,6 +9,7 @@
     "axios": "^0.15.3",
     "es2015-event-emitter": "0.0.3",
     "lodash.debounce": "^4.0.8",
+    "lodash.throttle": "^4.1.1",
     "react": "15.2.1",
     "react-native": "0.30.0",
     "react-native-audio-streaming": "git+https://git@github.com/egm0121/react-native-audio-streaming.git#feature/multiple-instances",

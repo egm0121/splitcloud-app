@@ -10,8 +10,10 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  TouchableHighlight
 } from 'react-native';
-
+import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 
 class MainSceneContainer extends Component {
@@ -29,7 +31,11 @@ class MainSceneContainer extends Component {
         muted : 0
       }]
     };
-
+    this.modeButtons = [
+      {mode:'S',label:'Split'},
+      {mode:'L',label:'Top'},
+      {mode:'R',label:'Bottom'}
+    ];
   }
   _createPanAndMuteState([[firstPan,secondPan],[firstMute,secondMute]] = mapping){
     return {
@@ -56,7 +62,7 @@ class MainSceneContainer extends Component {
     this.setState({mode:mode});
   }
   renderPlayer(player){
-    return <AudioPlayerContainer style={styles.player}
+    return <AudioPlayerContainer
        side={player.side}
        pan={player.pan}
        navigator={this.props.navigator}
@@ -65,22 +71,30 @@ class MainSceneContainer extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.header}>
-           SplitCloud
-        </Text>
-        {this.renderPlayer(this.state.players[0])}
-        <View style={styles.horizontalContainer}>
-          <TouchableOpacity style={styles.container} onPress={this._onSideSelectorPressed.bind(this,'S')}>
-            <Text style={styles.textCenter}>Split</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.container} onPress={this._onSideSelectorPressed.bind(this,'L')}>
-            <Text style={styles.textCenter}>Top</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.container} onPress={this._onSideSelectorPressed.bind(this,'R')}>
-            <Text style={styles.textCenter}>Bottom</Text>
-          </TouchableOpacity>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>
+             SplitCloud
+          </Text>
         </View>
-      {this.renderPlayer(this.state.players[1])}
+        <View style={styles.player}>
+        {this.renderPlayer(this.state.players[0])}
+        </View>
+        <View style={styles.panToggleContainer}>
+          <View style={styles.horizontalContainer}>
+            {this.modeButtons.map((e,i) => {
+               const isSelectedStyle = e.mode === this.state.mode ? [styles.panModeSelected] : [];
+               return <TouchableHighlight style={styles.container} key={i}
+                        onPress={this._onSideSelectorPressed.bind(this,e.mode)}>
+                        <View>
+                          <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
+                        </View>
+                </TouchableHighlight>;
+            })}
+          </View>
+        </View>
+          <View style={styles.player}>
+            {this.renderPlayer(this.state.players[1])}
+          </View>
       </View>
 
     );
@@ -90,26 +104,47 @@ class MainSceneContainer extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F50',
-    paddingTop: 20
+    backgroundColor: THEME.mainBgColor,
+    paddingTop: 10
   },
-  header: {
-    fontSize: 26,
-    fontWeight: 'bold',
+  header :{
+    borderBottomWidth: 1,
+    borderBottomColor: THEME.contentBorderColor
+  },
+  headerText: {
+    fontSize: 25,
     textAlign: 'center',
-    color: '#FFFFFF',
-    margin: 10,
+    color: THEME.mainHighlightColor,
+    lineHeight:45,
+    height: 50,
+    fontWeight:'200'
   },
   player:{
-    flex:1
+    flex:6,
   },
-  horizontalContainer: {
-    flexDirection: 'row',
-    margin:40,
-    backgroundColor: '#F50',
+  panToggleContainer:{
+    flex:1,
+    borderWidth: 0.5,
+    borderLeftWidth:0,
+    borderRightWidth:0,
+    borderColor: THEME.contentBorderColor
   },
-  textCenter :{
-    textAlign:'center'
+  panModeSelected:{
+    color:THEME.mainHighlightColor
+  },
+  horizontalContainer:{
+    flex:1,
+    flexDirection:'row'
+  },
+  textSplitControls:{
+    textAlign:'center',
+    fontSize:18,
+    lineHeight:20,
+    color : THEME.mainColor
+  },
+  splitModeActive:{
+    borderBottomWidth:1,
+    borderBottomColor: THEME.activeBorderColor
   }
 });
 
