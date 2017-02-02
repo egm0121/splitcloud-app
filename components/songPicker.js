@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
-    borderBottomWidth :1
+    borderBottomWidth :2
   },
   list:{
     alignItems: 'flex-start',
