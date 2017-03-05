@@ -19,6 +19,7 @@ import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 're
 import SongPickerContainer from './songPickerContainer';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
+import axios from 'axios';
 import LogSlider from '../helpers/LogSlider';
 
 const PROGRESS_TICK_INTERVAL = 1000;
@@ -149,10 +150,13 @@ class AudioPlayerContainer extends Component {
     }
   }
   _onSongSelected(rowData){
+    this._resolvePlayableSoundUrl(rowData).then((resolvedData) => {
       this.setState({
-        playlist:[rowData],
+        playlist:[resolvedData],
         currTrackIndex:0
       });
+    });
+
   }
   _onSongQueued(nextTrack){
     this.setState((state,props) => ({
@@ -197,6 +201,13 @@ class AudioPlayerContainer extends Component {
   }
   _pauseCurrentTrack(){
 
+  }
+  _resolvePlayableSoundUrl(songObj){
+    //this strip of https is needed as the ATS excaption for tls version on
+    //the info.plist wont work on twice for same request and 302 redirect
+    //to a second exceptional domain 
+    songObj.streamUrl = songObj.streamUrl.replace(/^(https)/,'http');
+    return Promise.resolve(songObj);
   }
   _onPlayToggleOnePress(){
       if(this._isCurrentMutedSide()){

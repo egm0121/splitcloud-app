@@ -39,10 +39,13 @@ class SongPicker extends Component {
     this.SC_CLIENT_ID = this.props.scClientId;
     this.scResultLimit = this.props.scResultLimit;
     this.showStreamableOnly = this.props.showStreamableOnly;
-    this._onSearchTermsChange = throttle(this._onSearchTermsChange.bind(this),this.props.debounceWait);
+    this._onSearchTermsChange = throttle(
+      this._onSearchTermsChange.bind(this),
+      this.props.debounceWait
+    );
   }
   _onSearchTermsChange(text){
-    this.performSoundcloudApiSearchWithAxios(text).then(this.updateResultList,(err) => {
+    this.performSoundcloudApiSearch(text).then(this.updateResultList,(err) => {
       console.log('ignore as old term request',err)
     });
   }
@@ -54,12 +57,14 @@ class SongPicker extends Component {
     }
     this.setState({searchInput:text});
   }
-  performSoundcloudApiSearchWithAxios(term){
+  performSoundcloudApiSearch(term){
     if(this.prevQueryCancelToken){
       this.prevQueryCancelToken.cancel('Old Query, invalidate request');
     }
     this.prevQueryCancelToken = axios.CancelToken.source();
-    return axios.get(`http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,{cancelToken: this.prevQueryCancelToken.token})
+    return axios.get(
+      `http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
+      {cancelToken: this.prevQueryCancelToken.token})
     .then((resp) => resp.data);
   }
   updateResultList(resp){
