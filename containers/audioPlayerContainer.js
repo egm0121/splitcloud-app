@@ -1,7 +1,3 @@
-/**
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -19,7 +15,6 @@ import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 're
 import SongPickerContainer from './songPickerContainer';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
-import axios from 'axios';
 import LogSlider from '../helpers/LogSlider';
 
 const PROGRESS_TICK_INTERVAL = 1000;
@@ -81,8 +76,6 @@ class AudioPlayerContainer extends Component {
   }
   _updateComponentPlayerState(){
     this.playerAObj.getStatus((err,data) => {
-      let progres = parseFloat(data.progress);
-      let duration = parseFloat(data.duration);
       let currPlaybackProgress = parseInt( (data.progress * 100) / data.duration ) || 0;
       this.setState({
           duration : data.duration,
@@ -205,7 +198,7 @@ class AudioPlayerContainer extends Component {
   _resolvePlayableSoundUrl(songObj){
     //this strip of https is needed as the ATS excaption for tls version on
     //the info.plist wont work on twice for same request and 302 redirect
-    //to a second exceptional domain 
+    //to a second exceptional domain
     songObj.streamUrl = songObj.streamUrl.replace(/^(https)/,'http');
     return Promise.resolve(songObj);
   }
@@ -408,9 +401,9 @@ class AudioPlayerContainer extends Component {
               onValuesChangeFinish={this._onSeekToTime}
               onValuesChangeStart={this._onSeekToTimeStart}
               sliderLength={progressTrackLength}
-              trackStyle={{ borderRadius: 7, height: 2 }}
-              selectedStyle={{backgroundColor: 'rgba(255,255,255,0.5)'}}
-              unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.5)'}}
+              trackStyle={{ borderRadius: 12, height: 3 }}
+              selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
+              unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
               markerStyle={markerStyle} />
           </View>
           <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.duration)}</Text>
@@ -536,15 +529,15 @@ const sliderTrackStyles = {
   min : mainFgColor
 };
 const markerStyle = {
-  height:20,
-  width:20,
-  borderRadius: 10,
+  height:15,
+  width:15,
+  borderRadius: 7.5,
   backgroundColor:THEME.mainHighlightColor,
   borderWidth: 0,
   shadowColor:'black',
-  shadowRadius:3,
+  shadowRadius:0,
   shadowOffset: { width:0,height:2},
-  shadowOpacity: 0.3
+  shadowOpacity: 0
 };
 AudioPlayerContainer.propTypes = {
 

@@ -18,8 +18,8 @@ import THEME from '../styles/variables';
 const EMPTY_RESULT_ROW =  [{label:'No results',isEmpty:true}];
 const SEARCH_INPUT_PLACEHOLDER = '';
 class SongPicker extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
 
     this._onSearchChange = this._onSearchChange.bind(this);
     this.updateResultList = this.updateResultList.bind(this);

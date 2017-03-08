@@ -15,10 +15,11 @@ import {
 } from 'react-native';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
-
+import { connect } from 'react-redux';
+import { changePlaybackMode } from '../redux/actions/playbackModeActions';
 class MainSceneContainer extends Component {
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.state = {
       mode : 'S',
       players : [{
@@ -36,6 +37,7 @@ class MainSceneContainer extends Component {
       {mode:'L',label:'Top'},
       {mode:'R',label:'Bottom'}
     ];
+    console.log('has state', this.props.all)
   }
   _createPanAndMuteState([[firstPan,secondPan],[firstMute,secondMute]] = mapping){
     return {
@@ -51,7 +53,6 @@ class MainSceneContainer extends Component {
     };
   }
   _onSideSelectorPressed(mode){
-
     const modeToPanAndMute = {
       'S':[[-1,1],[0,0]],
       'L':[[0,1],[0,1]],
@@ -82,9 +83,9 @@ class MainSceneContainer extends Component {
         <View style={styles.panToggleContainer}>
           <View style={styles.horizontalContainer}>
             {this.modeButtons.map((e,i) => {
-               const isSelectedStyle = e.mode === this.state.mode ? [styles.panModeSelected] : [];
+               const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
                return <TouchableHighlight style={styles.container} key={i}
-                        onPress={this._onSideSelectorPressed.bind(this,e.mode)}>
+                        onPress={this.props.onModeSelected.bind(this,e.mode)}>
                         <View>
                           <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
                         </View>
@@ -147,6 +148,18 @@ const styles = StyleSheet.create({
     borderBottomColor: THEME.activeBorderColor
   }
 });
+let mapStateToProps  =  (state) => {
+  return { mode : state.mode };
+};
+let mapDispatchToProps = (dispatch) => {
+  return {
+    onModeSelected(mode){
+      dispatch(changePlaybackMode(mode))
+    }
+  }
+};
+
+MainSceneContainer = connect(mapStateToProps,mapDispatchToProps)(MainSceneContainer);
 
 AppRegistry.registerComponent('MainSceneContainer', () => MainSceneContainer);
 
