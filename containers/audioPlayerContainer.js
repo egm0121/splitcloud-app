@@ -13,6 +13,7 @@ import {
 import THEME from '../styles/variables';
 import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
+import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
@@ -286,6 +287,13 @@ class AudioPlayerContainer extends Component {
     return `${pad(min)}:${pad(leftSeconds)}`;
   }
   componentWillReceiveProps(newProps){
+    console.log(
+      'new props for side '+newProps.side,
+      {
+        pan:newProps.pan,
+        muted:newProps.muted
+      });
+      
     this.setState({
       pan:newProps.pan,
       muted:newProps.muted
@@ -443,6 +451,24 @@ class AudioPlayerContainer extends Component {
     );
   }
 }
+
+AudioPlayerContainer.propTypes = {
+
+};
+const mapStateToProps = (state, props) => {
+  let player = state.players.filter((player) => player.side === props.side).pop();
+  return {
+    player,
+    pan : player.pan,
+    muted : player.muted
+  }
+};
+const mapDispatchToProps = () => {
+  return {};
+};
+AudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
+
+AppRegistry.registerComponent('AudioPlayerContainer', () => AudioPlayerContainer);
 const volumeMarginSide = 80;
 const volumeMarginVertical = 10;
 const playbackHorizontalMargin = 15;
@@ -539,9 +565,4 @@ const markerStyle = {
   shadowOffset: { width:0,height:2},
   shadowOpacity: 0
 };
-AudioPlayerContainer.propTypes = {
-
-};
-AppRegistry.registerComponent('AudioPlayerContainer', () => AudioPlayerContainer);
-
 export default AudioPlayerContainer;

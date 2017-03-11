@@ -23,13 +23,9 @@ class MainSceneContainer extends Component {
     this.state = {
       mode : 'S',
       players : [{
-        side:'L',
-        pan :-1,
-        muted : 0
+        side:'L'
       },{
-        side:'R',
-        pan : 1,
-        muted : 0
+        side:'R'
       }]
     };
     this.modeButtons = [
@@ -39,35 +35,11 @@ class MainSceneContainer extends Component {
     ];
     console.log('has state', this.props.all)
   }
-  _createPanAndMuteState([[firstPan,secondPan],[firstMute,secondMute]] = mapping){
-    return {
-      players : [{
-        pan : firstPan,
-        side : 'L',
-        muted : firstMute
-      },{
-        pan : secondPan,
-        side : 'R',
-        muted : secondMute
-      }]
-    };
-  }
-  _onSideSelectorPressed(mode){
-    const modeToPanAndMute = {
-      'S':[[-1,1],[0,0]],
-      'L':[[0,1],[0,1]],
-      'R':[[-1,0],[1,0]]
-    };
 
-    this.setState(this._createPanAndMuteState(modeToPanAndMute[mode]))
-    this.setState({mode:mode});
-  }
   renderPlayer(player){
     return <AudioPlayerContainer
        side={player.side}
-       pan={player.pan}
-       navigator={this.props.navigator}
-       muted={player.muted} />
+       navigator={this.props.navigator} />
   }
   render() {
     return (

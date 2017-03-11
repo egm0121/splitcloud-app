@@ -30,7 +30,7 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
-			<key>cf-media.sndcdn.com</key>
+			<key>sndcdn.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>
 				<true/>
