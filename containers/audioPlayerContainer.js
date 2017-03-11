@@ -293,7 +293,7 @@ class AudioPlayerContainer extends Component {
         pan:newProps.pan,
         muted:newProps.muted
       });
-      
+
     this.setState({
       pan:newProps.pan,
       muted:newProps.muted
@@ -367,7 +367,9 @@ class AudioPlayerContainer extends Component {
     };
     const isBufferingLabel = 'Buffering - ';
     const playbackStateLabel =
-      this._isPlayerPlaying() || this._isPlayerBuffering() ? 'Pause' : 'Play';
+      this._isPlayerPlaying() || this._isPlayerBuffering() ?
+        <Image style={[styles.playerIcon,{marginTop:-8}]} source={require('../assets/flat_pause.png')} resizeMode={'contain'}/> :
+        <Image style={[styles.playerIcon,{marginTop:-8}]} source={require('../assets/flat_play.png')} resizeMode={'contain'}/>;
 
     let {height, width} = Dimensions.get('window');
     let progressTrackLength = width - 130;
@@ -418,9 +420,7 @@ class AudioPlayerContainer extends Component {
         </View>
         <View style={styles.horizontalContainer}>
           <TouchableOpacity style={styles.container} onPress={this._goToPrevTrack}>
-            <Text style={styles.welcome}>
-              Prev
-            </Text>
+            <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
           <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
             <Text style={styles.welcome}>
@@ -428,14 +428,10 @@ class AudioPlayerContainer extends Component {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.container} onPress={this._onStopToggleOnePress}>
-            <Text style={styles.welcome}>
-              Stop
-            </Text>
+            <Image style={[styles.playerIcon]} source={require('../assets/flat_stop.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
           <TouchableOpacity style={styles.container} onPress={this._goToNextTrack}>
-            <Text style={styles.welcome}>
-              Next
-            </Text>
+            <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
         </View>
         <View style={styles.horizontalContainer}>
@@ -488,7 +484,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    alignItems:'center'
   },
   horizontalContainer: {
     flex: 1,
@@ -522,6 +519,14 @@ const styles = StyleSheet.create({
     margin: 10,
     height: 30
   },textShadowStyle),
+  playerIcon : {
+    width:30,
+    height:30
+  },
+  playerIconSmaller : {
+    width: 25,
+    height: 25
+  },
   tracknameContainer:{
     flex:2,
     flexDirection:'column',
