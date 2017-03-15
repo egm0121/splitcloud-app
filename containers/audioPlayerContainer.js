@@ -366,11 +366,8 @@ class AudioPlayerContainer extends Component {
       'R' : 'right'
     };
     const isBufferingLabel = 'Buffering - ';
-    const playbackStateLabel =
-      this._isPlayerPlaying() || this._isPlayerBuffering() ?
-        <Image style={[styles.playerIcon,{marginTop:-8}]} source={require('../assets/flat_pause.png')} resizeMode={'contain'}/> :
-        <Image style={[styles.playerIcon,{marginTop:-8}]} source={require('../assets/flat_play.png')} resizeMode={'contain'}/>;
-
+    let playbackSource = this._isPlayerPlaying() || this._isPlayerBuffering() ?
+      require('../assets/flat_pause.png') : require('../assets/flat_play.png');
     let {height, width} = Dimensions.get('window');
     let progressTrackLength = width - 130;
     let trackIndex = this._getCurrentTrackIndex();
@@ -419,18 +416,19 @@ class AudioPlayerContainer extends Component {
           <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.duration)}</Text>
         </View>
         <View style={styles.horizontalContainer}>
-          <TouchableOpacity style={styles.container} onPress={this._goToPrevTrack}>
+          <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
             <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
           <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
-            <Text style={styles.welcome}>
-              {playbackStateLabel}
-            </Text>
+            <Image
+               style={[styles.playerIcon,styles.playerIconSmaller]}
+               source={playbackSource}
+               resizeMode={'contain'}/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.container} onPress={this._onStopToggleOnePress}>
-            <Image style={[styles.playerIcon]} source={require('../assets/flat_stop.png')} resizeMode={'cover'}/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.container} onPress={this._goToNextTrack}>
+          {/**<TouchableOpacity style={styles.container} onPress={this._onStopToggleOnePress}>
+            <Image style={[styles.playerIcon,styles.playerIconSmaller]} source={require('../assets/flat_stop.png')} resizeMode={'cover'}/>
+          </TouchableOpacity>*/}
+          <TouchableOpacity style={[styles.container,,styles.endRow]} onPress={this._goToNextTrack}>
             <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
         </View>
@@ -487,6 +485,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems:'center'
   },
+  startRow: {
+    alignItems:'flex-end'
+  },
+  endRow:{
+    alignItems:'flex-start'
+  },
   horizontalContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -520,12 +524,12 @@ const styles = StyleSheet.create({
     height: 30
   },textShadowStyle),
   playerIcon : {
-    width:30,
-    height:30
+    width:40,
+    height:40
   },
   playerIconSmaller : {
-    width: 25,
-    height: 25
+    width: 35,
+    height: 35
   },
   tracknameContainer:{
     flex:2,
