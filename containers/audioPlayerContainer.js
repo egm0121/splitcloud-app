@@ -143,19 +143,21 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _onSongSelected(rowData){
-    this._resolvePlayableSoundUrl(rowData).then((resolvedData) => {
+  _onSongSelected(nextTrack){
+    this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
       this.setState({
-        playlist:[resolvedData],
+        playlist:[nextTrack],
         currTrackIndex:0
       });
     });
 
   }
   _onSongQueued(nextTrack){
-    this.setState((state,props) => ({
-      playlist : [...state.playlist,nextTrack]
-    }));
+    this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
+      this.setState((state,props) => ({
+        playlist : [...state.playlist,nextTrack]
+      }));
+    });
   }
   _goToNextTrack(){
 
@@ -197,10 +199,12 @@ class AudioPlayerContainer extends Component {
 
   }
   _resolvePlayableSoundUrl(songObj){
+    let stripSSL = (s) => s ? s.replace(/^(https)/,'http') : s ;
     //this strip of https is needed as the ATS excaption for tls version on
     //the info.plist wont work on twice for same request and 302 redirect
     //to a second exceptional domain
-    songObj.streamUrl = songObj.streamUrl.replace(/^(https)/,'http');
+    songObj.streamUrl = stripSSL(songObj.streamUrl);
+    songObj.artwork = stripSSL(songObj.artwork);
     return Promise.resolve(songObj);
   }
   _onPlayToggleOnePress(){
@@ -387,7 +391,11 @@ class AudioPlayerContainer extends Component {
               source={{uri:this._getCurrentTrackArtwork()}}
               resizeMode={'cover'}
             /> :
-            <Image style={[styles.artworkImage,{width:width}]} />
+            <Image
+              source={require('../assets/alt_artwork.png')}
+              style={[styles.artworkImage,{width:width}]}
+              resizeMode={'stretch'}
+              />
           }
         </View>
         <View style={styles.tracknameContainer}>
@@ -555,7 +563,7 @@ const styles = StyleSheet.create({
   },
   artworkImage : {
     width: 250,
-    height: 250,
+    height: 232,
     backgroundColor:artworkPlaceholderColor
   }
 });

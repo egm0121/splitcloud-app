@@ -93,11 +93,11 @@ const styles = StyleSheet.create({
     fontWeight:'200'
   },
   player:{
-    flex:6,
+    flex:6
   },
   panToggleContainer:{
     flex:1,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderLeftWidth:0,
     borderRightWidth:0,
     borderColor: THEME.contentBorderColor
@@ -114,10 +114,6 @@ const styles = StyleSheet.create({
     fontSize:18,
     lineHeight:20,
     color : THEME.mainColor
-  },
-  splitModeActive:{
-    borderBottomWidth:1,
-    borderBottomColor: THEME.activeBorderColor
   }
 });
 let mapStateToProps  =  (state) => {
