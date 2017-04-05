@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   }
 });
 let mapStateToProps  =  (state) => {
-  return { mode : state.mode };
+  return { mode : state.mode , players: state.players };
 };
 let mapDispatchToProps = (dispatch) => {
   return {

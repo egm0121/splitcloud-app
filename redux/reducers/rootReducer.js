@@ -2,6 +2,16 @@ import { playbackModeTypes , actionTypes } from '../constants/actions';
 
 const initialState = {
   mode : playbackModeTypes.SPLIT,
+  songPickers :[{
+      side : playbackModeTypes.LEFT,
+      searchTerms : '',
+      recentQueryList : []
+    },
+    {
+      side : playbackModeTypes.RIGHT,
+      searchTerms : '',
+      recentQueryList : []
+  }],
   players : [{
     side: playbackModeTypes.LEFT,
     pan :-1,
@@ -30,9 +40,27 @@ function playersReducer(players, currAction){
     }
   });
 }
+function songPickersReducer(state, currAction){
+    switch(currAction.type){
+      case actionTypes.UPDATE_PICKER_SEARCH_TERMS:
+        return state.map((picker) => {
+          if(picker.side == currAction.side){
+            return {...picker, searchTerms : currAction.terms};
+          }
+          return {...picker};
+        })
+      default:
+      return state;
+    }
+}
 function rootReducer(state = initialState, currAction){
 
   switch(currAction.type) {
+    case actionTypes.UPDATE_PICKER_SEARCH_TERMS :
+      return {
+        ...state,
+        songPickers: songPickersReducer(state.songPickers,currAction)
+      }
     case actionTypes.CHANGE_PLAYBACK_MODE :
       return { ...state,
         mode : currAction.mode,

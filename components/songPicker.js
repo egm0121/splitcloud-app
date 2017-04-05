@@ -30,7 +30,7 @@ class SongPicker extends Component {
 
     this.SC_CLIENT_ID = null;
     this.state = {
-      searchInput: '',
+      searchInput: this.props.searchTerms || '',
       pureList : [],
       renderList: this.ds.cloneWithRows(EMPTY_RESULT_ROW)
     };
@@ -43,8 +43,11 @@ class SongPicker extends Component {
       this._onSearchTermsChange.bind(this),
       this.props.debounceWait
     );
+    this._onSearchChange(this.state.searchInput);
   }
+
   _onSearchTermsChange(text){
+    this.props.onSearchTermsChange(text);
     this.performSoundcloudApiSearch(text).then(this.updateResultList,(err) => {
       console.log('ignore as old term request',err)
     });
@@ -121,6 +124,7 @@ class SongPicker extends Component {
         <TextInput
           style={styles.searchInput}
           placeholder="Search songs:"
+          value={this.state.searchInput}
           placeholderTextColor={THEME.mainColor}
           onChangeText={this._onSearchChange} />
         </View>
@@ -203,7 +207,8 @@ const styles = StyleSheet.create({
 SongPicker.propTypes = {
   onSongSelected: PropTypes.func.isRequired,
   onSongQueued: PropTypes.func,
-  onClose: PropTypes.func
+  onClose: PropTypes.func,
+  onSearchTermsChange: PropTypes.func
 };
 
 export default SongPicker;

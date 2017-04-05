@@ -226,19 +226,17 @@ class AudioPlayerContainer extends Component {
         this._updateComponentPlayerState();
       });
   }
-  _onPickerToggle(activeSide){
+  _onPickerToggle(){
     this.props.navigator.push({
       component: SongPickerContainer,
       passProps : {
-        activeSide,
+        side : this.props.side,
         onClose: () => { this.props.navigator.pop() },
         onSongSelected : (nextTrack) => {
-          console.log('got song selected',nextTrack);
           this.props.navigator.pop();
           this._onSongSelected(nextTrack);
         },
         onSongQueued : (nextTrack) => {
-          console.log('songQueued');
           this.props.navigator.pop();
           this._onSongQueued(nextTrack);
         }
@@ -433,9 +431,6 @@ class AudioPlayerContainer extends Component {
                source={playbackSource}
                resizeMode={'contain'}/>
           </TouchableOpacity>
-          {/**<TouchableOpacity style={styles.container} onPress={this._onStopToggleOnePress}>
-            <Image style={[styles.playerIcon,styles.playerIconSmaller]} source={require('../assets/flat_stop.png')} resizeMode={'cover'}/>
-          </TouchableOpacity>*/}
           <TouchableOpacity style={[styles.container,,styles.endRow]} onPress={this._goToNextTrack}>
             <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
