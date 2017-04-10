@@ -11,7 +11,8 @@ import {
   View,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  TouchableHighlight
+  TouchableHighlight,
+  Linking
 } from 'react-native';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
@@ -20,6 +21,7 @@ import { changePlaybackMode } from '../redux/actions/playbackModeActions';
 class MainSceneContainer extends Component {
   constructor(props){
     super(props);
+    this.handleOpenURL = this.handleOpenURL.bind(this);
     this.state = {
       mode : 'S',
       players : [{
@@ -33,9 +35,18 @@ class MainSceneContainer extends Component {
       {mode:'L',label:'Top'},
       {mode:'R',label:'Bottom'}
     ];
-    console.log('has state', this.props.all)
-  }
 
+
+  }
+  componentDidMount(){
+    Linking.addEventListener('url', this.handleOpenURL);
+  }
+  componentWillUnmount(){
+    Linking.removeEventListener('url', this.handleOpenURL);
+  }
+  handleOpenURL(){
+    console.log('handle openURL called',arguments)
+  }
   renderPlayer(player){
     return <AudioPlayerContainer
        side={player.side}
@@ -117,7 +128,7 @@ const styles = StyleSheet.create({
   }
 });
 let mapStateToProps  =  (state) => {
-  return { mode : state.mode , players: state.players };
+  return { mode : state.mode , players: state.pla };
 };
 let mapDispatchToProps = (dispatch) => {
   return {

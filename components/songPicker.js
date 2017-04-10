@@ -56,14 +56,18 @@ class SongPicker extends Component {
     if(text){
       this._onSearchTermsChange(text);
     } else {
+      this._invalidatePrevRequest();
       this.updateResultList(false);
     }
     this.setState({searchInput:text});
   }
-  performSoundcloudApiSearch(term){
+  _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
       this.prevQueryCancelToken.cancel('Old Query, invalidate request');
     }
+  }
+  performSoundcloudApiSearch(term){
+    this._invalidatePrevRequest();
     this.prevQueryCancelToken = axios.CancelToken.source();
     return axios.get(
       `http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
@@ -73,17 +77,20 @@ class SongPicker extends Component {
   updateResultList(resp){
     // in case of empty results or no search terms
     if(!resp){
-      return   this.setState({
+      return this.setState({
           pureList : EMPTY_RESULT_ROW,
           renderList : this.ds.cloneWithRows(EMPTY_RESULT_ROW)
         });
     }
+
     let tracks = resp.map((t) => (
       {label : t.title,
+       username: t.user.username,
        streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
        artwork : t.artwork_url
-      })
+     })
     );
+
     this.setState({
       pureList : tracks,
       renderList : this.ds.cloneWithRows(tracks)
@@ -108,6 +115,7 @@ class SongPicker extends Component {
       <View style={styles.row}>
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
             <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >{rowData.label} </Text>
+            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{rowData.username} </Text>
           </TouchableOpacity>
         <View style={styles.rowAction}>
           <TouchableOpacity onPress={this._onSongQueued.bind(this,rowData)}>
@@ -164,19 +172,24 @@ const styles = StyleSheet.create({
   row : {
     flex: 1,
     flexDirection:'row',
-    height:40,
+    marginBottom:5,
+    marginTop:5,
     paddingLeft: 20
   },
   rowLabel : {
     flex: 9,
-    height: 40,
+    height: 42,
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0.5
   },
   rowLabelText: {
     color: THEME.mainHighlightColor,
-    lineHeight:30,
+    lineHeight:17,
     fontSize: 17
+  },
+  rowDescText :{
+    color: THEME.mainColor,
+    fontSize: 13
   },
   placeholderRowText:{
     textAlign :'center',
@@ -186,9 +199,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rowActionText :{
-    color: THEME.mainHighlightColor,
+    color: THEME.mainColor,
     fontSize: 30,
-    lineHeight:38,
+    lineHeight:28,
     textAlign : 'center'
   },
   footer : {

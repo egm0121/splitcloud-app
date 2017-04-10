@@ -24,7 +24,6 @@ class SongPickerContainer extends Component {
     this.onSearchTermsChange = this.onSearchTermsChange.bind(this);
   }
   onSearchTermsChange(terms){
-
     this.props.dispatch(updateSearchTerms(this.props.side,terms));
   }
   render() {
