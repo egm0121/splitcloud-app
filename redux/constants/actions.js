@@ -7,7 +7,8 @@ export const actionTypes = {
   SET_PLAYLIST : 'SET_PLAYLIST',
   CLEAR_PLAYLIST: 'CLEAR_PLAYLIST',
   ADD_PLAYLIST_ITEM : 'ADD_PLAYLIST_ITEM',
-  REMOVE_PLAYLIST_ITEM : 'REMOVE_PLAYLIST_ITEM'
+  REMOVE_PLAYLIST_ITEM : 'REMOVE_PLAYLIST_ITEM',
+  PLAY_PLAYLIST_ITEM : 'PLAY_PLAYLIST_ITEM'
 }
 //TODO: move out on his own appConstant file
 export const playbackModeTypes = {

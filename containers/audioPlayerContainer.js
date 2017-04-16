@@ -13,6 +13,7 @@ import {
 import THEME from '../styles/variables';
 import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
+import CurrentPlaylistContainer from './currentPlaylistContainer';
 import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
@@ -36,6 +37,7 @@ class AudioPlayerContainer extends Component {
     this._onProgressTick = this._onProgressTick.bind(this);
     this._goToNextTrack = this._goToNextTrack.bind(this);
     this._goToPrevTrack = this._goToPrevTrack.bind(this);
+    this._toggleCurrentPlaylist = this._toggleCurrentPlaylist.bind(this);
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
@@ -173,6 +175,9 @@ class AudioPlayerContainer extends Component {
        return this.setState({currTrackIndex : 0});
     }
     this.setState((state,props) => ({currTrackIndex: state.currTrackIndex - 1}))
+  }
+  _toggleCurrentPlaylist(){
+
   }
   _prepareCurrentTrack(){
     let currentTrack = this._getCurrentTrackStream();
@@ -396,12 +401,19 @@ class AudioPlayerContainer extends Component {
               />
           }
         </View>
+        <TouchableOpacity style={[styles.playlistButton]} onPress={this._toggleCurrentPlaylist}>
+          <Image
+            style={[styles.playerIcon,styles.playerIconSuperSmall]}
+            source={require('../assets/flat_select.png')}
+            resizeMode={'contain'}
+            />
+        </TouchableOpacity>
         <View style={styles.tracknameContainer}>
           <TouchableOpacity  onPress={this._onPickerToggle}>
             <Text style={styles.trackname} numberOfLines={1} ellipsizeMode={'tail'}>
               { trackLabelPlaceholder }
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity>    
         </View>
         <View style={styles.horizontalContainer} >
           <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.elapsed)}</Text>
@@ -431,7 +443,8 @@ class AudioPlayerContainer extends Component {
                source={playbackSource}
                resizeMode={'contain'}/>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.container,,styles.endRow]} onPress={this._goToNextTrack}>
+
+          <TouchableOpacity style={[styles.container,styles.endRow]} onPress={this._goToNextTrack}>
             <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
         </View>
@@ -486,13 +499,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    alignItems:'center'
+    alignItems:'center',
+    borderColor: 'lime',
+    borderWidth: 0
   },
   startRow: {
     alignItems:'flex-end'
   },
   endRow:{
     alignItems:'flex-start'
+  },
+  centerRow:{
+
   },
   horizontalContainer: {
     flex: 1,
@@ -534,11 +552,20 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35
   },
+  playerIconSuperSmall:{
+    width: 25,
+    height: 25
+  },
   tracknameContainer:{
     flex:2,
     flexDirection:'column',
     justifyContent:'center',
     backgroundColor:THEME.textOverlayBgColor
+  },
+  playlistButton:{
+    position:'absolute',
+    left : 20,
+    marginTop:-32
   },
   trackname : Object.assign({
     fontSize: 20,

@@ -3,14 +3,14 @@ import { playbackModeTypes , actionTypes } from '../constants/actions';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   songPickers :[{
-      side : playbackModeTypes.LEFT,
-      searchTerms : '',
-      recentQueryList : []
-    },
-    {
-      side : playbackModeTypes.RIGHT,
-      searchTerms : '',
-      recentQueryList : []
+    side : playbackModeTypes.LEFT,
+    searchTerms : '',
+    recentQueryList : []
+  },
+  {
+    side : playbackModeTypes.RIGHT,
+    searchTerms : '',
+    recentQueryList : []
   }],
   players : [{
     side: playbackModeTypes.LEFT,
@@ -20,6 +20,16 @@ const initialState = {
     side: playbackModeTypes.RIGHT,
     pan : 1,
     muted : 0
+  }],
+  playlist : [{
+    tracks:[],
+    currentTrackIndex: 0,
+    side : playbackModeTypes.LEFT
+  },
+  {
+    tracks:[],
+    currentTrackIndex: 0,
+    side : playbackModeTypes.RIGHT
   }]
 };
 
@@ -53,6 +63,24 @@ function songPickersReducer(state, currAction){
       return state;
     }
 }
+function currentPlaylistReducer(state, currAction){
+  switch(currAction.type){
+    case actionTypes.ADD_PLAYLIST_ITEM:
+      return {
+        ...state,
+        tracks : [...state.tracks, currAction.track]
+      };
+    case actionTypes.REMOVE_PLAYLIST_ITEM:
+      let itemIndex = state.tracks.findIndex(currAction.track);
+      return {
+        ...state,
+        tracks : itemIndex != null ?
+          state.tracks.slice(0).splice(itemIndex,1) : state.tracks
+      };
+    default:
+      return state;
+  }
+}
 function rootReducer(state = initialState, currAction){
 
   switch(currAction.type) {
@@ -66,6 +94,13 @@ function rootReducer(state = initialState, currAction){
         mode : currAction.mode,
         players: playersReducer(state.players,currAction)
       };
+    case actionTypes.ADD_PLAYLIST_ITEM:
+    case actionTypes.REMOVE_PLAYLIST_ITEM:
+    case actionTypes.PLAY_PLAYLIST_ITEM:
+      return {
+        ...state,
+        playlist: currentPlaylistReducer(state.playlist,currAction)
+      }
     default:
       return state;
   }
