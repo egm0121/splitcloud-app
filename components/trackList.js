@@ -17,11 +17,9 @@ import THEME from '../styles/variables';
 class TrackList extends Component {
   constructor(props){
     super(props);
-
     this.updateResultList = this.updateResultList.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
-    this._onSongQueued = this._onSongQueued.bind(this);
-    this._onClose = this._onClose.bind(this);
+    this._onSongAction = this._onSongAction.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.emptyResultRow = [{
       label:this.props.emptyLabel,

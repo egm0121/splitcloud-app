@@ -20,19 +20,15 @@ import {removeQeueuedTrack} from '../redux/actions/currentPlaylistActions';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
-    this.onTrackSelected = this.onTrackSelected.bind(this);
   }
-  onTrackSelected(track){
-    console.log('skip curr player index to track',track);
-  }
+
   render() {
 
     return (
       <View style={styles.container}>
-        <trackList
+        <TrackList
             tracksData={this.props.playlist}
-            onTrackSelected={this.onTrackSelected}
-            onTrackAction={this.prop.onRemoveTrack}
+            onTrackAction={this.props.onRemoveTrack}
             onTrackActionRender={'X'}
             {...this.props}
             />
@@ -42,8 +38,8 @@ class CurrentPlaylistContainer extends Component {
 }
 CurrentPlaylistContainer.propTypes = {
   side : PropTypes.string.isRequired,
-  onSongSelected: PropTypes.func.isRequired,
-  onSongQueued: PropTypes.func,
+  onTrackSelected: PropTypes.func.isRequired,
+  onRemoveTrack: PropTypes.func,
   onClose: PropTypes.func
 }
 const styles = StyleSheet.create({

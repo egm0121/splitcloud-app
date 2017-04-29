@@ -70,6 +70,11 @@ function currentPlaylistReducer(state, currAction){
         ...state,
         tracks : [...state.tracks, currAction.track]
       };
+    case actionTypes.SET_PLAYLIST:
+      return {
+        ...state,
+        tracks : [...currAction.tracks]
+      };
     case actionTypes.REMOVE_PLAYLIST_ITEM:
       let itemIndex = state.tracks.findIndex(currAction.track);
       return {
