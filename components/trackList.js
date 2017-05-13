@@ -56,14 +56,26 @@ class TrackList extends Component {
         this.props.onTrackSelected(rowData);
     }
   }
-  _onSongAction(rowData){
+  _onSongAction(rowData,rowId){
     if(!rowData.isEmpty){
       this.props.onTrackAction(rowData);
     }
   }
 
-  renderRowWithData(rowData) {
+  renderRowWithData(rowData,sectionId) {
     const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
+    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
+      rowTextStyle.push(styles.hightlightText);
+    }
+    if(rowData.isEmpty){
+      return (
+      <View style={[styles.rowContainerPlaceholder]}>
+        <View style={styles.rowPlaceholder}>
+          <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+        </View>
+      </View>
+      );
+    }
     return (
       <View style={styles.row}>
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
@@ -83,6 +95,7 @@ class TrackList extends Component {
       <View style={styles.container}>
         <ListView contentContainerStyle={styles.list}
           dataSource={this.state.renderList}
+          removeClippedSubviews={false}
           renderRow={this.renderRowWithData.bind(this)} />
         <View style={styles.footer}>
           <TouchableOpacity onPress={this.props.onClose}>
@@ -93,15 +106,25 @@ class TrackList extends Component {
     );
   }
 }
+
 TrackList.defaultProps = {
   emptyLabel : 'Empty Tracklist',
   onTrackActionRender : () => '+'
 };
+TrackList.propTypes = {
+  tracksData : PropTypes.array.isRequired,
+  emptyLabel : PropTypes.string,
+  onTrackSelected: PropTypes.func,
+  onTrackAction: PropTypes.func,
+  onTrackActionRender: PropTypes.func,
+  highlightProp : PropTypes.string,
+  onClose: PropTypes.func
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
-    backgroundColor: THEME.mainBgColor
+    backgroundColor: THEME.contentBgColor
   },
   list:{
     alignItems: 'flex-start',
@@ -113,39 +136,57 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     marginBottom:5,
     marginTop:5,
-    paddingLeft: 20
+    paddingLeft: 20,
+    paddingRight: 20
   },
   rowLabel : {
-    flex: 9,
+    flex: 10,
     height: 42,
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0.5
+  },
+  rowContainerPlaceholder:{
+    flex: 1,
+    flexDirection:'row',
+    marginBottom:5,
+    marginTop:5
+  },
+  rowPlaceholder :{
+    flex : 1,
   },
   rowLabelText: {
     color: THEME.mainHighlightColor,
     lineHeight:17,
     fontSize: 17
   },
+  hightlightText : {
+    color: 'orange'
+  },
   rowDescText :{
     color: THEME.mainColor,
     fontSize: 13
   },
   placeholderRowText:{
-    textAlign :'center',
-    color:THEME.mainColor
+    color:THEME.mainColor,
+    lineHeight:30,
+    textAlign:'center',
+    fontSize: 17
   },
   rowAction : {
-    flex: 1,
+    flex: 2,
+    borderColor: THEME.listBorderColor,
+    borderBottomWidth:0.5
   },
   rowActionText :{
     color: THEME.mainColor,
-    fontSize: 30,
-    lineHeight:28,
-    textAlign : 'center'
+    fontSize: 35,
+    lineHeight:35,
+    textAlign : 'right'
   },
   footer : {
     borderColor : THEME.contentBorderColor,
-    borderTopWidth :1
+    borderTopWidth :1,
+    backgroundColor: THEME.mainBgColor
   },
   closeAction : {
     flex: 1,
@@ -155,20 +196,6 @@ const styles = StyleSheet.create({
     padding: 10
   }
 });
-/*{
-label : '',
-username:'',
-streamUrl : '' ,
-artwork : ''
-}
-*/
-TrackList.propTypes = {
-  tracksData : PropTypes.array.isRequired,
-  emptyLabel : PropTypes.string,
-  onTrackSelected: PropTypes.func,
-  onTrackAction: PropTypes.func,
-  onTrackActionRender: PropTypes.func,
-  onClose: PropTypes.func
-};
+
 
 export default TrackList;

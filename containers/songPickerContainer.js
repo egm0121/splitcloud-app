@@ -37,6 +37,10 @@ class SongPickerContainer extends Component {
             showStreamableOnly={true}
             debounceWait={DEBOUNCE_MILLISEC}
             onSearchTermsChange={this.onSearchTermsChange}
+            currentPlayingTrack={
+              this.props.playlist.tracks[this.props.playlist.currentTrackIndex]
+            }
+            searchTerms = {this.props.picker.searchTerms}
             {...this.props}
             />
       </View>
@@ -58,7 +62,12 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state,props) => {
   const pickerState =
     state.songPickers.filter((picker) => picker.side == props.side).pop();
-  return pickerState;
+  const playlistState =
+    state.playlist.filter((picker) => picker.side == props.side).pop();
+  return {
+    picker : pickerState,
+    playlist : playlistState
+  };
 }
 SongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
 

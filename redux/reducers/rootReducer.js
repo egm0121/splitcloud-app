@@ -64,6 +64,7 @@ function songPickersReducer(state, currAction){
     }
 }
 function currentPlaylistReducer(state, currAction){
+  let toIndex;
   switch(currAction.type){
     case actionTypes.ADD_PLAYLIST_ITEM:
       return {
@@ -76,15 +77,55 @@ function currentPlaylistReducer(state, currAction){
         tracks : [...currAction.tracks]
       };
     case actionTypes.REMOVE_PLAYLIST_ITEM:
-      let itemIndex = state.tracks.findIndex(currAction.track);
+      let toRemoveIdx = state.tracks.indexOf(currAction.track);
+      let toTrackIdx =  state.currentTrackIndex;
+      if( toRemoveIdx < state.currentTrackIndex && state.currentTrackIndex > 0){
+          toTrackIdx = state.currentTrackIndex - 1;
+      }
       return {
         ...state,
-        tracks : itemIndex != null ?
-          state.tracks.slice(0).splice(itemIndex,1) : state.tracks
+        tracks : toRemoveIdx > -1 ?
+          state.tracks.filter( (t,idx) => idx !== toRemoveIdx) : state.tracks,
+        currentTrackIndex: toTrackIdx
+      };
+    case actionTypes.INCREMENT_CURR_PLAY_INDEX:
+      if(state.currentTrackIndex == state.tracks.length-1){
+        toIndex = 0;
+      } else {
+        toIndex = state.currentTrackIndex + 1
+      }
+      return {
+        ...state,
+        currentTrackIndex: toIndex
+      };
+    case actionTypes.DECREMENT_CURR_PLAY_INDEX:
+      if(state.currentTrackIndex == 0){
+        toIndex = 0;
+      } else {
+        toIndex = state.currentTrackIndex - 1
+      }
+      return {
+        ...state,
+        currentTrackIndex: toIndex
+      };
+    case actionTypes.CHANGE_CURR_PLAY_INDEX:
+      toIndex = state.tracks.indexOf(currAction.track);
+      if( toIndex == -1 ) toIndex = state.currentTrackIndex;
+      return {
+        ...state,
+        currentTrackIndex:toIndex
       };
     default:
       return state;
   }
+}
+function playlistsReducer(state,action){
+  return state.map((playlist)=>{
+     if(playlist.side == action.side){
+       return currentPlaylistReducer(playlist,action);
+     }
+     return playlist;
+  })
 }
 function rootReducer(state = initialState, currAction){
 
@@ -102,9 +143,12 @@ function rootReducer(state = initialState, currAction){
     case actionTypes.ADD_PLAYLIST_ITEM:
     case actionTypes.REMOVE_PLAYLIST_ITEM:
     case actionTypes.PLAY_PLAYLIST_ITEM:
+    case actionTypes.INCREMENT_CURR_PLAY_INDEX:
+    case actionTypes.DECREMENT_CURR_PLAY_INDEX:
+    case actionTypes.CHANGE_CURR_PLAY_INDEX:
       return {
         ...state,
-        playlist: currentPlaylistReducer(state.playlist,currAction)
+        playlist: playlistsReducer(state.playlist,currAction)
       }
     default:
       return state;

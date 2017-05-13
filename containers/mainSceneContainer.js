@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     flex:6
   },
   panToggleContainer:{
-    flex:1,
+    height:40,
     borderWidth: 1,
     borderLeftWidth:0,
     borderRightWidth:0,
@@ -142,11 +142,12 @@ const styles = StyleSheet.create({
   textSplitControls:{
     textAlign:'center',
     fontSize:18,
-    lineHeight:20,
+    lineHeight:18,
     color : THEME.mainColor
   }
 });
 let mapStateToProps  =  (state) => {
+  /* @TODO: players list should be rendered according to redux state */
   return { mode : state.mode , players: state.pla };
 };
 let mapDispatchToProps = (dispatch) => {
