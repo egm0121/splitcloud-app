@@ -6,6 +6,7 @@ const styles = {
   contentBgColor : 'rgb(18, 19, 20)',
   contentBorderColor : 'rgba(71, 71, 72, 0.3)',//'#474748',
   textOverlayBgColor : 'rgba(18, 19, 20,0.3)',
+  notifyBgColor : 'rgba(41,41,46,0.9)',
   listBorderColor : '#39393a'
 };
 

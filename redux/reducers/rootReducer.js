@@ -2,6 +2,9 @@ import { playbackModeTypes , actionTypes } from '../constants/actions';
 
 const initialState = {
   mode : playbackModeTypes.SPLIT,
+  notifications : {
+    list : []
+  },
   songPickers :[{
     side : playbackModeTypes.LEFT,
     searchTerms : '',
@@ -127,6 +130,23 @@ function playlistsReducer(state,action){
      return playlist;
   })
 }
+function notificationReducer(state, currAction){
+
+    switch(currAction.type){
+      case actionTypes.CLEAR_NOTIFICATION:
+        return {
+          ...state,
+          list :state.list.filter((curr) => curr.id != currAction.id)
+        }
+      case actionTypes.ADD_NOTIFICATION:
+        return {
+          ...state,
+          list : [currAction.notification,...state.list]
+        }
+      default:
+      return state;
+    }
+}
 function rootReducer(state = initialState, currAction){
 
   switch(currAction.type) {
@@ -150,9 +170,14 @@ function rootReducer(state = initialState, currAction){
         ...state,
         playlist: playlistsReducer(state.playlist,currAction)
       }
+    case actionTypes.CLEAR_NOTIFICATION:
+    case actionTypes.ADD_NOTIFICATION:
+      return {
+        ...state,
+        notifications: notificationReducer(state.notifications,currAction)
+      }
     default:
       return state;
   }
-
 }
 export default rootReducer;

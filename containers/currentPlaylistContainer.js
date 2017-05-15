@@ -16,6 +16,7 @@ import config from '../helpers/config';
 import { connect } from 'react-redux';
 import TrackList from '../components/trackList';
 import {removeQueuedTrack} from '../redux/actions/currentPlaylistActions';
+import {pushNotification} from  '../redux/actions/notificationActions';
 import THEME from '../styles/variables';
 
 class CurrentPlaylistContainer extends Component {
@@ -93,11 +94,14 @@ const mapStateToProps = (state,props) => {
   };
 }
 const mapDispatchToProps = (dispatch,props) => ({
-   onRemoveTrack(track){
-     console.log('should dispatch an action to remove the track from the playlist');
-     dispatch(removeQueuedTrack(props.side,track));
-   }
-
+  onRemoveTrack(track){
+    console.log('should dispatch an action to remove the track from the playlist');
+    dispatch(removeQueuedTrack(props.side,track));
+    dispatch(pushNotification({message:'Removed Track!',type:'success'}));
+  },
+  pushNotification(notification){
+    dispatch(pushNotification(notification));
+  }
 });
 CurrentPlaylistContainer = connect(mapStateToProps,mapDispatchToProps)(CurrentPlaylistContainer);
 

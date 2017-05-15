@@ -17,6 +17,7 @@ import {
 import config from '../helpers/config';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
+import NotificationOverlay from '../components/notificationOverlay';
 import { connect } from 'react-redux';
 import { changePlaybackMode } from '../redux/actions/playbackModeActions';
 const {
@@ -54,14 +55,13 @@ class MainSceneContainer extends Component {
   }
   onLoginStart(){
     Linking.openURL([
-     'https://soundcloud.com/connect',
-     '?response_type=code',
-     '&client_id=' + SC_CLIENT_ID,
-     '&client_secret=' + SC_CLIENT_SECRET,
-     '&display=popup',
-     '&redirect_uri=' + SC_OAUTH_REDIRECT_URI
-
-   ].join(''))
+      'https://soundcloud.com/connect',
+      '?response_type=code',
+      '&client_id=' + SC_CLIENT_ID,
+      '&client_secret=' + SC_CLIENT_SECRET,
+      '&display=popup',
+      '&redirect_uri=' + SC_OAUTH_REDIRECT_URI
+    ].join(''))
   }
   renderPlayer(player){
     return <AudioPlayerContainer
@@ -95,9 +95,9 @@ class MainSceneContainer extends Component {
             })}
           </View>
         </View>
-          <View style={styles.player}>
-            {this.renderPlayer(this.state.players[1])}
-          </View>
+        <View style={styles.player}>
+          {this.renderPlayer(this.state.players[1])}
+        </View>
       </View>
 
     );

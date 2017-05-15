@@ -21,6 +21,9 @@ import {
   decrementCurrentPlayIndex,
   changeCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
+import {
+  pushNotification
+} from '../redux/actions/notificationActions';
 import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
@@ -154,6 +157,10 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onSongQueued(nextTrack){
+    this.props.pushNotification({
+      type : 'success',
+      message : 'Added Track!'
+    });
     this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
       this.props.onSongQueued(nextTrack);
     });
@@ -473,7 +480,8 @@ const mapDispatchToProps = (dispatch, props) => {
     onSongQueued : (trackItem) => dispatch(addPlaylistItem(props.side,trackItem)),
     goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
     goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
-    goToTrack: (trackItem) => dispatch(changeCurrentPlayIndex(props.side,trackItem))
+    goToTrack: (trackItem) => dispatch(changeCurrentPlayIndex(props.side,trackItem)),
+    pushNotification: (notification) => dispatch(pushNotification(notification))
   };
 };
 AudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);

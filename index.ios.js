@@ -1,19 +1,18 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
  * @flow
  */
 
 import React, { Component } from 'react';
 import {
   AppRegistry,
-  Navigator
+  Navigator,
+  View
 } from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './redux/reducers/rootReducer';
 import MainSceneContainer from './containers/mainSceneContainer';
-
+import NotificationContainer from './containers/notificationContainer';
 
 let store;
 const logger = store => {
@@ -49,15 +48,17 @@ class SplitCloudApp extends Component {
   render() {
     return (
         <Provider store={store} >
-          <Navigator
-            initialRoute={{ title: 'Initial screen', index: 0, component: MainSceneContainer }}
-            renderScene={(route, navigator) => {
-              let Component = route.component;
-                return  <Component title={route.title} navigator={navigator} {...route.passProps}/>
-
-            }}
-            configureScene={ this.configureScene }
-          />
+            <Navigator
+                initialRoute={{ title: 'Initial screen', index: 0, component: MainSceneContainer }}
+                renderScene={(route, navigator) => {
+                  let Component = route.component;
+                  return <View style={{flex: 1}}>
+                          <Component title={route.title} navigator={navigator} {...route.passProps}/>
+                          <NotificationContainer />
+                        </View>
+                }}
+                configureScene={ this.configureScene }
+              />
         </Provider>
     );
   }
