@@ -14,14 +14,22 @@ import {
   TouchableHighlight,
   Linking
 } from 'react-native';
+import config from '../helpers/config';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
+import NotificationOverlay from '../components/notificationOverlay';
 import { connect } from 'react-redux';
 import { changePlaybackMode } from '../redux/actions/playbackModeActions';
+const {
+  SC_CLIENT_ID,
+  SC_CLIENT_SECRET,
+  SC_OAUTH_REDIRECT_URI
+} = config;
 class MainSceneContainer extends Component {
   constructor(props){
     super(props);
     this.handleOpenURL = this.handleOpenURL.bind(this);
+    this.onLoginStart = this.onLoginStart.bind(this);
     this.state = {
       mode : 'S',
       players : [{
@@ -31,12 +39,10 @@ class MainSceneContainer extends Component {
       }]
     };
     this.modeButtons = [
-      {mode:'S',label:'Split'},
       {mode:'L',label:'Top'},
+      {mode:'S',label:'Split'},
       {mode:'R',label:'Bottom'}
     ];
-
-
   }
   componentDidMount(){
     Linking.addEventListener('url', this.handleOpenURL);
@@ -46,6 +52,16 @@ class MainSceneContainer extends Component {
   }
   handleOpenURL(){
     console.log('handle openURL called',arguments)
+  }
+  onLoginStart(){
+    Linking.openURL([
+      'https://soundcloud.com/connect',
+      '?response_type=code',
+      '&client_id=' + SC_CLIENT_ID,
+      '&client_secret=' + SC_CLIENT_SECRET,
+      '&display=popup',
+      '&redirect_uri=' + SC_OAUTH_REDIRECT_URI
+    ].join(''))
   }
   renderPlayer(player){
     return <AudioPlayerContainer
@@ -59,6 +75,9 @@ class MainSceneContainer extends Component {
           <Text style={styles.headerText}>
              SplitCloud
           </Text>
+          {/*<TouchableHighlight onPress={this.onLoginStart} >
+            <Text style={{color:'gray'}}>Login</Text>
+          </TouchableHighlight>*/}
         </View>
         <View style={styles.player}>
         {this.renderPlayer(this.state.players[0])}
@@ -67,7 +86,7 @@ class MainSceneContainer extends Component {
           <View style={styles.horizontalContainer}>
             {this.modeButtons.map((e,i) => {
                const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
-               return <TouchableHighlight style={styles.container} key={i}
+               return <TouchableHighlight style={styles.container} key={e.mode}
                         onPress={this.props.onModeSelected.bind(this,e.mode)}>
                         <View>
                           <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
@@ -76,9 +95,9 @@ class MainSceneContainer extends Component {
             })}
           </View>
         </View>
-          <View style={styles.player}>
-            {this.renderPlayer(this.state.players[1])}
-          </View>
+        <View style={styles.player}>
+          {this.renderPlayer(this.state.players[1])}
+        </View>
       </View>
 
     );
@@ -107,7 +126,7 @@ const styles = StyleSheet.create({
     flex:6
   },
   panToggleContainer:{
-    flex:1,
+    height:40,
     borderWidth: 1,
     borderLeftWidth:0,
     borderRightWidth:0,
@@ -123,11 +142,12 @@ const styles = StyleSheet.create({
   textSplitControls:{
     textAlign:'center',
     fontSize:18,
-    lineHeight:20,
+    lineHeight:18,
     color : THEME.mainColor
   }
 });
 let mapStateToProps  =  (state) => {
+  /* @TODO: players list should be rendered according to redux state */
   return { mode : state.mode , players: state.pla };
 };
 let mapDispatchToProps = (dispatch) => {

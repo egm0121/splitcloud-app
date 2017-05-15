@@ -13,6 +13,17 @@ import {
 import THEME from '../styles/variables';
 import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
+import CurrentPlaylistContainer from './currentPlaylistContainer';
+import {
+  setPlaylist,
+  addPlaylistItem,
+  incrementCurrentPlayIndex,
+  decrementCurrentPlayIndex,
+  changeCurrentPlayIndex
+} from '../redux/actions/currentPlaylistActions';
+import {
+  pushNotification
+} from '../redux/actions/notificationActions';
 import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
@@ -26,7 +37,6 @@ class AudioPlayerContainer extends Component {
   constructor(props){
     super(props);
     this._onPlayToggleOnePress = this._onPlayToggleOnePress.bind(this);
-    this._onStopToggleOnePress = this._onStopToggleOnePress.bind(this);
     this._onPickerToggle = this._onPickerToggle.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
@@ -36,15 +46,13 @@ class AudioPlayerContainer extends Component {
     this._onProgressTick = this._onProgressTick.bind(this);
     this._goToNextTrack = this._goToNextTrack.bind(this);
     this._goToPrevTrack = this._goToPrevTrack.bind(this);
+    this._toggleCurrentPlaylist = this._toggleCurrentPlaylist.bind(this);
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.playerAObj = new ReactNativeStreamingPlayer();
 
     this.state = {
-      songPickerRequester:null,
-      currTrackIndex:0,
-      playlist:[],
       volume:1,
       userVolume:1,
       elapsed:0,
@@ -54,15 +62,14 @@ class AudioPlayerContainer extends Component {
       sliderOneValue:[1],
       pan : this.props.pan,
       muted : this.props.muted,
-      prevRemoteStatus : false
+      prevRemoteStatus : false,
+      playbackIndex : 0
     };
     this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100})
     this.playerAObj.setPan(this.state.pan);
     this.playerAObj.setVolume(this._linearToLogVolume(this.state.volume));
     this._onProgressTick();
     console.log("platform ", Platform)
-    console.log("player instance Id:",this.playerAObj._nativeInstanceId);
-
     this.playerAObj.on('stateChange',(evt) => {
       const actionName = evt.status.toLowerCase(),
             hookName = '_onPlayer'+capitalize(actionName);
@@ -145,34 +152,28 @@ class AudioPlayerContainer extends Component {
   }
   _onSongSelected(nextTrack){
     this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
-      this.setState({
-        playlist:[nextTrack],
-        currTrackIndex:0
-      });
+      this.props.onSongQueued(nextTrack);
+      this._goToTrack(nextTrack);
     });
-
   }
   _onSongQueued(nextTrack){
+    this.props.pushNotification({
+      type : 'success',
+      message : 'Added Track!'
+    });
     this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
-      this.setState((state,props) => ({
-        playlist : [...state.playlist,nextTrack]
-      }));
+      this.props.onSongQueued(nextTrack);
     });
   }
   _goToNextTrack(){
-
-    if( this.state.currTrackIndex === (this.state.playlist.length -1) ){
-       console.log('reset to trackIndex 0')
-       return this.setState({currTrackIndex : 0});
-    }
-
-    this.setState((state,props) => ({currTrackIndex: state.currTrackIndex +1}))
+    this.props.goToNextTrack();
   }
   _goToPrevTrack(){
-    if(this.state.currTrackIndex === 0){
-       return this.setState({currTrackIndex : 0});
-    }
-    this.setState((state,props) => ({currTrackIndex: state.currTrackIndex - 1}))
+    this.props.goToPrevTrack();
+  }
+  _goToTrack(track){
+    console.log('goToTrack', this.props.playlist.tracks)
+    this.props.goToTrack(track);
   }
   _prepareCurrentTrack(){
     let currentTrack = this._getCurrentTrackStream();
@@ -187,16 +188,6 @@ class AudioPlayerContainer extends Component {
       this.playerAObj.setSoundUrl(currentTrack);
       this.playerAObj.play();
     });
-  }
-  _onStopToggleOnePress(){
-    this.playerAObj.stop();
-    this._updateComponentPlayerState();
-  }
-  _playCurrentTrack(){
-
-  }
-  _pauseCurrentTrack(){
-
   }
   _resolvePlayableSoundUrl(songObj){
     let stripSSL = (s) => s ? s.replace(/^(https)/,'http') : s ;
@@ -233,12 +224,24 @@ class AudioPlayerContainer extends Component {
         side : this.props.side,
         onClose: () => { this.props.navigator.pop() },
         onSongSelected : (nextTrack) => {
-          this.props.navigator.pop();
           this._onSongSelected(nextTrack);
         },
         onSongQueued : (nextTrack) => {
-          this.props.navigator.pop();
           this._onSongQueued(nextTrack);
+        }
+      }
+    });
+  }
+  _toggleCurrentPlaylist(){
+    this.props.navigator.push({
+      component: CurrentPlaylistContainer,
+      passProps : {
+        side : this.props.side,
+        playlist : this.props.playlist,
+        playlistTitle : `Currently Playing / ${this.props.side == 'L' ? 'Top' : 'Bottom'} Player`,
+        onClose: () => { this.props.navigator.pop() },
+        onTrackSelected : (nextTrack) => {
+          this._goToTrack(nextTrack);
         }
       }
     });
@@ -289,17 +292,19 @@ class AudioPlayerContainer extends Component {
     return `${pad(min)}:${pad(leftSeconds)}`;
   }
   componentWillReceiveProps(newProps){
-    console.log(
-      'new props for side '+newProps.side,
-      {
-        pan:newProps.pan,
-        muted:newProps.muted
-      });
-
-    this.setState({
-      pan:newProps.pan,
-      muted:newProps.muted
-    });
+    if(newProps.pan != this.props.pan ||
+       newProps.muted != this.props.muted){
+         this.setState({
+           pan:newProps.pan,
+           muted:newProps.muted
+         });
+    }
+    if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
+      this.setState({playbackIndex : newProps.playlist.currentTrackIndex})
+    }
+    if(newProps.playlist.tracks !== this.props.playlist.tracks){
+      console.log('(props Update) playlist updated:',newProps.playlist);
+    }
   }
   componentDidUpdate(prevProps, prevState){
     if(prevState.volume !== this.state.volume && !this.state.muted){
@@ -311,14 +316,15 @@ class AudioPlayerContainer extends Component {
     if(prevState.muted !== this.state.muted){
       this._onPlayerMuteChange(this.state.muted);
     }
-    if(prevState.playlist !== this.state.playlist){
-      console.log('playlist updated:',this.state.playlist);
+    if(prevProps.playlist.tracks[prevState.playbackIndex] !==
+       this.props.playlist.tracks[this.state.playbackIndex]){
+       console.log(
+         '(state Update) current playing track changed: prepare to play. idx:',
+         this.state.playbackIndex
+       );
+       this._prepareCurrentTrack();
     }
-    if(prevState.playlist[prevState.currTrackIndex] !==
-       this.state.playlist[this.state.currTrackIndex]){
-      console.log('current playing track changed: prepare to play. idx:',this.state.currTrackIndex);
-      this._prepareCurrentTrack();
-    }
+
   }
   componentWillUnmount(){
     console.log("component will unmount! destory player instance")
@@ -328,10 +334,10 @@ class AudioPlayerContainer extends Component {
     }
   }
   _getCurrentTrackIndex(){
-    return this.state.currTrackIndex;
+    return this.state.playbackIndex;
   }
   _getCurrentTrackObj(){
-    return this.state.playlist[this.state.currTrackIndex] || {};
+    return this.props.playlist.tracks[this.state.playbackIndex] || {};
   }
   _getCurrentTrackStream(){
     return this._getCurrentTrackObj().streamUrl;
@@ -371,78 +377,84 @@ class AudioPlayerContainer extends Component {
     let playbackSource = this._isPlayerPlaying() || this._isPlayerBuffering() ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
     let {height, width} = Dimensions.get('window');
-    let progressTrackLength = width - 130;
+    let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
-    if(this._getCurrentTrackTitle() ){
+    if( this._getCurrentTrackTitle() ){
         trackLabelPlaceholder = this._getCurrentTrackTitle();
     }
-    if(this._isPlayerBuffering() ){
+    if( this._isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
     }
     return (
-      <View style={styles.mainContainer}>
+      <View style={styles.mainContainer} >
         <View style={styles.artwork}>
-          {this._getCurrentTrackArtwork() ?
             <Image
-              style={[styles.artworkImage,{width:width}]}
-              source={{uri:this._getCurrentTrackArtwork()}}
-              resizeMode={'cover'}
-            /> :
-            <Image
-              source={require('../assets/alt_artwork.png')}
-              style={[styles.artworkImage,{width:width}]}
-              resizeMode={'stretch'}
-              />
-          }
-        </View>
-        <View style={styles.tracknameContainer}>
-          <TouchableOpacity  onPress={this._onPickerToggle}>
-            <Text style={styles.trackname} numberOfLines={1} ellipsizeMode={'tail'}>
-              { trackLabelPlaceholder }
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.horizontalContainer} >
-          <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.elapsed)}</Text>
-          <View style={styles.playbackTrackContainer}>
-            <MultiSlider
-              values={this.state.sliderOneValue}
-              min={0}
-              max={100}
-              onValuesChange={this._onMultiSliderValuesChange}
-              onValuesChangeFinish={this._onSeekToTime}
-              onValuesChangeStart={this._onSeekToTimeStart}
-              sliderLength={progressTrackLength}
-              trackStyle={{ borderRadius: 12, height: 3 }}
-              selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
-              unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
-              markerStyle={markerStyle} />
-          </View>
-          <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.duration)}</Text>
-        </View>
-        <View style={styles.horizontalContainer}>
-          <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
-            <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
-            <Image
-               style={[styles.playerIcon,styles.playerIconSmaller]}
-               source={playbackSource}
-               resizeMode={'contain'}/>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.container,,styles.endRow]} onPress={this._goToNextTrack}>
-            <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.horizontalContainer}>
-          <View style={styles.volumeSlider}>
-            <Slider step={0.05}
-              minimumTrackTintColor={sliderTrackStyles.min}
-              maximumTrackTintColor={sliderTrackStyles.max}
-              onValueChange={this._onVolumeValueChange}
-              value={this.state.initialSliderValue} />
-          </View>
+              style={[styles.artworkImage]}
+              source={ this._getCurrentTrackArtwork() ?
+                 {uri:this._getCurrentTrackArtwork()} :
+                 require('../assets/alt_artwork.png')
+               }
+              resizeMode={this._getCurrentTrackArtwork() ?'cover':'stretch'}>
+
+              <View style={styles.tracknameContainer}>
+                <TouchableOpacity  onPress={this._onPickerToggle}>
+                  <Text style={styles.trackname} numberOfLines={1} ellipsizeMode={'tail'}>
+                    { trackLabelPlaceholder }
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.horizontalContainer} >
+                <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
+                <View style={styles.playbackTrackContainer}>
+                  <MultiSlider
+                    values={this.state.sliderOneValue}
+                    min={0}
+                    max={100}
+                    onValuesChange={this._onMultiSliderValuesChange}
+                    onValuesChangeFinish={this._onSeekToTime}
+                    onValuesChangeStart={this._onSeekToTimeStart}
+                    sliderLength={progressTrackLength}
+                    trackStyle={{ borderRadius: 12, height: 3 }}
+                    selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
+                    unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
+                    markerStyle={markerStyle} />
+                </View>
+                <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.duration)}</Text>
+              </View>
+              <View style={styles.horizontalContainer}>
+                <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
+                  <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
+                  <Image
+                     style={[styles.playerIcon,styles.playerIconSmaller]}
+                     source={playbackSource}
+                     resizeMode={'contain'}/>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.container,styles.endRow]} onPress={this._goToNextTrack}>
+                  <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.playlistButtonView}>
+                <TouchableOpacity style={styles.playlistButton} onPress={this._toggleCurrentPlaylist}>
+                  <Image
+                    style={[styles.playerIcon,styles.playerIconSuperSmall]}
+                    source={require('../assets/flat_select.png')}
+                    resizeMode={'contain'}
+                    />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.horizontalContainer}>
+                <View style={styles.volumeSlider}>
+                  <Slider step={0.05}
+                    minimumTrackTintColor={sliderTrackStyles.min}
+                    maximumTrackTintColor={sliderTrackStyles.max}
+                    onValueChange={this._onVolumeValueChange}
+                    value={this.state.initialSliderValue} />
+                </View>
+              </View>
+            </Image>
         </View>
       </View>
     );
@@ -454,21 +466,30 @@ AudioPlayerContainer.propTypes = {
 };
 const mapStateToProps = (state, props) => {
   let player = state.players.filter((player) => player.side === props.side).pop();
+  let playlist = state.playlist.filter((playlist) => playlist.side === props.side).pop();
   return {
     player,
     pan : player.pan,
-    muted : player.muted
+    muted : player.muted,
+    playlist
   }
 };
-const mapDispatchToProps = () => {
-  return {};
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+    onSongSelected : (trackItem) => dispatch(setPlaylist(props.side,[trackItem])),
+    onSongQueued : (trackItem) => dispatch(addPlaylistItem(props.side,trackItem)),
+    goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
+    goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
+    goToTrack: (trackItem) => dispatch(changeCurrentPlayIndex(props.side,trackItem)),
+    pushNotification: (notification) => dispatch(pushNotification(notification))
+  };
 };
 AudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
 
 AppRegistry.registerComponent('AudioPlayerContainer', () => AudioPlayerContainer);
 const volumeMarginSide = 80;
 const volumeMarginVertical = 10;
-const playbackHorizontalMargin = 15;
+const playbackHorizontalMargin = 10;
 const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
 const overImageShadowOffset = {width:1,height:1};
@@ -486,13 +507,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    alignItems:'center'
+    alignItems:'center',
+    borderColor: 'lime',
+    borderWidth: 0
   },
   startRow: {
     alignItems:'flex-end'
   },
   endRow:{
     alignItems:'flex-start'
+  },
+  centerRow:{
+
   },
   horizontalContainer: {
     flex: 1,
@@ -510,8 +536,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     width:50
   },textShadowStyle),
+  playbackTimeInitial:{
+    marginLeft:10
+  },
   playbackTrackContainer:{
-
     marginHorizontal: playbackHorizontalMargin
   },
   volumeSlider:{
@@ -534,11 +562,24 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35
   },
+  playerIconSuperSmall:{
+    width: 30,
+    height: 30
+  },
   tracknameContainer:{
     flex:2,
     flexDirection:'column',
     justifyContent:'center',
     backgroundColor:THEME.textOverlayBgColor
+  },
+  playlistButtonView:{
+    position:'absolute',
+    bottom:0,
+    zIndex :10
+  },
+  playlistButton:{
+    paddingLeft:15,
+    paddingBottom:15
   },
   trackname : Object.assign({
     fontSize: 20,
@@ -553,12 +594,12 @@ const styles = StyleSheet.create({
   artwork : {
     justifyContent: 'center',
     flexDirection:'row',
-    flex:0,
-    height:0
+    flex:1
   },
   artworkImage : {
-    width: 250,
-    height: 232,
+    flex:1,
+    width:null,
+    height:null,
     backgroundColor:artworkPlaceholderColor
   }
 });

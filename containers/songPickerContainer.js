@@ -12,11 +12,12 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
+import config from '../helpers/config';
 import { connect } from 'react-redux';
 import SongPicker from '../components/songPicker';
 import {updateSearchTerms} from '../redux/actions/songPickerActions';
+const {SC_CLIENT_ID} = config;
 const DEBOUNCE_MILLISEC = 100;
-const SC_CLIENT_ID = "54921f38ed5d570772c094534b9f50b5";
 const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {
   constructor(props){
@@ -36,6 +37,10 @@ class SongPickerContainer extends Component {
             showStreamableOnly={true}
             debounceWait={DEBOUNCE_MILLISEC}
             onSearchTermsChange={this.onSearchTermsChange}
+            currentPlayingTrack={
+              this.props.playlist.tracks[this.props.playlist.currentTrackIndex]
+            }
+            searchTerms = {this.props.picker.searchTerms}
             {...this.props}
             />
       </View>
@@ -57,7 +62,12 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state,props) => {
   const pickerState =
     state.songPickers.filter((picker) => picker.side == props.side).pop();
-  return pickerState;
+  const playlistState =
+    state.playlist.filter((picker) => picker.side == props.side).pop();
+  return {
+    picker : pickerState,
+    playlist : playlistState
+  };
 }
 SongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
 

@@ -15,24 +15,20 @@ import {
 import throttle from 'lodash.throttle';
 import axios from 'axios';
 import THEME from '../styles/variables';
-const EMPTY_RESULT_ROW =  [{label:'No results',isEmpty:true}];
-const SEARCH_INPUT_PLACEHOLDER = '';
+import TrackList from '../components/trackList';
 class SongPicker extends Component {
   constructor(props){
     super(props);
 
     this._onSearchChange = this._onSearchChange.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
-    this._onSongSelected = this._onSongSelected.bind(this);
-    this._onSongQueued = this._onSongQueued.bind(this);
-    this._onClose = this._onClose.bind(this);
-    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this._onClearSearch = this._onClearSearch.bind(this);
+    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
 
     this.SC_CLIENT_ID = null;
     this.state = {
       searchInput: this.props.searchTerms || '',
-      pureList : [],
-      renderList: this.ds.cloneWithRows(EMPTY_RESULT_ROW)
+      pureList : []
     };
   }
   componentWillMount(){
@@ -43,6 +39,7 @@ class SongPicker extends Component {
       this._onSearchTermsChange.bind(this),
       this.props.debounceWait
     );
+    //start immediately a search for the initial searchInput value.
     this._onSearchChange(this.state.searchInput);
   }
 
@@ -63,7 +60,7 @@ class SongPicker extends Component {
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
-      this.prevQueryCancelToken.cancel('Old Query, invalidate request');
+       this.prevQueryCancelToken.cancel('Old Query, invalidate request');
     }
   }
   performSoundcloudApiSearch(term){
@@ -77,12 +74,8 @@ class SongPicker extends Component {
   updateResultList(resp){
     // in case of empty results or no search terms
     if(!resp){
-      return this.setState({
-          pureList : EMPTY_RESULT_ROW,
-          renderList : this.ds.cloneWithRows(EMPTY_RESULT_ROW)
-        });
+      return this.setState({ pureList : [] });
     }
-
     let tracks = resp.map((t) => (
       {label : t.title,
        username: t.user.username,
@@ -90,65 +83,50 @@ class SongPicker extends Component {
        artwork : t.artwork_url
      })
     );
-
-    this.setState({
-      pureList : tracks,
-      renderList : this.ds.cloneWithRows(tracks)
-    })
+    this.setState({ pureList : tracks });
   }
-  _onSongSelected(rowData){
-    if(!rowData.isEmpty){
-        this.props.onSongSelected(rowData);
+  _markAsCurrentTrack(item){
+    const currTrack = this.props.currentPlayingTrack || {};
+    if(item.label == currTrack.label){
+      return {
+        ...item,
+        isCurrentTrack : true
+      }
     }
+    return item;
   }
-  _onSongQueued(rowData){
-    if(!rowData.isEmpty){
-      this.props.onSongQueued(rowData);
-    }
-  }
-  _onClose(){
-    this.props.onClose();
-  }
-  renderRowWithData(rowData) {
-    const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
-    return (
-      <View style={styles.row}>
-          <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >{rowData.label} </Text>
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{rowData.username} </Text>
-          </TouchableOpacity>
-        <View style={styles.rowAction}>
-          <TouchableOpacity onPress={this._onSongQueued.bind(this,rowData)}>
-            {rowData.isEmpty ? null : <Text style={styles.rowActionText}>+</Text>}
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+  _onClearSearch(){
+    this._onSearchChange('');
   }
   render() {
+    let clearButtonOpacity = this.state.searchInput.length;
     return (
       <View style={styles.container}>
+        <View style={[styles.clearSearchAction,{opacity:clearButtonOpacity}]}>
+          <TouchableOpacity onPress={this._onClearSearch} style={styles.clearSearchTouchable}>
+            <Text style={styles.clearSearchActionText}>✕</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.searchInputView}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search songs:"
+          placeholder="Search SoundCloud tracks..."
           value={this.state.searchInput}
           placeholderTextColor={THEME.mainColor}
           onChangeText={this._onSearchChange} />
         </View>
-        <ListView contentContainerStyle={styles.list}
-          dataSource={this.state.renderList}
-          renderRow={this.renderRowWithData.bind(this)} />
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={this._onClose.bind(this)}>
-            <Text style={styles.closeAction}>Close</Text>
-          </TouchableOpacity>
-        </View>
+        <TrackList
+          tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
+          onTrackActionRender={() => '+'}
+          highlightProp={'isCurrentTrack'}
+          onTrackAction={this.props.onSongQueued}
+          onTrackSelected={this.props.onSongSelected}
+          {...this.props}
+          />
       </View>
     );
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -164,56 +142,21 @@ const styles = StyleSheet.create({
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :2
   },
-  list:{
-    alignItems: 'flex-start',
-    backgroundColor: THEME.contentBgColor,
-    flexDirection:'column'
+  clearSearchAction:{
+    position:'absolute',
+    borderRadius:15,
+    right:6,
+    top:22,
+    zIndex:10,
+    height:30,
+    width:30,
+    backgroundColor:THEME.contentBorderColor
   },
-  row : {
-    flex: 1,
-    flexDirection:'row',
-    marginBottom:5,
-    marginTop:5,
-    paddingLeft: 20
-  },
-  rowLabel : {
-    flex: 9,
-    height: 42,
-    borderColor: THEME.listBorderColor,
-    borderBottomWidth:0.5
-  },
-  rowLabelText: {
+  clearSearchActionText:{
     color: THEME.mainHighlightColor,
-    lineHeight:17,
-    fontSize: 17
-  },
-  rowDescText :{
-    color: THEME.mainColor,
-    fontSize: 13
-  },
-  placeholderRowText:{
-    textAlign :'center',
-    color:THEME.mainColor
-  },
-  rowAction : {
-    flex: 1,
-  },
-  rowActionText :{
-    color: THEME.mainColor,
-    fontSize: 30,
+    fontSize:20,
     lineHeight:28,
-    textAlign : 'center'
-  },
-  footer : {
-    borderColor : THEME.contentBorderColor,
-    borderTopWidth :1
-  },
-  closeAction : {
-    flex: 1,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    height: 40,
-    padding: 10
+    textAlign:'center'
   }
 });
 
