@@ -1,4 +1,5 @@
 import { playbackModeTypes , actionTypes } from '../constants/actions';
+import { combineReducers } from 'redux';
 
 const initialState = {
   mode : playbackModeTypes.SPLIT,
@@ -36,24 +37,29 @@ const initialState = {
   }]
 };
 
-function playersReducer(players, currAction){
-  return players.map((state) => {
-    const mode = currAction.mode;
-    if( mode == playbackModeTypes.SPLIT) {
-      return {
-        side : state.side,
-        pan : state.side == playbackModeTypes.LEFT ? -1 : 1,
-        muted : 0
-      }
-    }
-    return {
-      side : state.side,
-      pan : 0,
-      muted : mode == state.side ? 0 : 1
-    }
-  });
+function playersReducer(state = initialState.players, currAction){
+  switch(currAction.type){
+    case actionTypes.CHANGE_PLAYBACK_MODE :
+      return state.map((player) => {
+        const mode = currAction.mode;
+        if( mode == playbackModeTypes.SPLIT) {
+          return {
+            side : player.side,
+            pan : player.side == playbackModeTypes.LEFT ? -1 : 1,
+            muted : 0
+          }
+        }
+        return {
+          side : player.side,
+          pan : 0,
+          muted : mode == player.side ? 0 : 1
+        }
+      });
+    default :
+    return state;
+  }
 }
-function songPickersReducer(state, currAction){
+function songPickersReducer(state = initialState.songPickers, currAction){
     switch(currAction.type){
       case actionTypes.UPDATE_PICKER_SEARCH_TERMS:
         return state.map((picker) => {
@@ -66,7 +72,7 @@ function songPickersReducer(state, currAction){
       return state;
     }
 }
-function currentPlaylistReducer(state, currAction){
+function currentPlaylistReducer(state , currAction){
   let toIndex;
   switch(currAction.type){
     case actionTypes.ADD_PLAYLIST_ITEM:
@@ -122,15 +128,25 @@ function currentPlaylistReducer(state, currAction){
       return state;
   }
 }
-function playlistsReducer(state,action){
-  return state.map((playlist)=>{
-     if(playlist.side == action.side){
-       return currentPlaylistReducer(playlist,action);
-     }
-     return playlist;
-  })
+function playlistsReducer(state = initialState.playlist,action){
+  switch(action.type){
+    case actionTypes.ADD_PLAYLIST_ITEM:
+    case actionTypes.REMOVE_PLAYLIST_ITEM:
+    case actionTypes.PLAY_PLAYLIST_ITEM:
+    case actionTypes.INCREMENT_CURR_PLAY_INDEX:
+    case actionTypes.DECREMENT_CURR_PLAY_INDEX:
+    case actionTypes.CHANGE_CURR_PLAY_INDEX:
+      return state.map((playlist)=>{
+         if(playlist.side == action.side){
+           return currentPlaylistReducer(playlist,action);
+         }
+         return playlist;
+      });
+    default:
+      return state;
+  }
 }
-function notificationReducer(state, currAction){
+function notificationReducer(state = initialState.notifications, currAction){
 
     switch(currAction.type){
       case actionTypes.CLEAR_NOTIFICATION:
@@ -146,6 +162,14 @@ function notificationReducer(state, currAction){
       default:
       return state;
     }
+}
+function modeSelectorReducer (state = initialState.mode ,currAction){
+  switch(currAction.type){
+    case actionTypes.CHANGE_PLAYBACK_MODE:
+      return currAction.mode;
+    default:
+    return state;
+  }
 }
 function rootReducer(state = initialState, currAction){
 
@@ -180,4 +204,12 @@ function rootReducer(state = initialState, currAction){
       return state;
   }
 }
-export default rootReducer;
+const appReducer = combineReducers({
+  'mode':modeSelectorReducer,
+  'songPickers':songPickersReducer,
+  'players':playersReducer,
+  'playlist':playlistsReducer,
+  'notifications':notificationReducer
+});
+
+export default appReducer;

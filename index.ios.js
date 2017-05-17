@@ -9,7 +9,8 @@ import {
   View
 } from 'react-native';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose} from 'redux';
+import { persistStore, autoRehydrate } from 'redux-persist';
 import rootReducer from './redux/reducers/rootReducer';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NotificationContainer from './containers/notificationContainer';
@@ -31,7 +32,7 @@ const createStoreWithDebug = withLog => {
     createStore(rootReducer);
 }
 
-store = createStoreWithDebug(__DEV__ && false)
+store = createStoreWithDebug(__DEV__ && true)
 
 class SplitCloudApp extends Component {
   constructor(props){
