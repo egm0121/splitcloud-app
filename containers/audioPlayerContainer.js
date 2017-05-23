@@ -63,7 +63,8 @@ class AudioPlayerContainer extends Component {
       pan : this.props.pan,
       muted : this.props.muted,
       prevRemoteStatus : false,
-      playbackIndex : 0
+      playbackIndex : 0,
+      allowPlayback : false
     };
     this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100})
     this.playerAObj.setPan(this.state.pan);
@@ -130,6 +131,7 @@ class AudioPlayerContainer extends Component {
       'prevTrackCommand' : this._goToPrevTrack,
       'togglePlayPauseCommand' : this._onPlayToggleOnePress
     };
+    this._enablePlayback();
     if(this._isCurrentExclusiveSide()){
        (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
     }
@@ -153,6 +155,7 @@ class AudioPlayerContainer extends Component {
   _onSongSelected(nextTrack){
     this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
       this.props.onSongQueued(nextTrack);
+      this._enablePlayback();
       this._goToTrack(nextTrack);
     });
   }
@@ -166,16 +169,18 @@ class AudioPlayerContainer extends Component {
     });
   }
   _goToNextTrack(){
+    this._enablePlayback();
     this.props.goToNextTrack();
   }
   _goToPrevTrack(){
+    this._enablePlayback();
     this.props.goToPrevTrack();
   }
   _goToTrack(track){
     console.log('goToTrack', this.props.playlist.tracks)
     this.props.goToTrack(track);
   }
-  _prepareCurrentTrack(){
+  _prepareCurrentTrack(autoPlayback){
     let currentTrack = this._getCurrentTrackStream();
     console.log('_prepareCurrentTrack',currentTrack);
     if( !currentTrack )return;
@@ -186,7 +191,9 @@ class AudioPlayerContainer extends Component {
       }
       console.log('setSoundUrl and play')
       this.playerAObj.setSoundUrl(currentTrack);
-      this.playerAObj.play();
+      if(autoPlayback) {
+        this.playerAObj.play();
+      }
     });
   }
   _resolvePlayableSoundUrl(songObj){
@@ -215,7 +222,11 @@ class AudioPlayerContainer extends Component {
           this.playerAObj.play();
         }
         this._updateComponentPlayerState();
+        this._enablePlayback();
       });
+  }
+  _enablePlayback(){
+    this.setState({allowPlayback:true});
   }
   _onPickerToggle(){
     this.props.navigator.push({
@@ -292,6 +303,7 @@ class AudioPlayerContainer extends Component {
     return `${pad(min)}:${pad(leftSeconds)}`;
   }
   componentWillReceiveProps(newProps){
+
     if(newProps.pan != this.props.pan ||
        newProps.muted != this.props.muted){
          this.setState({
@@ -322,7 +334,7 @@ class AudioPlayerContainer extends Component {
          '(state Update) current playing track changed: prepare to play. idx:',
          this.state.playbackIndex
        );
-       this._prepareCurrentTrack();
+       this._prepareCurrentTrack(this.state.allowPlayback);
     }
 
   }
@@ -380,6 +392,7 @@ class AudioPlayerContainer extends Component {
     let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
+    let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
         trackLabelPlaceholder = this._getCurrentTrackTitle();
     }
@@ -436,7 +449,7 @@ class AudioPlayerContainer extends Component {
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
               </View>
-              <View style={styles.playlistButtonView}>
+              {isPlaylistVisible ? <View style={styles.playlistButtonView}>
                 <TouchableOpacity style={styles.playlistButton} onPress={this._toggleCurrentPlaylist}>
                   <Image
                     style={[styles.playerIcon,styles.playerIconSuperSmall]}
@@ -444,7 +457,7 @@ class AudioPlayerContainer extends Component {
                     resizeMode={'contain'}
                     />
                 </TouchableOpacity>
-              </View>
+              </View> : null}
               <View style={styles.horizontalContainer}>
                 <View style={styles.volumeSlider}>
                   <Slider step={0.05}
