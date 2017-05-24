@@ -63,17 +63,16 @@ class AudioPlayerContainer extends Component {
       pan : this.props.pan,
       muted : this.props.muted,
       prevRemoteStatus : false,
-      playbackIndex : 0,
-      allowPlayback : false
+      playbackIndex : 0
     };
     this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100})
     this.playerAObj.setPan(this.state.pan);
     this.playerAObj.setVolume(this._linearToLogVolume(this.state.volume));
     this._onProgressTick();
-    console.log("platform ", Platform)
+    console.log('platform ', Platform)
     this.playerAObj.on('stateChange',(evt) => {
       const actionName = evt.status.toLowerCase(),
-            hookName = '_onPlayer'+capitalize(actionName);
+        hookName = '_onPlayer'+capitalize(actionName);
       if(typeof this[hookName] === 'function' ){
         this[hookName](...[evt]);
       }
@@ -131,7 +130,7 @@ class AudioPlayerContainer extends Component {
       'prevTrackCommand' : this._goToPrevTrack,
       'togglePlayPauseCommand' : this._onPlayToggleOnePress
     };
-    this._enablePlayback();
+
     if(this._isCurrentExclusiveSide()){
        (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
     }
@@ -155,7 +154,6 @@ class AudioPlayerContainer extends Component {
   _onSongSelected(nextTrack){
     this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
       this.props.onSongQueued(nextTrack);
-      this._enablePlayback();
       this._goToTrack(nextTrack);
     });
   }
@@ -169,29 +167,28 @@ class AudioPlayerContainer extends Component {
     });
   }
   _goToNextTrack(){
-    this._enablePlayback();
     this.props.goToNextTrack();
   }
   _goToPrevTrack(){
-    this._enablePlayback();
     this.props.goToPrevTrack();
   }
   _goToTrack(track){
     console.log('goToTrack', this.props.playlist.tracks)
     this.props.goToTrack(track);
   }
-  _prepareCurrentTrack(autoPlayback){
+  _prepareCurrentTrack(shouldAutoPlay){
     let currentTrack = this._getCurrentTrackStream();
-    console.log('_prepareCurrentTrack',currentTrack);
+    console.log('_prepareCurrentTrack',currentTrack,'and play');
     if( !currentTrack )return;
     this.playerAObj.isPlaying((err,isPlaying) => {
       if(isPlaying) {
         console.log('pause and set url to next')
         this.playerAObj.pause();
       }
-      console.log('setSoundUrl and play')
+      console.log('setSoundUrl');
       this.playerAObj.setSoundUrl(currentTrack);
-      if(autoPlayback) {
+      if( shouldAutoPlay ){
+        console.log('start playback');
         this.playerAObj.play();
       }
     });
@@ -210,7 +207,7 @@ class AudioPlayerContainer extends Component {
         console.log('toggle playback attempted on muted player');
         return false;
       }
-      console.log('_onPlayToggle checks passed')
+      console.log('_onPlayToggle checks passed');
       this.playerAObj.getStatus((err,playbackStatus) => {
         if(playbackStatus.status === "PLAYING"){
           this.playerAObj.pause();
@@ -222,11 +219,7 @@ class AudioPlayerContainer extends Component {
           this.playerAObj.play();
         }
         this._updateComponentPlayerState();
-        this._enablePlayback();
       });
-  }
-  _enablePlayback(){
-    this.setState({allowPlayback:true});
   }
   _onPickerToggle(){
     this.props.navigator.push({
@@ -279,7 +272,7 @@ class AudioPlayerContainer extends Component {
   _linearToLogVolume(currVolumePosition){
     currVolumePosition = parseInt(currVolumePosition * 100);
     if(currVolumePosition == 0 || currVolumePosition == 100){
-       return currVolumePosition / 100;
+      return currVolumePosition / 100;
     }
     return parseFloat((this.volumeSliderScale.value(currVolumePosition)/100).toFixed(2));
   }
@@ -297,13 +290,12 @@ class AudioPlayerContainer extends Component {
   }
   _formatAsMinutes(seconds){
     let min = Math.floor(seconds / 60),
-        leftSeconds = seconds - (min * 60),
-        pInt = (float) => parseInt(float,10),
-        pad = (int) => int < 10 ? `0${pInt(int)}` : `${pInt(int)}`;
+      leftSeconds = seconds - (min * 60),
+      pInt = (float) => parseInt(float,10),
+      pad = (int) => int < 10 ? `0${pInt(int)}` : `${pInt(int)}`;
     return `${pad(min)}:${pad(leftSeconds)}`;
   }
   componentWillReceiveProps(newProps){
-
     if(newProps.pan != this.props.pan ||
        newProps.muted != this.props.muted){
          this.setState({
@@ -334,7 +326,8 @@ class AudioPlayerContainer extends Component {
          '(state Update) current playing track changed: prepare to play. idx:',
          this.state.playbackIndex
        );
-       this._prepareCurrentTrack(this.state.allowPlayback);
+       let shouldAutoPlay = !this.props.playlist.rehydrate;
+       this._prepareCurrentTrack(shouldAutoPlay);
     }
 
   }

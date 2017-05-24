@@ -34,14 +34,16 @@ const createStoreWithDebug = withLog => {
     createStore(rootReducer,undefined,enhancer);
 }
 
-store = createStoreWithDebug(__DEV__ && false)
+store = createStoreWithDebug(__DEV__ && true)
 
-persistStore(store, {
+let persistor = persistStore(store, {
   blacklist: ['notifications'],
   storage: AsyncStorage
   }, () => {
   console.log('rehydration complete')
-})
+});
+
+//persistor.purge();
 
 class SplitCloudApp extends Component {
   constructor(props){

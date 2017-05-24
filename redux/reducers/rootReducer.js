@@ -1,4 +1,5 @@
 import { playbackModeTypes , actionTypes } from '../constants/actions';
+import { REHYDRATE } from 'redux-persist/constants';
 import { combineReducers } from 'redux';
 
 const initialState = {
@@ -138,9 +139,26 @@ function playlistsReducer(state = initialState.playlist,action){
     case actionTypes.CHANGE_CURR_PLAY_INDEX:
       return state.map((playlist)=>{
          if(playlist.side == action.side){
-           return currentPlaylistReducer(playlist,action);
+           return {
+             ...currentPlaylistReducer(playlist,action),
+             rehydrate:false
+            };
          }
-         return playlist;
+         return {
+           ...playlist,
+           rehydrate:false
+         };
+      });
+    /*
+     in case of reydration use the rehydrate flag to indicate that it is not
+     the result of a user interaction thus no automatic playback should be triggered
+     */
+    case REHYDRATE:
+      return action.payload.playlist.map((playlist) => {
+        return {
+          ...playlist,
+          rehydrate:true
+        }
       });
     default:
       return state;
