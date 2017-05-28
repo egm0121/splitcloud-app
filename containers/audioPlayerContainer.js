@@ -11,7 +11,8 @@ import {
   Platform
 } from 'react-native';
 import THEME from '../styles/variables';
-import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
+import { audioPlayerStates } from '../helpers/constants';
+import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import {
@@ -31,8 +32,14 @@ import LogSlider from '../helpers/LogSlider';
 
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
-const PLAYBACK_ENABLED_STATES = {PLAYING:1,BUFFERING:1};
-const PLAYBACK_DISABLED_STATES = {STOPPED:1,PAUSED:1};
+const PLAYBACK_ENABLED_STATES = {
+  [audioPlayerStates.PLAYING]:1,
+  [audioPlayerStates.BUFFERING]:1
+};
+const PLAYBACK_DISABLED_STATES = {
+  [audioPlayerStates.STOPPED]:1,
+  [audioPlayerStates.PAUSED]:1
+};
 class AudioPlayerContainer extends Component {
   constructor(props){
     super(props);
@@ -86,11 +93,11 @@ class AudioPlayerContainer extends Component {
     this.playerAObj.getStatus((err,data) => {
       let currPlaybackProgress = parseInt( (data.progress * 100) / data.duration ) || 0;
       this.setState({
-          duration : data.duration,
-          elapsed: data.progress,
-          sliderOneValue:[currPlaybackProgress],
-          status : data.status
-        });
+        duration : data.duration,
+        elapsed: data.progress,
+        sliderOneValue:[currPlaybackProgress],
+        status : data.status
+      });
     });
   }
   _onProgressTick(){
@@ -110,10 +117,10 @@ class AudioPlayerContainer extends Component {
   }
   _onPlayerStoppedDebounced(evt){
     console.log('_onPlayerStopped Debounced',evt);
-    if(evt.progress == 0 && evt.duration == 0 && evt.prevStatus in {'PLAYING':1,'BUFFERING':1}){
-         console.log('track end detected. go to next track');
-         this._goToNextTrack();
-       }
+    if(evt.progress == 0 && evt.duration == 0 && evt.prevStatus in PLAYBACK_ENABLED_STATES){
+      console.log('track end detected. go to next track');
+      this._goToNextTrack();
+    }
   }
   _onAudioRouteInterruption(evt){
     console.log('onAudioRouteInterruption',evt);
@@ -132,22 +139,22 @@ class AudioPlayerContainer extends Component {
     };
 
     if(this._isCurrentExclusiveSide()){
-       (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
+      (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
     }
     if(evt.type === 'pauseCommand'){
-        this.playerAObj.getStatus((err,data) => {
-          if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
-          this.playerAObj.pause();
-          this.setState({prevRemoteStatus : data.status});
-        });
+      this.playerAObj.getStatus((err,data) => {
+        if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
+        this.playerAObj.pause();
+        this.setState({prevRemoteStatus : data.status});
+      });
     }
     if(evt.type === 'playCommand'){
       this.playerAObj.getStatus((err,data) => {
         if(!(data.status in PLAYBACK_DISABLED_STATES) ||
            !(this.state.prevRemoteStatus in PLAYBACK_ENABLED_STATES)){
-            return false;
-          }
-          data.status === 'PAUSED' ? this.playerAObj.resume() : this.playerAObj.play();
+          return false;
+        }
+        data.status === 'PAUSED' ? this.playerAObj.resume() : this.playerAObj.play();
       });
     }
   }
@@ -203,23 +210,23 @@ class AudioPlayerContainer extends Component {
     return Promise.resolve(songObj);
   }
   _onPlayToggleOnePress(){
-      if(this._isCurrentMutedSide()){
-        console.log('toggle playback attempted on muted player');
-        return false;
+    if(this._isCurrentMutedSide()){
+      console.log('toggle playback attempted on muted player');
+      return false;
+    }
+    console.log('_onPlayToggle checks passed');
+    this.playerAObj.getStatus((err,playbackStatus) => {
+      if(playbackStatus.status === audioPlayerStates.PLAYING){
+        this.playerAObj.pause();
       }
-      console.log('_onPlayToggle checks passed');
-      this.playerAObj.getStatus((err,playbackStatus) => {
-        if(playbackStatus.status === "PLAYING"){
-          this.playerAObj.pause();
-        }
-        if(playbackStatus.status === "PAUSED" ){
-          this.playerAObj.resume()
-        }
-        if(playbackStatus.status === "STOPPED"){
-          this.playerAObj.play();
-        }
-        this._updateComponentPlayerState();
-      });
+      if(playbackStatus.status === audioPlayerStates.PAUSED ){
+        this.playerAObj.resume()
+      }
+      if(playbackStatus.status === audioPlayerStates.STOPPED){
+        this.playerAObj.play();
+      }
+      this._updateComponentPlayerState();
+    });
   }
   _onPickerToggle(){
     this.props.navigator.push({
@@ -251,7 +258,7 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onMultiSliderValuesChange(values){
-    console.log('_onMultiSliderValuesChange')
+    console.log('_onMultiSliderValuesChange',values);
   }
   _onSeekToTime(newPos){
     let seekedPos = (parseInt(newPos[0]) * this.state.duration) / 100;
@@ -296,12 +303,11 @@ class AudioPlayerContainer extends Component {
     return `${pad(min)}:${pad(leftSeconds)}`;
   }
   componentWillReceiveProps(newProps){
-    if(newProps.pan != this.props.pan ||
-       newProps.muted != this.props.muted){
-         this.setState({
-           pan:newProps.pan,
-           muted:newProps.muted
-         });
+    if(newProps.pan != this.props.pan || newProps.muted != this.props.muted){
+      this.setState({
+        pan:newProps.pan,
+        muted:newProps.muted
+      });
     }
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
       this.setState({playbackIndex : newProps.playlist.currentTrackIndex})
@@ -322,20 +328,20 @@ class AudioPlayerContainer extends Component {
     }
     if(prevProps.playlist.tracks[prevState.playbackIndex] !==
        this.props.playlist.tracks[this.state.playbackIndex]){
-       console.log(
+      console.log(
          '(state Update) current playing track changed: prepare to play. idx:',
          this.state.playbackIndex
-       );
-       let shouldAutoPlay = !this.props.playlist.rehydrate;
-       this._prepareCurrentTrack(shouldAutoPlay);
+      );
+      let shouldAutoPlay = !this.props.playlist.rehydrate;
+      this._prepareCurrentTrack(shouldAutoPlay);
     }
 
   }
   componentWillUnmount(){
-    console.log("component will unmount! destory player instance")
+    console.log('component will unmount! destory player instance')
     if(this.playerAObj){
-       this.playerAObj.stop();
-       this.playerAObj.destroy();
+      this.playerAObj.stop();
+      this.playerAObj.destroy();
     }
   }
   _getCurrentTrackIndex(){
@@ -356,16 +362,16 @@ class AudioPlayerContainer extends Component {
     return scArtwork || false;
   }
   _isPlayerBuffering(){
-    return this.state.status === 'BUFFERING';
+    return this.state.status === audioPlayerStates.BUFFERING;
   }
   _isPlayerPlaying(){
-    return this.state.status === 'PLAYING';
+    return this.state.status === audioPlayerStates.PLAYING;
   }
   _isPlayerPaused(){
-    return this.state.status === 'PAUSED';
+    return this.state.status === audioPlayerStates.PAUSED;
   }
   _isPlayerStopped(){
-    return this.state.status === 'STOPPED';
+    return this.state.status === audioPlayerStates.STOPPED;
   }
   _isCurrentExclusiveSide(){
     return this.state.pan === 0 && this.state.muted === 0;
@@ -381,13 +387,13 @@ class AudioPlayerContainer extends Component {
     const isBufferingLabel = 'Buffering - ';
     let playbackSource = this._isPlayerPlaying() || this._isPlayerBuffering() ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
-    let {height, width} = Dimensions.get('window');
+    let {width} = Dimensions.get('window');
     let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
     let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
-        trackLabelPlaceholder = this._getCurrentTrackTitle();
+      trackLabelPlaceholder = this._getCurrentTrackTitle();
     }
     if( this._isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
@@ -468,7 +474,7 @@ class AudioPlayerContainer extends Component {
 }
 
 AudioPlayerContainer.propTypes = {
-
+//TODO: specify propTypes
 };
 const mapStateToProps = (state, props) => {
   let player = state.players.filter((player) => player.side === props.side).pop();
@@ -490,11 +496,11 @@ const mapDispatchToProps = (dispatch, props) => {
     pushNotification: (notification) => dispatch(pushNotification(notification))
   };
 };
-AudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
+let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
 
-AppRegistry.registerComponent('AudioPlayerContainer', () => AudioPlayerContainer);
+AppRegistry.registerComponent('AudioPlayerContainer', () => ConnectedAudioPlayerContainer);
+
 const volumeMarginSide = 80;
-const volumeMarginVertical = 10;
 const playbackHorizontalMargin = 10;
 const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
@@ -624,4 +630,4 @@ const markerStyle = {
   shadowOffset: { width:0,height:2},
   shadowOpacity: 0
 };
-export default AudioPlayerContainer;
+export default ConnectedAudioPlayerContainer;

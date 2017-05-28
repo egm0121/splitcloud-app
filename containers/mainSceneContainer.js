@@ -69,6 +69,14 @@ class MainSceneContainer extends Component {
        navigator={this.props.navigator} />
   }
   render() {
+    let playerLStyle = [],
+        playerRStyle = [];
+    if(this.props.mode != 'S'){
+       playerLStyle = this.props.mode == 'L' ?
+          styles.expandedPlayer : styles.minimizedPlayer;
+       playerRStyle = this.props.mode == 'R' ?
+          styles.expandedPlayer : styles.minimizedPlayer;
+    }
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -79,7 +87,7 @@ class MainSceneContainer extends Component {
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
         </View>
-        <View style={styles.player}>
+        <View style={[styles.player,playerLStyle]}>
         {this.renderPlayer(this.state.players[0])}
         </View>
         <View style={styles.panToggleContainer}>
@@ -95,7 +103,7 @@ class MainSceneContainer extends Component {
             })}
           </View>
         </View>
-        <View style={styles.player}>
+        <View style={[styles.player,playerRStyle]}>
           {this.renderPlayer(this.state.players[1])}
         </View>
       </View>
@@ -125,6 +133,13 @@ const styles = StyleSheet.create({
   player:{
     flex:6
   },
+  expandedPlayer:{
+    flex:12
+  },
+  minimizedPlayer:{
+    flex:0,
+    height:0
+  },
   panToggleContainer:{
     height:40,
     borderWidth: 1,
@@ -148,7 +163,7 @@ const styles = StyleSheet.create({
 });
 let mapStateToProps  =  (state) => {
   /* @TODO: players list should be rendered according to redux state */
-  return { mode : state.mode , players: state.pla };
+  return { mode : state.mode , players: state.players };
 };
 let mapDispatchToProps = (dispatch) => {
   return {
