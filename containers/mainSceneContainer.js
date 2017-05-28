@@ -70,11 +70,11 @@ class MainSceneContainer extends Component {
   }
   render() {
     let playerLStyle = [],
-        playerRStyle = [];
+      playerRStyle = [];
     if(this.props.mode != 'S'){
-       playerLStyle = this.props.mode == 'L' ?
+      playerLStyle = this.props.mode == 'L' ?
           styles.expandedPlayer : styles.minimizedPlayer;
-       playerRStyle = this.props.mode == 'R' ?
+      playerRStyle = this.props.mode == 'R' ?
           styles.expandedPlayer : styles.minimizedPlayer;
     }
     return (

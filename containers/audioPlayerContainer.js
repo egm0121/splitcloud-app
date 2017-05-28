@@ -390,6 +390,12 @@ class AudioPlayerContainer extends Component {
     let {width} = Dimensions.get('window');
     let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
+    let showBgArtCover = this._getCurrentTrackArtwork();
+    let tracknameStyles = [styles.tracknameContainer];
+    let playerBgImage = [styles.artworkImage];
+    if(this.props.isFullscreen){
+      tracknameStyles.push(styles.tracknameFullscreen)
+    }
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
     let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
@@ -402,20 +408,22 @@ class AudioPlayerContainer extends Component {
       <View style={styles.mainContainer} >
         <View style={styles.artwork}>
             <Image
-              style={[styles.artworkImage]}
-              source={ this._getCurrentTrackArtwork() ?
-                 {uri:this._getCurrentTrackArtwork()} :
-                 require('../assets/alt_artwork.png')
+              style={playerBgImage}
+              blurRadius = {this.props.isFullscreen ? 10 : 0}
+              source={ showBgArtCover ?
+                {uri:this._getCurrentTrackArtwork()} :
+                require('../assets/alt_artwork.png')
                }
-              resizeMode={this._getCurrentTrackArtwork() ?'cover':'stretch'}>
+              resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
 
-              <View style={styles.tracknameContainer}>
+              <View style={tracknameStyles}>
                 <TouchableOpacity  onPress={this._onPickerToggle}>
                   <Text style={styles.trackname} numberOfLines={1} ellipsizeMode={'tail'}>
                     { trackLabelPlaceholder }
                   </Text>
                 </TouchableOpacity>
               </View>
+              {this.props.isFullscreen ? this.renderForegroundArtCover() : null}
               <View style={styles.horizontalContainer} >
                 <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
                 <View style={styles.playbackTrackContainer}>
@@ -471,6 +479,16 @@ class AudioPlayerContainer extends Component {
       </View>
     );
   }
+  renderForegroundArtCover() {
+    return <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
+      <Image style={[styles.fgArtCoverImage]}
+       source={ this._getCurrentTrackArtwork() ?
+        {uri:this._getCurrentTrackArtwork()} :
+        require('../assets/alt_artwork.png')
+       }
+      resizeMode={'contain'}/>
+    </View>
+  }
 }
 
 AudioPlayerContainer.propTypes = {
@@ -479,10 +497,12 @@ AudioPlayerContainer.propTypes = {
 const mapStateToProps = (state, props) => {
   let player = state.players.filter((player) => player.side === props.side).pop();
   let playlist = state.playlist.filter((playlist) => playlist.side === props.side).pop();
+  let isFullscreen = state.mode === props.side;
   return {
     player,
     pan : player.pan,
     muted : player.muted,
+    isFullscreen,
     playlist
   }
 };
@@ -584,6 +604,9 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     backgroundColor:THEME.textOverlayBgColor
   },
+  tracknameFullscreen:{
+    flex:1
+  },
   playlistButtonView:{
     position:'absolute',
     bottom:0,
@@ -613,6 +636,16 @@ const styles = StyleSheet.create({
     width:null,
     height:null,
     backgroundColor:artworkPlaceholderColor
+  },
+  artworkBgFullscreen:{},
+  fgArtCoverImage :{
+    flex:1
+  },
+  fgArtCoverContainer:{
+    flex:5,
+    borderColor:THEME.contentBorderColor,
+    borderBottomWidth:2,
+    paddingBottom: 20
   }
 });
 const sliderTrackStyles = {
