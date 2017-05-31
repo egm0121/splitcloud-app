@@ -57,6 +57,8 @@ class AudioPlayerContainer extends Component {
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
+    this.renderInFullscreen = this.renderInFullscreen.bind(this);
+
     this.playerAObj = new ReactNativeStreamingPlayer();
 
     this.state = {
@@ -356,6 +358,9 @@ class AudioPlayerContainer extends Component {
   _getCurrentTrackTitle() {
     return this._getCurrentTrackObj().label;
   }
+  _getCurrentTrackDescription(){
+    return  this._getCurrentTrackObj().username;
+  }
   _getCurrentTrackArtwork(){
     const scArtwork = this._getCurrentTrackObj().artwork ?
       this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
@@ -379,6 +384,9 @@ class AudioPlayerContainer extends Component {
   _isCurrentMutedSide(){
     return this.state.muted === 1;
   }
+  renderInFullscreen(children){
+    return this.props.isFullscreen ? children :null;
+  }
   render() {
     const sideLabel = {
       'L' : 'left',
@@ -392,14 +400,20 @@ class AudioPlayerContainer extends Component {
     let trackIndex = this._getCurrentTrackIndex();
     let showBgArtCover = this._getCurrentTrackArtwork();
     let tracknameStyles = [styles.tracknameContainer];
+    let tracknameTextStyles = [styles.trackname,trackLabelShadow];
     let playerBgImage = [styles.artworkImage];
     if(this.props.isFullscreen){
       tracknameStyles.push(styles.tracknameFullscreen)
+      tracknameTextStyles.push(styles.tracknameTextFullscreen)
     }
+    let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
+    let trackLabelShadow = this.props.isFullscreen ?
+      lightTextShadowStyle : textShadowStyle;
     let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
       trackLabelPlaceholder = this._getCurrentTrackTitle();
+      trackDescription = this._getCurrentTrackDescription();
     }
     if( this._isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
@@ -418,12 +432,17 @@ class AudioPlayerContainer extends Component {
 
               <View style={tracknameStyles}>
                 <TouchableOpacity  onPress={this._onPickerToggle}>
-                  <Text style={styles.trackname} numberOfLines={1} ellipsizeMode={'tail'}>
+                  <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                     { trackLabelPlaceholder }
                   </Text>
                 </TouchableOpacity>
+                {this.renderInFullscreen(<TouchableOpacity >
+                  <Text style={[styles.trackDescription]}>
+                    { trackDescription }
+                  </Text>
+                </TouchableOpacity>)}
               </View>
-              {this.props.isFullscreen ? this.renderForegroundArtCover() : null}
+              {this.renderInFullscreen(this.renderForegroundArtCover())}
               <View style={styles.horizontalContainer} >
                 <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
                 <View style={styles.playbackTrackContainer}>
@@ -440,7 +459,7 @@ class AudioPlayerContainer extends Component {
                     unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                     markerStyle={markerStyle} />
                 </View>
-                <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.duration)}</Text>
+                <Text style={[styles.playbackTime,textShadowStyle]}>{this._formatAsMinutes(this.state.duration)}</Text>
               </View>
               <View style={styles.horizontalContainer}>
                 <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
@@ -533,6 +552,11 @@ const textShadowStyle = {
   textShadowOffset: overImageShadowOffset,
   textShadowRadius : overImageShadowRadious,
 }
+const lightTextShadowStyle = {
+  textShadowColor: 'rgb(0,0,0)',
+  textShadowOffset: {width:0,height:0},
+  textShadowRadius : 4,
+};
 const styles = StyleSheet.create({
   mainContainer:{
     flex:1
@@ -540,9 +564,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    alignItems:'center',
-    borderColor: 'lime',
-    borderWidth: 0
+    alignItems:'center'
   },
   startRow: {
     alignItems:'flex-end'
@@ -561,14 +583,14 @@ const styles = StyleSheet.create({
   progressSlider : {
     flex:1,
   },
-  playbackTime : Object.assign({
+  playbackTime :{
     textAlign: 'center',
     color: mainFgColor,
     textShadowColor: overImageShadowColor,
     height:30,
     lineHeight: 22,
     width:50
-  },textShadowStyle),
+  },
   playbackTimeInitial:{
     marginLeft:10
   },
@@ -606,7 +628,12 @@ const styles = StyleSheet.create({
     backgroundColor:THEME.textOverlayBgColor
   },
   tracknameFullscreen:{
-    flex:1
+    flex:0,
+    height:75
+  },
+  tracknameTextFullscreen:{
+    lineHeight: 25,
+    height: 30,
   },
   playlistButtonView:{
     position:'absolute',
@@ -617,8 +644,9 @@ const styles = StyleSheet.create({
     paddingLeft:15,
     paddingBottom:15
   },
-  trackname : Object.assign({
-    fontSize: 20,
+  trackname : {
+    fontSize: 18,
+    fontWeight: '600',
     textAlign: 'center',
     color: mainFgColor,
     backgroundColor: 'transparent',
@@ -626,7 +654,13 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft:20,
     paddingRight:20
-  },textShadowStyle),
+  },
+  trackDescription:{
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: THEME.scAuthorColor
+  },
   artwork : {
     justifyContent: 'center',
     flexDirection:'row',

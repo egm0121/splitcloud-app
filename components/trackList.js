@@ -162,7 +162,8 @@ const styles = StyleSheet.create({
   },
   rowDescText :{
     color: THEME.mainColor,
-    fontSize: 13
+    fontSize: 13,
+    lineHeight:20
   },
   hightlightText : {
     color: THEME.mainActiveColor
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
     color: THEME.mainColor,
     opacity:0.8,
     fontSize: 35,
-    lineHeight:35,
+    lineHeight:37,
     textAlign : 'right'
   },
   footer : {
