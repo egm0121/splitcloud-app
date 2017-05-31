@@ -40,7 +40,7 @@ const initialState = {
 
 function playersReducer(state = initialState.players, currAction){
   switch(currAction.type){
-    case actionTypes.CHANGE_PLAYBACK_MODE :
+  case actionTypes.CHANGE_PLAYBACK_MODE :
     return state.map((player) => {
       const mode = currAction.mode;
       if( mode == playbackModeTypes.SPLIT) {
@@ -61,17 +61,17 @@ function playersReducer(state = initialState.players, currAction){
   }
 }
 function songPickersReducer(state = initialState.songPickers, currAction){
-    switch(currAction.type){
-      case actionTypes.UPDATE_PICKER_SEARCH_TERMS:
-        return state.map((picker) => {
-          if(picker.side == currAction.side){
-            return {...picker, searchTerms : currAction.terms};
-          }
-          return {...picker};
-        })
-      default:
-      return state;
-    }
+  switch(currAction.type){
+  case actionTypes.UPDATE_PICKER_SEARCH_TERMS:
+    return state.map((picker) => {
+      if(picker.side == currAction.side){
+        return {...picker, searchTerms : currAction.terms};
+      }
+      return {...picker};
+    })
+  default:
+    return state;
+  }
 }
 function currentPlaylistReducer(state , currAction){
   let toIndex;
@@ -154,7 +154,7 @@ function playlistsReducer(state = initialState.playlist,action){
      the result of a user interaction thus no automatic playback should be triggered
      */
     case REHYDRATE:
-      return action.payload.playlist.map((playlist) => {
+      return (action.payload.playlist || state).map((playlist) => {
         return {
           ...playlist,
           rehydrate:true

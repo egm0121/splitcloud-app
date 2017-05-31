@@ -741,7 +741,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.splitr-app.react";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.split-cloud.react";
 				PRODUCT_NAME = Example;
 			};
 			name = Debug;
@@ -765,7 +765,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.splitr-app.react";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.split-cloud.react";
 				PRODUCT_NAME = Example;
 			};
 			name = Release;

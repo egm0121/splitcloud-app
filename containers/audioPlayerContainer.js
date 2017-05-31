@@ -484,9 +484,10 @@ class AudioPlayerContainer extends Component {
       <Image style={[styles.fgArtCoverImage]}
        source={ this._getCurrentTrackArtwork() ?
         {uri:this._getCurrentTrackArtwork()} :
-        require('../assets/alt_artwork.png')
+        require('../assets/empty_album.png')
        }
-      resizeMode={'contain'}/>
+       resizeMode={'contain'}
+      />
     </View>
   }
 }
@@ -639,12 +640,13 @@ const styles = StyleSheet.create({
   },
   artworkBgFullscreen:{},
   fgArtCoverImage :{
-    flex:1
+    flex:1,
+    width:null,
+    height:null,
   },
   fgArtCoverContainer:{
     flex:5,
     borderColor:THEME.contentBorderColor,
-    borderBottomWidth:2,
     paddingBottom: 20
   }
 });
