@@ -475,7 +475,8 @@ class AudioPlayerContainer extends Component {
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
               </View>
-              {isPlaylistVisible ? <View style={styles.playlistButtonView}>
+              {isPlaylistVisible ?
+                <View style={styles.playlistButtonView}>
                 <TouchableOpacity style={styles.playlistButton} onPress={this._toggleCurrentPlaylist}>
                   <Image
                     style={[styles.playerIcon,styles.playerIconSuperSmall]}
@@ -484,6 +485,10 @@ class AudioPlayerContainer extends Component {
                     />
                 </TouchableOpacity>
               </View> : null}
+                <Image
+                style={[styles.scCopyImage]}
+                source={require('../assets/powered_by_large_white.png')}
+                resizeMode={'contain'} />
               <View style={styles.horizontalContainer}>
                 <View style={styles.volumeSlider}>
                   <Slider step={0.05}
@@ -495,6 +500,7 @@ class AudioPlayerContainer extends Component {
               </View>
             </Image>
         </View>
+
       </View>
     );
   }
@@ -643,6 +649,14 @@ const styles = StyleSheet.create({
   playlistButton:{
     paddingLeft:15,
     paddingBottom:15
+  },
+  scCopyImage:{
+    position:'absolute',
+    bottom:10,
+    right:10,
+    zIndex :10,
+    width:40,
+    height:40
   },
   trackname : {
     fontSize: 18,
