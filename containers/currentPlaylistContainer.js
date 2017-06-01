@@ -26,7 +26,7 @@ class CurrentPlaylistContainer extends Component {
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
   }
   componentWillReceiveProps(newProps){
-      console.log('currentPlaylistContainer received props',newProps);
+    console.log('currentPlaylistContainer received props',newProps);
   }
   _markAsCurrentTrack(item){
     const currTrack =
@@ -50,7 +50,7 @@ class CurrentPlaylistContainer extends Component {
         <TrackList
             tracksData={playlistTracksData}
             onTrackAction={this.props.onRemoveTrack}
-            onTrackActionRender={() => '✕'}
+            onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '✕'}
             highlightProp={'isCurrentTrack'}
             {...this.props}
             />

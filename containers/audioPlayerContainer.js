@@ -8,10 +8,11 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
-  Platform
+  Platform,
+  Linking
 } from 'react-native';
 import THEME from '../styles/variables';
-import { audioPlayerStates } from '../helpers/constants';
+import { audioPlayerStates, soundcloudEndpoint } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
@@ -47,7 +48,6 @@ class AudioPlayerContainer extends Component {
     this._onPickerToggle = this._onPickerToggle.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
-    this._onMultiSliderValuesChange = this._onMultiSliderValuesChange.bind(this);
     this._onSeekToTime = this._onSeekToTime.bind(this);
     this._onSeekToTimeStart = this._onSeekToTimeStart.bind(this);
     this._onProgressTick = this._onProgressTick.bind(this);
@@ -58,6 +58,7 @@ class AudioPlayerContainer extends Component {
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.renderInFullscreen = this.renderInFullscreen.bind(this);
+    this._openScUploaderLink = this._openScUploaderLink.bind(this);
 
     this.playerAObj = new ReactNativeStreamingPlayer();
 
@@ -259,9 +260,6 @@ class AudioPlayerContainer extends Component {
       }
     });
   }
-  _onMultiSliderValuesChange(values){
-    console.log('_onMultiSliderValuesChange',values);
-  }
   _onSeekToTime(newPos){
     let seekedPos = (parseInt(newPos[0]) * this.state.duration) / 100;
     this.playerAObj.seekToTime(seekedPos);
@@ -366,6 +364,14 @@ class AudioPlayerContainer extends Component {
       this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
     return scArtwork || false;
   }
+  _getCurrentTrackUploaderLink(){
+    return  this._getCurrentTrackObj().scUploaderLink;
+  }
+  _openScUploaderLink(){
+    Linking.openURL(
+      this._getCurrentTrackUploaderLink() || soundcloudEndpoint.profileUrl
+    );
+  }
   _isPlayerBuffering(){
     return this.state.status === audioPlayerStates.BUFFERING;
   }
@@ -436,7 +442,7 @@ class AudioPlayerContainer extends Component {
                     { trackLabelPlaceholder }
                   </Text>
                 </TouchableOpacity>
-                {this.renderInFullscreen(<TouchableOpacity >
+                {this.renderInFullscreen(<TouchableOpacity onPress={this._openScUploaderLink} >
                   <Text style={[styles.trackDescription]}>
                     { trackDescription }
                   </Text>
@@ -485,10 +491,12 @@ class AudioPlayerContainer extends Component {
                     />
                 </TouchableOpacity>
               </View> : null}
+              <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
                 <Image
                 style={[styles.scCopyImage]}
                 source={require('../assets/powered_by_large_white.png')}
                 resizeMode={'contain'} />
+              </TouchableOpacity>
               <View style={styles.horizontalContainer}>
                 <View style={styles.volumeSlider}>
                   <Slider step={0.05}
@@ -650,13 +658,15 @@ const styles = StyleSheet.create({
     paddingLeft:15,
     paddingBottom:15
   },
-  scCopyImage:{
+  scCopyContainer :{
     position:'absolute',
     bottom:10,
     right:10,
-    zIndex :10,
-    width:40,
-    height:40
+    zIndex :10
+  },
+  scCopyImage:{
+    width:45,
+    height:45
   },
   trackname : {
     fontSize: 18,

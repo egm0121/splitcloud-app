@@ -77,10 +77,13 @@ class SongPicker extends Component {
       return this.setState({ pureList : [] });
     }
     let tracks = resp.map((t) => (
-      {label : t.title,
+      {
+       id: t.id,
+       label : t.title,
        username: t.user.username,
        streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
-       artwork : t.artwork_url
+       artwork : t.artwork_url,
+       scUploaderLink : t.user.permalink_url
      })
     );
     this.setState({ pureList : tracks });
@@ -117,7 +120,7 @@ class SongPicker extends Component {
         </View>
         <TrackList
           tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
-          onTrackActionRender={() => '+'}
+          onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
           highlightProp={'isCurrentTrack'}
           onTrackAction={this.props.onSongQueued}
           onTrackSelected={this.props.onSongSelected}

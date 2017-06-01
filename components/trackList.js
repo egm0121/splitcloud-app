@@ -64,7 +64,9 @@ class TrackList extends Component {
 
   renderRowWithData(rowData) {
     const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
-    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
+    if( this.props.highlightProp &&
+        rowData[this.props.highlightProp] ){
+
       rowTextStyle.push(styles.hightlightText);
     }
     if(rowData.isEmpty){
@@ -83,9 +85,13 @@ class TrackList extends Component {
             <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{rowData.username} </Text>
           </TouchableOpacity>
         <View style={styles.rowAction}>
-          <TouchableOpacity onPress={this._onSongAction.bind(this,rowData)}>
-            {rowData.isEmpty ? null : <Text style={styles.rowActionText}>{this.props.onTrackActionRender(rowData)}</Text>}
-          </TouchableOpacity>
+            {!rowData.isEmpty && this.props.onTrackActionRender(rowData) ?
+              <TouchableOpacity onPress={this._onSongAction.bind(this,rowData)}>
+                <Text style={styles.rowActionText}>
+                  {this.props.onTrackActionRender(rowData)}
+                </Text>
+              </TouchableOpacity>: null
+              }
         </View>
       </View>
     );
@@ -118,6 +124,7 @@ TrackList.propTypes = {
   onTrackAction: PropTypes.func,
   onTrackActionRender: PropTypes.func,
   highlightProp : PropTypes.string,
+
   onClose: PropTypes.func
 };
 
