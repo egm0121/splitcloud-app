@@ -69,8 +69,8 @@ const mapStateToProps = (state,props) => {
     playlist : playlistState
   };
 }
-SongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
+const ConnectedSongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
 
-AppRegistry.registerComponent('SongPickerContainer', () => SongPickerContainer);
+AppRegistry.registerComponent('SongPickerContainer', () => ConnectedSongPickerContainer);
 
-export default SongPickerContainer;
+export default ConnectedSongPickerContainer;

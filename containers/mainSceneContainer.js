@@ -20,6 +20,7 @@ import AudioPlayerContainer from './audioPlayerContainer';
 import NotificationOverlay from '../components/notificationOverlay';
 import { connect } from 'react-redux';
 import { changePlaybackMode } from '../redux/actions/playbackModeActions';
+import { persistor } from '../redux/store/configure';
 const {
   SC_CLIENT_ID,
   SC_CLIENT_SECRET,
@@ -30,6 +31,7 @@ class MainSceneContainer extends Component {
     super(props);
     this.handleOpenURL = this.handleOpenURL.bind(this);
     this.onLoginStart = this.onLoginStart.bind(this);
+    this.purgeStore = this.purgeStore.bind(this);
     this.state = {
       mode : 'S',
       players : [{
@@ -63,6 +65,9 @@ class MainSceneContainer extends Component {
       '&redirect_uri=' + SC_OAUTH_REDIRECT_URI
     ].join(''))
   }
+  purgeStore(){
+    persistor.purge();
+  }
   renderPlayer(player){
     return <AudioPlayerContainer
        side={player.side}
@@ -86,6 +91,11 @@ class MainSceneContainer extends Component {
           {/*<TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
+          {__DEV__ ?
+          <TouchableHighlight style={{position:'absolute',top:5,zIndex:10}} onPress={this.purgeStore}>
+            <Text style={{color:'gray'}}>Purge store</Text>
+          </TouchableHighlight> :null
+          }
         </View>
         <View style={[styles.player,playerLStyle]}>
         {this.renderPlayer(this.state.players[0])}
@@ -93,12 +103,12 @@ class MainSceneContainer extends Component {
         <View style={styles.panToggleContainer}>
           <View style={styles.horizontalContainer}>
             {this.modeButtons.map((e,i) => {
-               const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
-               return <TouchableHighlight style={styles.container} key={e.mode}
-                        onPress={this.props.onModeSelected.bind(this,e.mode)}>
-                        <View>
-                          <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
-                        </View>
+              const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
+              return <TouchableHighlight style={styles.container} key={e.mode}
+                      onPress={this.props.onModeSelected.bind(this,e.mode)}>
+                      <View>
+                        <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
+                      </View>
                 </TouchableHighlight>;
             })}
           </View>
@@ -173,8 +183,8 @@ let mapDispatchToProps = (dispatch) => {
   }
 };
 
-MainSceneContainer = connect(mapStateToProps,mapDispatchToProps)(MainSceneContainer);
+const ConnectedMainSceneContainer = connect(mapStateToProps,mapDispatchToProps)(MainSceneContainer);
 
-AppRegistry.registerComponent('MainSceneContainer', () => MainSceneContainer);
+AppRegistry.registerComponent('MainSceneContainer', () => ConnectedMainSceneContainer);
 
-export default MainSceneContainer;
+export default ConnectedMainSceneContainer;

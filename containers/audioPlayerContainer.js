@@ -17,7 +17,6 @@ import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import {
-  setPlaylist,
   addPlaylistItem,
   incrementCurrentPlayIndex,
   decrementCurrentPlayIndex,
@@ -44,7 +43,7 @@ const PLAYBACK_DISABLED_STATES = {
 class AudioPlayerContainer extends Component {
   constructor(props){
     super(props);
-    this._onPlayToggleOnePress = this._onPlayToggleOnePress.bind(this);
+    this._onPlayTogglePress = this._onPlayTogglePress.bind(this);
     this._onPickerToggle = this._onPickerToggle.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
@@ -138,7 +137,7 @@ class AudioPlayerContainer extends Component {
     let exclusiveCommandMap = {
       'nextTrackCommand' : this._goToNextTrack,
       'prevTrackCommand' : this._goToPrevTrack,
-      'togglePlayPauseCommand' : this._onPlayToggleOnePress
+      'togglePlayPauseCommand' : this._onPlayTogglePress
     };
 
     if(this._isCurrentExclusiveSide()){
@@ -189,17 +188,20 @@ class AudioPlayerContainer extends Component {
   _prepareCurrentTrack(shouldAutoPlay){
     let currentTrack = this._getCurrentTrackStream();
     console.log('_prepareCurrentTrack',currentTrack,'and play');
-    if( !currentTrack )return;
     this.playerAObj.isPlaying((err,isPlaying) => {
       if(isPlaying) {
         console.log('pause and set url to next')
         this.playerAObj.pause();
       }
-      console.log('setSoundUrl');
-      this.playerAObj.setSoundUrl(currentTrack);
-      if( shouldAutoPlay ){
-        console.log('start playback');
-        this.playerAObj.play();
+      if(currentTrack){
+        console.log('setSoundUrl');
+        this.playerAObj.setSoundUrl(currentTrack);
+        if( shouldAutoPlay ){
+          console.log('start playback');
+          this.playerAObj.play();
+        }
+      } else {
+        this.playerAObj.stop();
       }
     });
   }
@@ -212,8 +214,8 @@ class AudioPlayerContainer extends Component {
     songObj.artwork = stripSSL(songObj.artwork);
     return Promise.resolve(songObj);
   }
-  _onPlayToggleOnePress(){
-    if(this._isCurrentMutedSide()){
+  _onPlayTogglePress(){
+    if(this._isCurrentMutedSide() || !this._getCurrentTrackStream()){
       console.log('toggle playback attempted on muted player');
       return false;
     }
@@ -252,7 +254,7 @@ class AudioPlayerContainer extends Component {
       passProps : {
         side : this.props.side,
         playlist : this.props.playlist,
-        playlistTitle : `Currently Playing / ${this.props.side == 'L' ? 'Top' : 'Bottom'} Player`,
+        playlistTitle : `Up Next - ${this.props.side == 'L' ? 'Top' : 'Bottom'} Player`,
         onClose: () => { this.props.navigator.pop() },
         onTrackSelected : (nextTrack) => {
           this._goToTrack(nextTrack);
@@ -471,7 +473,7 @@ class AudioPlayerContainer extends Component {
                 <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
+                <TouchableOpacity style={styles.container} onPress={this._onPlayTogglePress}>
                   <Image
                      style={[styles.playerIcon,styles.playerIconSmaller]}
                      source={playbackSource}
@@ -542,7 +544,6 @@ const mapStateToProps = (state, props) => {
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    onSongSelected : (trackItem) => dispatch(setPlaylist(props.side,[trackItem])),
     onSongQueued : (trackItem) => dispatch(addPlaylistItem(props.side,trackItem)),
     goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
     goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),

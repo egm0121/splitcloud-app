@@ -15,7 +15,7 @@ import {
 import config from '../helpers/config';
 import { connect } from 'react-redux';
 import TrackList from '../components/trackList';
-import {removeQueuedTrack} from '../redux/actions/currentPlaylistActions';
+import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import THEME from '../styles/variables';
 
@@ -46,6 +46,9 @@ class CurrentPlaylistContainer extends Component {
       <View style={styles.container}>
         <View style={styles.sectionTitleView}>
           <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
+          <TouchableOpacity style={styles.clearButton} onPress={this.props.onClearPlaylist}>
+            <Text style={styles.clearButtonText}>Clear All</Text>
+          </TouchableOpacity>
         </View>
         <TrackList
             tracksData={playlistTracksData}
@@ -73,7 +76,22 @@ const styles = StyleSheet.create({
   },
   sectionTitle : {
     color: THEME.mainHighlightColor,
-    fontSize: 18
+    fontSize: 17
+  },
+  clearButton: {
+    position:'absolute',
+    right:10,
+    top:20,
+    borderRadius:15,
+    paddingHorizontal:10,
+    zIndex:10,
+    height:30,
+    backgroundColor:THEME.contentBorderColor
+  },
+  clearButtonText: {
+    color: THEME.mainHighlightColor,
+    fontSize: 13,
+    lineHeight: 23
   },
   sectionTitleView :{
     alignItems: 'center',
@@ -98,6 +116,10 @@ const mapDispatchToProps = (dispatch,props) => ({
     console.log('should dispatch an action to remove the track from the playlist');
     dispatch(removeQueuedTrack(props.side,track));
     dispatch(pushNotification({message:'Removed Track!',type:'success'}));
+  },
+  onClearPlaylist(){
+    dispatch(setPlaylist(props.side,[]));
+    dispatch(pushNotification({message:'Cleared Playlist!',type:'success'}));
   },
   pushNotification(notification){
     dispatch(pushNotification(notification));
