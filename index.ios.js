@@ -9,41 +9,9 @@ import {
   View
 } from 'react-native';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose} from 'redux';
-import { persistStore, autoRehydrate } from 'redux-persist';
-import { AsyncStorage } from 'react-native'
-import rootReducer from './redux/reducers/rootReducer';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NotificationContainer from './containers/notificationContainer';
-
-let store;
-const logger = store => {
-  return next => {
-    return action => {
-      console.info('REDUX: action ->', action)
-      let result = next(action)
-      console.info('REDUX: state ->', store.getState())
-      return result;
-    }
-  }
-}
-const createStoreWithDebug = withLog => {
-  let enhancer = compose(autoRehydrate())
-  return withLog ?
-    createStore(rootReducer,applyMiddleware(logger),enhancer) :
-    createStore(rootReducer,undefined,enhancer);
-}
-
-store = createStoreWithDebug(__DEV__ && true)
-
-let persistor = persistStore(store, {
-  blacklist: ['notifications'],
-  storage: AsyncStorage
-  }, () => {
-  console.log('rehydration complete')
-});
-
-//persistor.purge();
+import { store } from './redux/store/configure';
 
 class SplitCloudApp extends Component {
   constructor(props){
