@@ -408,16 +408,16 @@ class AudioPlayerContainer extends Component {
     let trackIndex = this._getCurrentTrackIndex();
     let showBgArtCover = this._getCurrentTrackArtwork();
     let tracknameStyles = [styles.tracknameContainer];
-    let tracknameTextStyles = [styles.trackname,trackLabelShadow];
+    let tracknameTextStyles = [styles.trackname];
     let playerBgImage = [styles.artworkImage];
     if(this.props.isFullscreen){
       tracknameStyles.push(styles.tracknameFullscreen)
       tracknameTextStyles.push(styles.tracknameTextFullscreen)
     }
+    tracknameTextStyles.push( this.props.isFullscreen ? lightTextShadowStyle : textShadowStyle);
     let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
-    let trackLabelShadow = this.props.isFullscreen ?
-      lightTextShadowStyle : textShadowStyle;
+
     let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
       trackLabelPlaceholder = this._getCurrentTrackTitle();
@@ -452,7 +452,7 @@ class AudioPlayerContainer extends Component {
               </View>
               {this.renderInFullscreen(this.renderForegroundArtCover())}
               <View style={styles.horizontalContainer} >
-                <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
+                <Text style={[styles.playbackTime,textShadowStyle,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
                 <View style={styles.playbackTrackContainer}>
                   <MultiSlider
                     values={this.state.sliderOneValue}
@@ -570,9 +570,9 @@ const textShadowStyle = {
   textShadowRadius : overImageShadowRadious,
 }
 const lightTextShadowStyle = {
-  textShadowColor: 'rgb(0,0,0)',
-  textShadowOffset: {width:0,height:0},
-  textShadowRadius : 4,
+  textShadowColor: '#555',
+  textShadowOffset: {width:1,height:1},
+  textShadowRadius : 8
 };
 const styles = StyleSheet.create({
   mainContainer:{
