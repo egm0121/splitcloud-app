@@ -111,12 +111,12 @@ class SongPicker extends Component {
           </TouchableOpacity>
         </View>
         <View style={styles.searchInputView}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search SoundCloud tracks..."
-          value={this.state.searchInput}
-          placeholderTextColor={THEME.mainColor}
-          onChangeText={this._onSearchChange} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search SoundCloud tracks..."
+            value={this.state.searchInput}
+            placeholderTextColor={THEME.mainColor}
+            onChangeText={this._onSearchChange} />
         </View>
         <TrackList
           tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
@@ -132,23 +132,27 @@ class SongPicker extends Component {
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 20,
-    backgroundColor: THEME.mainBgColor
+    flex: 1
   },
   searchInput : {
+    paddingTop: 12,
     height: 40,
     color: THEME.mainHighlightColor,
-    paddingLeft: 10
+    paddingHorizontal: 40,
+    lineHeight:20,
+
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
-    borderBottomWidth :2
+    borderBottomWidth :2,
+    paddingTop: 10,
+    backgroundColor: THEME.mainBgColor,
+    height: 60
   },
   clearSearchAction:{
     position:'absolute',
     borderRadius:15,
-    right:6,
+    right:15,
     top:22,
     zIndex:10,
     height:30,

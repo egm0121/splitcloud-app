@@ -16,6 +16,7 @@ import {
 import config from '../helpers/config';
 import { connect } from 'react-redux';
 import TrackList from '../components/trackList';
+import BackButton from  '../components/backButton';
 import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import THEME from '../styles/variables';
@@ -46,6 +47,7 @@ class CurrentPlaylistContainer extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.sectionTitleView}>
+          <BackButton onPressed={this.props.onClose} />
           <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
           <TouchableOpacity style={styles.clearButton} onPress={this.props.onClearPlaylist}>
               <Image style={[styles.clearListIcon]} source={require('../assets/flat_clear_list.png')} resizeMode={'cover'}/>

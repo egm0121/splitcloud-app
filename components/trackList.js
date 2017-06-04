@@ -103,11 +103,7 @@ class TrackList extends Component {
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
           renderRow={this.renderRowWithData.bind(this)} />
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={this.props.onClose}>
-            <Text style={styles.closeAction}>Close</Text>
-          </TouchableOpacity>
-        </View>
+
       </View>
     );
   }
@@ -123,9 +119,7 @@ TrackList.propTypes = {
   onTrackSelected: PropTypes.func,
   onTrackAction: PropTypes.func,
   onTrackActionRender: PropTypes.func,
-  highlightProp : PropTypes.string,
-
-  onClose: PropTypes.func
+  highlightProp : PropTypes.string
 };
 
 const styles = StyleSheet.create({
