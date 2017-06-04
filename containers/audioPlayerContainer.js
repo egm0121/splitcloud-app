@@ -12,7 +12,7 @@ import {
   Linking
 } from 'react-native';
 import THEME from '../styles/variables';
-import { audioPlayerStates, soundcloudEndpoint } from '../helpers/constants';
+import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
@@ -421,7 +421,7 @@ class AudioPlayerContainer extends Component {
     let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
       trackLabelPlaceholder = this._getCurrentTrackTitle();
-      trackDescription = this._getCurrentTrackDescription();
+      trackDescription = 'by '+this._getCurrentTrackDescription();
     }
     if( this._isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
@@ -431,7 +431,7 @@ class AudioPlayerContainer extends Component {
         <View style={styles.artwork}>
             <Image
               style={playerBgImage}
-              blurRadius = {this.props.isFullscreen ? 10 : 0}
+              blurRadius = {this.props.isFullscreen && !this.props.isSplitMode? 10 : 0}
               source={ showBgArtCover ?
                 {uri:this._getCurrentTrackArtwork()} :
                 require('../assets/alt_artwork.png')
@@ -534,12 +534,14 @@ const mapStateToProps = (state, props) => {
   let player = state.players.filter((player) => player.side === props.side).pop();
   let playlist = state.playlist.filter((playlist) => playlist.side === props.side).pop();
   let isFullscreen = state.mode === props.side;
+  let isSplitMode = state.mode === playbackModeTypes.SPLIT;
   return {
     player,
     pan : player.pan,
     muted : player.muted,
     isFullscreen,
-    playlist
+    playlist,
+    isSplitMode
   }
 };
 const mapDispatchToProps = (dispatch, props) => {
