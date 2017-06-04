@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:">
+      location = "self:/Users/giuliodellorbo/Documents/dev/git/react-native-demo/ios/SplitCloud.xcodeproj">
    </FileRef>
 </Workspace>

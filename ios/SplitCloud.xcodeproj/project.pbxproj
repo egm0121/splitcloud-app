@@ -429,7 +429,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Example" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SplitCloud" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -741,7 +741,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.split-cloud.react";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.splitcloud-app.react";
 				PRODUCT_NAME = Example;
 			};
 			name = Debug;
@@ -765,7 +765,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.split-cloud.react";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.splitcloud-app.react";
 				PRODUCT_NAME = Example;
 			};
 			name = Release;
@@ -891,7 +891,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Example" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "SplitCloud" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
