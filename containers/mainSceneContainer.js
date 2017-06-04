@@ -43,9 +43,9 @@ class MainSceneContainer extends Component {
       }]
     };
     this.modeButtons = [
-      {mode:'L',label:'Top'},
-      {mode:'S',label:'Split'},
-      {mode:'R',label:'Bottom'}
+      {mode:'L',label:'LEFT'},
+      {mode:'S',label:'SPLIT'},
+      {mode:'R',label:'RIGHT'}
     ];
   }
   componentDidMount(){
@@ -167,18 +167,21 @@ const styles = StyleSheet.create({
     borderRightWidth:0,
     borderColor: THEME.contentBorderColor
   },
-  panModeSelected:{
-    color:THEME.mainHighlightColor
-  },
+
   horizontalContainer:{
     flex:1,
     flexDirection:'row'
   },
   textSplitControls:{
     textAlign:'center',
-    fontSize:18,
+    fontSize:15,
     lineHeight:18,
+    fontWeight:'400',
     color : THEME.mainColor
+  },
+  panModeSelected:{
+    color:THEME.mainActiveColor,
+    fontWeight:'600',
   }
 });
 let mapStateToProps  =  (state) => {
