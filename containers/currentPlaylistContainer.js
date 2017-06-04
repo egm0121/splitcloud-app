@@ -9,6 +9,7 @@ import {
   Text,
   TextInput,
   ListView,
+  Image,
   View,
   TouchableOpacity,
 } from 'react-native';
@@ -47,7 +48,7 @@ class CurrentPlaylistContainer extends Component {
         <View style={styles.sectionTitleView}>
           <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
           <TouchableOpacity style={styles.clearButton} onPress={this.props.onClearPlaylist}>
-            <Text style={styles.clearButtonText}>Clear All</Text>
+              <Image style={[styles.clearListIcon]} source={require('../assets/flat_clear_list.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
         </View>
         <TrackList
@@ -80,18 +81,14 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     position:'absolute',
-    right:10,
+    right:20,
     top:20,
-    borderRadius:15,
-    paddingHorizontal:10,
     zIndex:10,
-    height:30,
-    backgroundColor:THEME.contentBorderColor
+    height:30
   },
-  clearButtonText: {
-    color: THEME.mainHighlightColor,
-    fontSize: 13,
-    lineHeight: 23
+  clearListIcon: {
+    width:30,
+    height:30
   },
   sectionTitleView :{
     alignItems: 'center',

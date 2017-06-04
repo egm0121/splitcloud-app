@@ -18,6 +18,7 @@ import config from '../helpers/config';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 import NotificationOverlay from '../components/notificationOverlay';
+import { playbackModeTypes } from '../helpers/constants';
 import { connect } from 'react-redux';
 import { changePlaybackMode } from '../redux/actions/playbackModeActions';
 import { persistor } from '../redux/store/configure';
@@ -32,6 +33,7 @@ class MainSceneContainer extends Component {
     this.handleOpenURL = this.handleOpenURL.bind(this);
     this.onLoginStart = this.onLoginStart.bind(this);
     this.purgeStore = this.purgeStore.bind(this);
+    this.renderPlaybackModeTabBar = this.renderPlaybackModeTabBar.bind(this);
     this.state = {
       mode : 'S',
       players : [{
@@ -73,6 +75,25 @@ class MainSceneContainer extends Component {
        side={player.side}
        navigator={this.props.navigator} />
   }
+  getFullScreenPlayer(){
+    if(this.props.mode == playbackModeTypes.SPLIT) return false;
+    return { side : this.props.mode };
+  }
+  renderPlaybackModeTabBar(){
+    return <View style={styles.panToggleContainer}>
+      <View style={styles.horizontalContainer}>
+        {this.modeButtons.map((e,i) => {
+          const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
+          return <TouchableHighlight style={styles.container} key={e.mode}
+                  onPress={this.props.onModeSelected.bind(this,e.mode)}>
+                  <View>
+                    <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
+                  </View>
+            </TouchableHighlight>;
+        })}
+      </View>
+    </View>;
+  }
   render() {
     let playerLStyle = [],
       playerRStyle = [];
@@ -98,24 +119,13 @@ class MainSceneContainer extends Component {
           }
         </View>
         <View style={[styles.player,playerLStyle]}>
-        {this.renderPlayer(this.state.players[0])}
+          {this.renderPlayer(this.state.players[0])}
         </View>
-        <View style={styles.panToggleContainer}>
-          <View style={styles.horizontalContainer}>
-            {this.modeButtons.map((e,i) => {
-              const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
-              return <TouchableHighlight style={styles.container} key={e.mode}
-                      onPress={this.props.onModeSelected.bind(this,e.mode)}>
-                      <View>
-                        <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
-                      </View>
-                </TouchableHighlight>;
-            })}
-          </View>
-        </View>
+        {this.getFullScreenPlayer() ? null : this.renderPlaybackModeTabBar()}
         <View style={[styles.player,playerRStyle]}>
           {this.renderPlayer(this.state.players[1])}
         </View>
+        {this.getFullScreenPlayer() ? this.renderPlaybackModeTabBar() :null}
       </View>
 
     );
