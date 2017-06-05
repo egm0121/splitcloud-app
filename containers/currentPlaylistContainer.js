@@ -124,8 +124,8 @@ const mapDispatchToProps = (dispatch,props) => ({
     dispatch(pushNotification(notification));
   }
 });
-CurrentPlaylistContainer = connect(mapStateToProps,mapDispatchToProps)(CurrentPlaylistContainer);
+const ConnectedCurrentPlaylistContainer = connect(mapStateToProps,mapDispatchToProps)(CurrentPlaylistContainer);
 
-AppRegistry.registerComponent('CurrentPlaylistContainer', () => CurrentPlaylistContainer);
+AppRegistry.registerComponent('CurrentPlaylistContainer', () => ConnectedCurrentPlaylistContainer);
 
-export default CurrentPlaylistContainer;
+export default ConnectedCurrentPlaylistContainer;

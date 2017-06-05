@@ -60,7 +60,7 @@ class SongPicker extends Component {
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
-       this.prevQueryCancelToken.cancel('Old Query, invalidate request');
+      this.prevQueryCancelToken.cancel('Old Query, invalidate request');
     }
   }
   performSoundcloudApiSearch(term){
@@ -78,13 +78,13 @@ class SongPicker extends Component {
     }
     let tracks = resp.map((t) => (
       {
-       id: t.id,
-       label : t.title,
-       username: t.user.username,
-       streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
-       artwork : t.artwork_url,
-       scUploaderLink : t.user.permalink_url
-     })
+        id: t.id,
+        label : t.title,
+        username: t.user.username,
+        streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
+        artwork : t.artwork_url,
+        scUploaderLink : t.user.permalink_url
+      })
     );
     this.setState({ pureList : tracks });
   }

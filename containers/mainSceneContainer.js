@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-
+/* global __DEV__ */
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   TouchableHighlight,
+  LayoutAnimation,
   Linking
 } from 'react-native';
 import config from '../helpers/config';
@@ -167,7 +168,6 @@ const styles = StyleSheet.create({
     borderRightWidth:0,
     borderColor: THEME.contentBorderColor
   },
-
   horizontalContainer:{
     flex:1,
     flexDirection:'row'
@@ -191,6 +191,7 @@ let mapStateToProps  =  (state) => {
 let mapDispatchToProps = (dispatch) => {
   return {
     onModeSelected(mode){
+      LayoutAnimation.configureNext({...LayoutAnimation.Presets.linear,duration:200});
       dispatch(changePlaybackMode(mode))
     }
   }
