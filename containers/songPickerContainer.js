@@ -15,6 +15,7 @@ import {
 import config from '../helpers/config';
 import { connect } from 'react-redux';
 import SongPicker from '../components/songPicker';
+import BackButton from '../components/backButton';
 import {updateSearchTerms} from '../redux/actions/songPickerActions';
 const {SC_CLIENT_ID} = config;
 const DEBOUNCE_MILLISEC = 100;
@@ -31,6 +32,7 @@ class SongPickerContainer extends Component {
 
     return (
       <View style={styles.container}>
+        <BackButton style={styles.backButton} onPressed={this.props.onClose} />
         <SongPicker
             scClientId={SC_CLIENT_ID}
             scResultLimit={SC_RESULT_LIMIT}
@@ -57,6 +59,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F50'
+  },
+  backButton:{
+    zIndex:20
   }
 });
 const mapStateToProps = (state,props) => {
@@ -69,8 +74,8 @@ const mapStateToProps = (state,props) => {
     playlist : playlistState
   };
 }
-SongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
+const ConnectedSongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
 
-AppRegistry.registerComponent('SongPickerContainer', () => SongPickerContainer);
+AppRegistry.registerComponent('SongPickerContainer', () => ConnectedSongPickerContainer);
 
-export default SongPickerContainer;
+export default ConnectedSongPickerContainer;

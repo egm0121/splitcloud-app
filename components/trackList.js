@@ -34,17 +34,17 @@ class TrackList extends Component {
     this.updateResultList(this.props.tracksData);
   }
   componentWillReceiveProps(newProps){
-      if(this.props.tracksData != newProps.tracksData){
-        this.updateResultList(newProps.tracksData);
-      }
+    if(this.props.tracksData != newProps.tracksData){
+      this.updateResultList(newProps.tracksData);
+    }
   }
   updateResultList(tracks){
     // in case of empty results or no search terms
     if(!tracks || !tracks.length){
       return this.setState({
-          pureList : this.emptyResultRow,
-          renderList : this.ds.cloneWithRows(this.emptyResultRow)
-        });
+        pureList : this.emptyResultRow,
+        renderList : this.ds.cloneWithRows(this.emptyResultRow)
+      });
     }
     this.setState({
       pureList : tracks,
@@ -53,18 +53,20 @@ class TrackList extends Component {
   }
   _onSongSelected(rowData){
     if(!rowData.isEmpty){
-        this.props.onTrackSelected(rowData);
+      this.props.onTrackSelected(rowData);
     }
   }
-  _onSongAction(rowData,rowId){
+  _onSongAction(rowData,){
     if(!rowData.isEmpty){
       this.props.onTrackAction(rowData);
     }
   }
 
-  renderRowWithData(rowData,sectionId) {
+  renderRowWithData(rowData) {
     const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
-    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
+    if( this.props.highlightProp &&
+        rowData[this.props.highlightProp] ){
+
       rowTextStyle.push(styles.hightlightText);
     }
     if(rowData.isEmpty){
@@ -83,9 +85,13 @@ class TrackList extends Component {
             <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{rowData.username} </Text>
           </TouchableOpacity>
         <View style={styles.rowAction}>
-          <TouchableOpacity onPress={this._onSongAction.bind(this,rowData)}>
-            {rowData.isEmpty ? null : <Text style={styles.rowActionText}>{this.props.onTrackActionRender(rowData)}</Text>}
-          </TouchableOpacity>
+            {!rowData.isEmpty && this.props.onTrackActionRender(rowData) ?
+              <TouchableOpacity onPress={this._onSongAction.bind(this,rowData)}>
+                <Text style={styles.rowActionText}>
+                  {this.props.onTrackActionRender(rowData)}
+                </Text>
+              </TouchableOpacity>: null
+              }
         </View>
       </View>
     );
@@ -97,11 +103,7 @@ class TrackList extends Component {
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
           renderRow={this.renderRowWithData.bind(this)} />
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={this.props.onClose}>
-            <Text style={styles.closeAction}>Close</Text>
-          </TouchableOpacity>
-        </View>
+
       </View>
     );
   }
@@ -117,8 +119,7 @@ TrackList.propTypes = {
   onTrackSelected: PropTypes.func,
   onTrackAction: PropTypes.func,
   onTrackActionRender: PropTypes.func,
-  highlightProp : PropTypes.string,
-  onClose: PropTypes.func
+  highlightProp : PropTypes.string
 };
 
 const styles = StyleSheet.create({
@@ -141,9 +142,9 @@ const styles = StyleSheet.create({
   },
   rowLabel : {
     flex: 10,
-    height: 42,
+    height: 52,
     borderColor: THEME.listBorderColor,
-    borderBottomWidth:0.5
+    borderBottomWidth:0
   },
   rowContainerPlaceholder:{
     flex: 1,
@@ -156,15 +157,17 @@ const styles = StyleSheet.create({
   },
   rowLabelText: {
     color: THEME.mainHighlightColor,
-    lineHeight:17,
-    fontSize: 17
-  },
-  hightlightText : {
-    color: 'orange'
+    lineHeight:20,
+    fontSize: 15,
+    fontWeight:'600'
   },
   rowDescText :{
     color: THEME.mainColor,
-    fontSize: 13
+    fontSize: 13,
+    lineHeight:20
+  },
+  hightlightText : {
+    color: THEME.mainActiveColor
   },
   placeholderRowText:{
     color:THEME.mainColor,
@@ -175,12 +178,13 @@ const styles = StyleSheet.create({
   rowAction : {
     flex: 2,
     borderColor: THEME.listBorderColor,
-    borderBottomWidth:0.5
+    borderBottomWidth:0
   },
   rowActionText :{
     color: THEME.mainColor,
+    opacity:0.8,
     fontSize: 35,
-    lineHeight:35,
+    lineHeight:37,
     textAlign : 'right'
   },
   footer : {

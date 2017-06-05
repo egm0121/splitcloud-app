@@ -8,14 +8,15 @@ import {
   View,
   TouchableOpacity,
   Dimensions,
-  Platform
+  Platform,
+  Linking
 } from 'react-native';
 import THEME from '../styles/variables';
-import { ReactNativeAudioStreaming, Player, ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
+import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes } from '../helpers/constants';
+import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import {
-  setPlaylist,
   addPlaylistItem,
   incrementCurrentPlayIndex,
   decrementCurrentPlayIndex,
@@ -31,16 +32,21 @@ import LogSlider from '../helpers/LogSlider';
 
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
-const PLAYBACK_ENABLED_STATES = {PLAYING:1,BUFFERING:1};
-const PLAYBACK_DISABLED_STATES = {STOPPED:1,PAUSED:1};
+const PLAYBACK_ENABLED_STATES = {
+  [audioPlayerStates.PLAYING]:1,
+  [audioPlayerStates.BUFFERING]:1
+};
+const PLAYBACK_DISABLED_STATES = {
+  [audioPlayerStates.STOPPED]:1,
+  [audioPlayerStates.PAUSED]:1
+};
 class AudioPlayerContainer extends Component {
   constructor(props){
     super(props);
-    this._onPlayToggleOnePress = this._onPlayToggleOnePress.bind(this);
+    this._onPlayTogglePress = this._onPlayTogglePress.bind(this);
     this._onPickerToggle = this._onPickerToggle.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
-    this._onMultiSliderValuesChange = this._onMultiSliderValuesChange.bind(this);
     this._onSeekToTime = this._onSeekToTime.bind(this);
     this._onSeekToTimeStart = this._onSeekToTimeStart.bind(this);
     this._onProgressTick = this._onProgressTick.bind(this);
@@ -50,6 +56,9 @@ class AudioPlayerContainer extends Component {
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
+    this.renderInFullscreen = this.renderInFullscreen.bind(this);
+    this._openScUploaderLink = this._openScUploaderLink.bind(this);
+
     this.playerAObj = new ReactNativeStreamingPlayer();
 
     this.state = {
@@ -69,10 +78,10 @@ class AudioPlayerContainer extends Component {
     this.playerAObj.setPan(this.state.pan);
     this.playerAObj.setVolume(this._linearToLogVolume(this.state.volume));
     this._onProgressTick();
-    console.log("platform ", Platform)
+    console.log('platform ', Platform)
     this.playerAObj.on('stateChange',(evt) => {
       const actionName = evt.status.toLowerCase(),
-            hookName = '_onPlayer'+capitalize(actionName);
+        hookName = '_onPlayer'+capitalize(actionName);
       if(typeof this[hookName] === 'function' ){
         this[hookName](...[evt]);
       }
@@ -86,11 +95,11 @@ class AudioPlayerContainer extends Component {
     this.playerAObj.getStatus((err,data) => {
       let currPlaybackProgress = parseInt( (data.progress * 100) / data.duration ) || 0;
       this.setState({
-          duration : data.duration,
-          elapsed: data.progress,
-          sliderOneValue:[currPlaybackProgress],
-          status : data.status
-        });
+        duration : data.duration,
+        elapsed: data.progress,
+        sliderOneValue:[currPlaybackProgress],
+        status : data.status
+      });
     });
   }
   _onProgressTick(){
@@ -110,10 +119,10 @@ class AudioPlayerContainer extends Component {
   }
   _onPlayerStoppedDebounced(evt){
     console.log('_onPlayerStopped Debounced',evt);
-    if(evt.progress == 0 && evt.duration == 0 && evt.prevStatus in {'PLAYING':1,'BUFFERING':1}){
-         console.log('track end detected. go to next track');
-         this._goToNextTrack();
-       }
+    if(evt.progress == 0 && evt.duration == 0 && evt.prevStatus in PLAYBACK_ENABLED_STATES){
+      console.log('track end detected. go to next track');
+      this._goToNextTrack();
+    }
   }
   _onAudioRouteInterruption(evt){
     console.log('onAudioRouteInterruption',evt);
@@ -128,25 +137,26 @@ class AudioPlayerContainer extends Component {
     let exclusiveCommandMap = {
       'nextTrackCommand' : this._goToNextTrack,
       'prevTrackCommand' : this._goToPrevTrack,
-      'togglePlayPauseCommand' : this._onPlayToggleOnePress
+      'togglePlayPauseCommand' : this._onPlayTogglePress
     };
+
     if(this._isCurrentExclusiveSide()){
-       (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
+      (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
     }
     if(evt.type === 'pauseCommand'){
-        this.playerAObj.getStatus((err,data) => {
-          if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
-          this.playerAObj.pause();
-          this.setState({prevRemoteStatus : data.status});
-        });
+      this.playerAObj.getStatus((err,data) => {
+        if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
+        this.playerAObj.pause();
+        this.setState({prevRemoteStatus : data.status});
+      });
     }
     if(evt.type === 'playCommand'){
       this.playerAObj.getStatus((err,data) => {
         if(!(data.status in PLAYBACK_DISABLED_STATES) ||
            !(this.state.prevRemoteStatus in PLAYBACK_ENABLED_STATES)){
-            return false;
-          }
-          data.status === 'PAUSED' ? this.playerAObj.resume() : this.playerAObj.play();
+          return false;
+        }
+        data.status === 'PAUSED' ? this.playerAObj.resume() : this.playerAObj.play();
       });
     }
   }
@@ -175,18 +185,24 @@ class AudioPlayerContainer extends Component {
     console.log('goToTrack', this.props.playlist.tracks)
     this.props.goToTrack(track);
   }
-  _prepareCurrentTrack(){
+  _prepareCurrentTrack(shouldAutoPlay){
     let currentTrack = this._getCurrentTrackStream();
-    console.log('_prepareCurrentTrack',currentTrack);
-    if( !currentTrack )return;
+    console.log('_prepareCurrentTrack',currentTrack,'and play');
     this.playerAObj.isPlaying((err,isPlaying) => {
       if(isPlaying) {
         console.log('pause and set url to next')
         this.playerAObj.pause();
       }
-      console.log('setSoundUrl and play')
-      this.playerAObj.setSoundUrl(currentTrack);
-      this.playerAObj.play();
+      if(currentTrack){
+        console.log('setSoundUrl');
+        this.playerAObj.setSoundUrl(currentTrack);
+        if( shouldAutoPlay ){
+          console.log('start playback');
+          this.playerAObj.play();
+        }
+      } else {
+        this.playerAObj.stop();
+      }
     });
   }
   _resolvePlayableSoundUrl(songObj){
@@ -198,24 +214,24 @@ class AudioPlayerContainer extends Component {
     songObj.artwork = stripSSL(songObj.artwork);
     return Promise.resolve(songObj);
   }
-  _onPlayToggleOnePress(){
-      if(this._isCurrentMutedSide()){
-        console.log('toggle playback attempted on muted player');
-        return false;
+  _onPlayTogglePress(){
+    if(this._isCurrentMutedSide() || !this._getCurrentTrackStream()){
+      console.log('toggle playback attempted on muted player');
+      return false;
+    }
+    console.log('_onPlayToggle checks passed');
+    this.playerAObj.getStatus((err,playbackStatus) => {
+      if(playbackStatus.status === audioPlayerStates.PLAYING){
+        this.playerAObj.pause();
       }
-      console.log('_onPlayToggle checks passed')
-      this.playerAObj.getStatus((err,playbackStatus) => {
-        if(playbackStatus.status === "PLAYING"){
-          this.playerAObj.pause();
-        }
-        if(playbackStatus.status === "PAUSED" ){
-          this.playerAObj.resume()
-        }
-        if(playbackStatus.status === "STOPPED"){
-          this.playerAObj.play();
-        }
-        this._updateComponentPlayerState();
-      });
+      if(playbackStatus.status === audioPlayerStates.PAUSED ){
+        this.playerAObj.resume()
+      }
+      if(playbackStatus.status === audioPlayerStates.STOPPED){
+        this.playerAObj.play();
+      }
+      this._updateComponentPlayerState();
+    });
   }
   _onPickerToggle(){
     this.props.navigator.push({
@@ -238,16 +254,13 @@ class AudioPlayerContainer extends Component {
       passProps : {
         side : this.props.side,
         playlist : this.props.playlist,
-        playlistTitle : `Currently Playing / ${this.props.side == 'L' ? 'Top' : 'Bottom'} Player`,
+        playlistTitle : `Up Next - ${this.props.side == 'L' ? 'Top' : 'Bottom'} Player`,
         onClose: () => { this.props.navigator.pop() },
         onTrackSelected : (nextTrack) => {
           this._goToTrack(nextTrack);
         }
       }
     });
-  }
-  _onMultiSliderValuesChange(values){
-    console.log('_onMultiSliderValuesChange')
   }
   _onSeekToTime(newPos){
     let seekedPos = (parseInt(newPos[0]) * this.state.duration) / 100;
@@ -268,7 +281,7 @@ class AudioPlayerContainer extends Component {
   _linearToLogVolume(currVolumePosition){
     currVolumePosition = parseInt(currVolumePosition * 100);
     if(currVolumePosition == 0 || currVolumePosition == 100){
-       return currVolumePosition / 100;
+      return currVolumePosition / 100;
     }
     return parseFloat((this.volumeSliderScale.value(currVolumePosition)/100).toFixed(2));
   }
@@ -286,18 +299,17 @@ class AudioPlayerContainer extends Component {
   }
   _formatAsMinutes(seconds){
     let min = Math.floor(seconds / 60),
-        leftSeconds = seconds - (min * 60),
-        pInt = (float) => parseInt(float,10),
-        pad = (int) => int < 10 ? `0${pInt(int)}` : `${pInt(int)}`;
+      leftSeconds = seconds - (min * 60),
+      pInt = (float) => parseInt(float,10),
+      pad = (int) => int < 10 ? `0${pInt(int)}` : `${pInt(int)}`;
     return `${pad(min)}:${pad(leftSeconds)}`;
   }
   componentWillReceiveProps(newProps){
-    if(newProps.pan != this.props.pan ||
-       newProps.muted != this.props.muted){
-         this.setState({
-           pan:newProps.pan,
-           muted:newProps.muted
-         });
+    if(newProps.pan != this.props.pan || newProps.muted != this.props.muted){
+      this.setState({
+        pan:newProps.pan,
+        muted:newProps.muted
+      });
     }
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
       this.setState({playbackIndex : newProps.playlist.currentTrackIndex})
@@ -318,19 +330,20 @@ class AudioPlayerContainer extends Component {
     }
     if(prevProps.playlist.tracks[prevState.playbackIndex] !==
        this.props.playlist.tracks[this.state.playbackIndex]){
-       console.log(
+      console.log(
          '(state Update) current playing track changed: prepare to play. idx:',
          this.state.playbackIndex
-       );
-       this._prepareCurrentTrack();
+      );
+      let shouldAutoPlay = !this.props.playlist.rehydrate;
+      this._prepareCurrentTrack(shouldAutoPlay);
     }
 
   }
   componentWillUnmount(){
-    console.log("component will unmount! destory player instance")
+    console.log('component will unmount! destory player instance')
     if(this.playerAObj){
-       this.playerAObj.stop();
-       this.playerAObj.destroy();
+      this.playerAObj.stop();
+      this.playerAObj.destroy();
     }
   }
   _getCurrentTrackIndex(){
@@ -345,28 +358,42 @@ class AudioPlayerContainer extends Component {
   _getCurrentTrackTitle() {
     return this._getCurrentTrackObj().label;
   }
+  _getCurrentTrackDescription(){
+    return  this._getCurrentTrackObj().username;
+  }
   _getCurrentTrackArtwork(){
     const scArtwork = this._getCurrentTrackObj().artwork ?
       this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
     return scArtwork || false;
   }
+  _getCurrentTrackUploaderLink(){
+    return  this._getCurrentTrackObj().scUploaderLink;
+  }
+  _openScUploaderLink(){
+    Linking.openURL(
+      this._getCurrentTrackUploaderLink() || soundcloudEndpoint.profileUrl
+    );
+  }
   _isPlayerBuffering(){
-    return this.state.status === 'BUFFERING';
+    return this.state.status === audioPlayerStates.BUFFERING;
   }
   _isPlayerPlaying(){
-    return this.state.status === 'PLAYING';
+    return this.state.status === audioPlayerStates.PLAYING;
   }
   _isPlayerPaused(){
-    return this.state.status === 'PAUSED';
+    return this.state.status === audioPlayerStates.PAUSED;
   }
   _isPlayerStopped(){
-    return this.state.status === 'STOPPED';
+    return this.state.status === audioPlayerStates.STOPPED;
   }
   _isCurrentExclusiveSide(){
     return this.state.pan === 0 && this.state.muted === 0;
   }
   _isCurrentMutedSide(){
     return this.state.muted === 1;
+  }
+  renderInFullscreen(children){
+    return this.props.isFullscreen ? children :null;
   }
   render() {
     const sideLabel = {
@@ -376,12 +403,25 @@ class AudioPlayerContainer extends Component {
     const isBufferingLabel = 'Buffering - ';
     let playbackSource = this._isPlayerPlaying() || this._isPlayerBuffering() ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
-    let {height, width} = Dimensions.get('window');
+    let {width} = Dimensions.get('window');
     let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
+    let showBgArtCover = this._getCurrentTrackArtwork();
+    let tracknameStyles = [styles.tracknameContainer];
+    let tracknameTextStyles = [styles.trackname];
+    let playerBgImage = [styles.artworkImage];
+    if(this.props.isFullscreen){
+      tracknameStyles.push(styles.tracknameFullscreen)
+      tracknameTextStyles.push(styles.tracknameTextFullscreen)
+    }
+    tracknameTextStyles.push( this.props.isFullscreen ? lightTextShadowStyle : textShadowStyle);
+    let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
+
+    let isPlaylistVisible = this.props.playlist.tracks.length > 1;
     if( this._getCurrentTrackTitle() ){
-        trackLabelPlaceholder = this._getCurrentTrackTitle();
+      trackLabelPlaceholder = this._getCurrentTrackTitle();
+      trackDescription = 'by '+this._getCurrentTrackDescription();
     }
     if( this._isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
@@ -390,22 +430,29 @@ class AudioPlayerContainer extends Component {
       <View style={styles.mainContainer} >
         <View style={styles.artwork}>
             <Image
-              style={[styles.artworkImage]}
-              source={ this._getCurrentTrackArtwork() ?
-                 {uri:this._getCurrentTrackArtwork()} :
-                 require('../assets/alt_artwork.png')
+              style={playerBgImage}
+              blurRadius = {this.props.isFullscreen && !this.props.isSplitMode? 10 : 0}
+              source={ showBgArtCover ?
+                {uri:this._getCurrentTrackArtwork()} :
+                require('../assets/alt_artwork.png')
                }
-              resizeMode={this._getCurrentTrackArtwork() ?'cover':'stretch'}>
+              resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
 
-              <View style={styles.tracknameContainer}>
+              <View style={tracknameStyles}>
                 <TouchableOpacity  onPress={this._onPickerToggle}>
-                  <Text style={styles.trackname} numberOfLines={1} ellipsizeMode={'tail'}>
+                  <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                     { trackLabelPlaceholder }
                   </Text>
                 </TouchableOpacity>
+                {this.renderInFullscreen(<TouchableOpacity onPress={this._openScUploaderLink} >
+                  <Text style={[styles.trackDescription]}>
+                    { trackDescription }
+                  </Text>
+                </TouchableOpacity>)}
               </View>
+              {this.renderInFullscreen(this.renderForegroundArtCover())}
               <View style={styles.horizontalContainer} >
-                <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
+                <Text style={[styles.playbackTime,textShadowStyle,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
                 <View style={styles.playbackTrackContainer}>
                   <MultiSlider
                     values={this.state.sliderOneValue}
@@ -420,13 +467,13 @@ class AudioPlayerContainer extends Component {
                     unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                     markerStyle={markerStyle} />
                 </View>
-                <Text style={styles.playbackTime}>{this._formatAsMinutes(this.state.duration)}</Text>
+                <Text style={[styles.playbackTime,textShadowStyle]}>{this._formatAsMinutes(this.state.duration)}</Text>
               </View>
               <View style={styles.horizontalContainer}>
                 <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.container} onPress={this._onPlayToggleOnePress}>
+                <TouchableOpacity style={styles.container} onPress={this._onPlayTogglePress}>
                   <Image
                      style={[styles.playerIcon,styles.playerIconSmaller]}
                      source={playbackSource}
@@ -436,7 +483,8 @@ class AudioPlayerContainer extends Component {
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
               </View>
-              <View style={styles.playlistButtonView}>
+              {isPlaylistVisible ?
+                <View style={styles.playlistButtonView}>
                 <TouchableOpacity style={styles.playlistButton} onPress={this._toggleCurrentPlaylist}>
                   <Image
                     style={[styles.playerIcon,styles.playerIconSuperSmall]}
@@ -444,7 +492,13 @@ class AudioPlayerContainer extends Component {
                     resizeMode={'contain'}
                     />
                 </TouchableOpacity>
-              </View>
+              </View> : null}
+              <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
+                <Image
+                style={[styles.scCopyImage]}
+                source={require('../assets/powered_by_large_white.png')}
+                resizeMode={'contain'} />
+              </TouchableOpacity>
               <View style={styles.horizontalContainer}>
                 <View style={styles.volumeSlider}>
                   <Slider step={0.05}
@@ -456,27 +510,42 @@ class AudioPlayerContainer extends Component {
               </View>
             </Image>
         </View>
+
       </View>
     );
+  }
+  renderForegroundArtCover() {
+    return <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
+      <Image style={[styles.fgArtCoverImage]}
+       source={ this._getCurrentTrackArtwork() ?
+        {uri:this._getCurrentTrackArtwork()} :
+        require('../assets/empty_album.png')
+       }
+       resizeMode={'contain'}
+      />
+    </View>
   }
 }
 
 AudioPlayerContainer.propTypes = {
-
+//TODO: specify propTypes
 };
 const mapStateToProps = (state, props) => {
   let player = state.players.filter((player) => player.side === props.side).pop();
   let playlist = state.playlist.filter((playlist) => playlist.side === props.side).pop();
+  let isFullscreen = state.mode === props.side;
+  let isSplitMode = state.mode === playbackModeTypes.SPLIT;
   return {
     player,
     pan : player.pan,
     muted : player.muted,
-    playlist
+    isFullscreen,
+    playlist,
+    isSplitMode
   }
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    onSongSelected : (trackItem) => dispatch(setPlaylist(props.side,[trackItem])),
     onSongQueued : (trackItem) => dispatch(addPlaylistItem(props.side,trackItem)),
     goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
     goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
@@ -484,11 +553,11 @@ const mapDispatchToProps = (dispatch, props) => {
     pushNotification: (notification) => dispatch(pushNotification(notification))
   };
 };
-AudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
+let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
 
-AppRegistry.registerComponent('AudioPlayerContainer', () => AudioPlayerContainer);
+AppRegistry.registerComponent('AudioPlayerContainer', () => ConnectedAudioPlayerContainer);
+
 const volumeMarginSide = 80;
-const volumeMarginVertical = 10;
 const playbackHorizontalMargin = 10;
 const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
@@ -500,6 +569,11 @@ const textShadowStyle = {
   textShadowOffset: overImageShadowOffset,
   textShadowRadius : overImageShadowRadious,
 }
+const lightTextShadowStyle = {
+  textShadowColor: '#555',
+  textShadowOffset: {width:1,height:1},
+  textShadowRadius : 8
+};
 const styles = StyleSheet.create({
   mainContainer:{
     flex:1
@@ -507,9 +581,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    alignItems:'center',
-    borderColor: 'lime',
-    borderWidth: 0
+    alignItems:'center'
   },
   startRow: {
     alignItems:'flex-end'
@@ -528,14 +600,14 @@ const styles = StyleSheet.create({
   progressSlider : {
     flex:1,
   },
-  playbackTime : Object.assign({
+  playbackTime :{
     textAlign: 'center',
     color: mainFgColor,
     textShadowColor: overImageShadowColor,
     height:30,
     lineHeight: 22,
     width:50
-  },textShadowStyle),
+  },
   playbackTimeInitial:{
     marginLeft:10
   },
@@ -572,6 +644,14 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     backgroundColor:THEME.textOverlayBgColor
   },
+  tracknameFullscreen:{
+    flex:0,
+    height:75
+  },
+  tracknameTextFullscreen:{
+    lineHeight: 25,
+    height: 30,
+  },
   playlistButtonView:{
     position:'absolute',
     bottom:0,
@@ -581,8 +661,19 @@ const styles = StyleSheet.create({
     paddingLeft:15,
     paddingBottom:15
   },
-  trackname : Object.assign({
-    fontSize: 20,
+  scCopyContainer :{
+    position:'absolute',
+    bottom:10,
+    right:10,
+    zIndex :10
+  },
+  scCopyImage:{
+    width:45,
+    height:45
+  },
+  trackname : {
+    fontSize: 18,
+    fontWeight: '600',
     textAlign: 'center',
     color: mainFgColor,
     backgroundColor: 'transparent',
@@ -590,7 +681,13 @@ const styles = StyleSheet.create({
     height: 40,
     paddingLeft:20,
     paddingRight:20
-  },textShadowStyle),
+  },
+  trackDescription:{
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: THEME.scAuthorColor
+  },
   artwork : {
     justifyContent: 'center',
     flexDirection:'row',
@@ -601,6 +698,17 @@ const styles = StyleSheet.create({
     width:null,
     height:null,
     backgroundColor:artworkPlaceholderColor
+  },
+  artworkBgFullscreen:{},
+  fgArtCoverImage :{
+    flex:1,
+    width:null,
+    height:null,
+  },
+  fgArtCoverContainer:{
+    flex:5,
+    borderColor:THEME.contentBorderColor,
+    paddingBottom: 20
   }
 });
 const sliderTrackStyles = {
@@ -618,4 +726,4 @@ const markerStyle = {
   shadowOffset: { width:0,height:2},
   shadowOpacity: 0
 };
-export default AudioPlayerContainer;
+export default ConnectedAudioPlayerContainer;
