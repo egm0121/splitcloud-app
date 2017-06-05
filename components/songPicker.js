@@ -90,7 +90,7 @@ class SongPicker extends Component {
   }
   _markAsCurrentTrack(item){
     const currTrack = this.props.currentPlayingTrack || {};
-    if(item.label == currTrack.label){
+    if(item.id == currTrack.id){
       return {
         ...item,
         isCurrentTrack : true

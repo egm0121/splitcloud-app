@@ -33,7 +33,7 @@ class CurrentPlaylistContainer extends Component {
   _markAsCurrentTrack(item){
     const currTrack =
       this.props.playlist.tracks[this.props.playlist.currentTrackIndex] || {};
-    if(item.label == currTrack.label){
+    if(item.id == currTrack.id){
       return {
         ...item,
         isCurrentTrack : true
