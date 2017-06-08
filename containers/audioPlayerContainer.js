@@ -221,7 +221,7 @@ class AudioPlayerContainer extends Component {
     }
     console.log('_onPlayToggle checks passed');
     this.playerAObj.getStatus((err,playbackStatus) => {
-      if(playbackStatus.status === audioPlayerStates.PLAYING){
+      if(playbackStatus.status in PLAYBACK_ENABLED_STATES ){
         this.playerAObj.pause();
       }
       if(playbackStatus.status === audioPlayerStates.PAUSED ){
