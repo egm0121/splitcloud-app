@@ -234,6 +234,7 @@ class AudioPlayerContainer extends Component {
   }
   _onPickerToggle(){
     this.props.navigator.push({
+      title : 'SongPickerContainer - ' + this.props.side,
       component: SongPickerContainer,
       passProps : {
         side : this.props.side,
@@ -249,6 +250,7 @@ class AudioPlayerContainer extends Component {
   }
   _toggleCurrentPlaylist(){
     this.props.navigator.push({
+      title : 'CurrentPlaylistContainer - ' + this.props.side,
       component: CurrentPlaylistContainer,
       passProps : {
         side : this.props.side,

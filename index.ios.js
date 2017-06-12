@@ -36,11 +36,11 @@ class SplitCloudApp extends Component {
     return (
         <Provider store={store} >
             <Navigator
-                initialRoute={{ title: 'Initial screen', index: 0, component: MainSceneContainer }}
+                initialRoute={{ title: 'MainSceneContainer', index: 0, component: MainSceneContainer }}
                 renderScene={(route, navigator) => {
                   var screenView = new GAHits.ScreenView(
                        'SplitcloudApp',
-                       route.component.displayName,
+                       route.title || 'Component',
                        DeviceInfo.getReadableVersion(),
                        DeviceInfo.getBundleId()
                      );

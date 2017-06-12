@@ -13,7 +13,8 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
   LayoutAnimation,
-  Linking
+  Linking,
+  Image
 } from 'react-native';
 import config from '../helpers/config';
 import THEME from '../styles/variables';
@@ -110,9 +111,7 @@ class MainSceneContainer extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>
-             SplitCloud
-          </Text>
+          <Image style={styles.appLogo} source={require('../assets/splitcloud.logo.png')} resizeMode={'contain'}/>
           {/*<TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
@@ -145,6 +144,12 @@ const styles = StyleSheet.create({
   header :{
     borderBottomWidth: 2,
     borderBottomColor: THEME.contentBorderColor
+  },
+  appLogo:{
+    alignSelf:'center',
+    marginBottom:8,
+    marginTop:17,
+    height:25
   },
   headerText: {
     fontSize: 25,
