@@ -16,6 +16,7 @@ import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes } from '../hel
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
+import SearchIcon from '../components/searchIcon';
 import {
   addPlaylistItem,
   incrementCurrentPlayIndex,
@@ -439,9 +440,11 @@ class AudioPlayerContainer extends Component {
               resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
 
               <View style={tracknameStyles}>
+
                 <TouchableOpacity  onPress={this._onPickerToggle}>
+
                   <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
-                    { trackLabelPlaceholder }
+                   { trackLabelPlaceholder }
                   </Text>
                 </TouchableOpacity>
                 {this.renderInFullscreen(<TouchableOpacity onPress={this._openScUploaderLink} >
@@ -470,6 +473,9 @@ class AudioPlayerContainer extends Component {
                 <Text style={[styles.playbackTime,textShadowStyle]}>{this._formatAsMinutes(this.state.duration)}</Text>
               </View>
               <View style={styles.horizontalContainer}>
+                <TouchableOpacity style={[styles.container,styles.playlistButton]} onPress={this._toggleCurrentPlaylist}>
+                  <Image style={[styles.playerIcon,styles.playerIconSuperSmall]} source={require('../assets/flat_select.png')} resizeMode={'contain'}/>
+                </TouchableOpacity>
                 <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
@@ -482,17 +488,10 @@ class AudioPlayerContainer extends Component {
                 <TouchableOpacity style={[styles.container,styles.endRow]} onPress={this._goToNextTrack}>
                   <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
                 </TouchableOpacity>
-              </View>
-              {isPlaylistVisible ?
-                <View style={styles.playlistButtonView}>
-                <TouchableOpacity style={styles.playlistButton} onPress={this._toggleCurrentPlaylist}>
-                  <Image
-                    style={[styles.playerIcon,styles.playerIconSuperSmall]}
-                    source={require('../assets/flat_select.png')}
-                    resizeMode={'contain'}
-                    />
+                <TouchableOpacity  style={[styles.container]} onPress={this._onPickerToggle}>
+                  <SearchIcon style={styles.smallSearchIcon} />
                 </TouchableOpacity>
-              </View> : null}
+              </View>
               <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
                 <Image
                 style={[styles.scCopyImage]}
@@ -589,9 +588,6 @@ const styles = StyleSheet.create({
   endRow:{
     alignItems:'flex-start'
   },
-  centerRow:{
-
-  },
   horizontalContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -652,15 +648,6 @@ const styles = StyleSheet.create({
     lineHeight: 25,
     height: 30,
   },
-  playlistButtonView:{
-    position:'absolute',
-    bottom:0,
-    zIndex :10
-  },
-  playlistButton:{
-    paddingLeft:15,
-    paddingBottom:15
-  },
   scCopyContainer :{
     position:'absolute',
     bottom:10,
@@ -671,13 +658,21 @@ const styles = StyleSheet.create({
     width:45,
     height:45
   },
+  smallSearchIcon: {
+    top:5,
+    width:25,
+    height:25,
+  },
+  playlistButton:{
+    top:5
+  },
   trackname : {
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
     color: mainFgColor,
     backgroundColor: 'transparent',
-    lineHeight: 32,
+    lineHeight: 35,
     height: 40,
     paddingLeft:20,
     paddingRight:20

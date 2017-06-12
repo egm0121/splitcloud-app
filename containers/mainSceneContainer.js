@@ -71,6 +71,9 @@ class MainSceneContainer extends Component {
   purgeStore(){
     persistor.purge();
   }
+  isSplitMode(){
+    return this.props.mode == playbackModeTypes.SPLIT;
+  }
   renderPlayer(player){
     return <AudioPlayerContainer
        side={player.side}
@@ -122,11 +125,11 @@ class MainSceneContainer extends Component {
         <View style={[styles.player,playerLStyle]}>
           {this.renderPlayer(this.state.players[0])}
         </View>
-        {this.getFullScreenPlayer() ? null : this.renderPlaybackModeTabBar()}
+        {this.isSplitMode() ? <View style={styles.separator}></View> : null}
         <View style={[styles.player,playerRStyle]}>
           {this.renderPlayer(this.state.players[1])}
         </View>
-        {this.getFullScreenPlayer() ? this.renderPlaybackModeTabBar() :null}
+        {this.renderPlaybackModeTabBar()}
       </View>
 
     );
@@ -161,11 +164,16 @@ const styles = StyleSheet.create({
     flex:0,
     height:0
   },
+  separator:{
+    height:1,
+    backgroundColor: THEME.contentBorderColor
+  },
   panToggleContainer:{
     height:40,
-    borderWidth: 1,
+    borderWidth: 2,
     borderLeftWidth:0,
     borderRightWidth:0,
+    borderBottomWidth:0,
     borderColor: THEME.contentBorderColor
   },
   horizontalContainer:{
