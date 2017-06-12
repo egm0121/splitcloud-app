@@ -11,6 +11,7 @@ import {
 import { Provider } from 'react-redux';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NotificationContainer from './containers/notificationContainer';
+
 import { store } from './redux/store/configure';
 
 class SplitCloudApp extends Component {

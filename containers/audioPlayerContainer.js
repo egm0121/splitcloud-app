@@ -75,11 +75,10 @@ class AudioPlayerContainer extends Component {
       prevRemoteStatus : false,
       playbackIndex : 0
     };
-    this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100})
+    this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100});
     this.playerAObj.setPan(this.state.pan);
     this.playerAObj.setVolume(this._linearToLogVolume(this.state.volume));
     this._onProgressTick();
-    console.log('platform ', Platform)
     this.playerAObj.on('stateChange',(evt) => {
       const actionName = evt.status.toLowerCase(),
         hookName = '_onPlayer'+capitalize(actionName);
@@ -105,7 +104,6 @@ class AudioPlayerContainer extends Component {
   }
   _onProgressTick(){
     this._updateComponentPlayerState();
-
     this.playbackProgressRef = setTimeout(
       this._onProgressTick,PROGRESS_TICK_INTERVAL
     );
@@ -289,12 +287,10 @@ class AudioPlayerContainer extends Component {
   _onPlayerMuteChange(muted){
     if(muted){
       this.playerAObj.setVolume(this._linearToLogVolume(0));
-      this.playerAObj.isPlaying((isPlaying) => {
+      this.playerAObj.isPlaying((err,isPlaying) => {
         if(isPlaying) this.playerAObj.pause();
       });
-      this.setState({muted:true});
     } else {
-      this.setState({muted:false});
       this.playerAObj.setVolume(this._linearToLogVolume(this.state.userVolume));
     }
   }
