@@ -10,6 +10,7 @@
     "es2015-event-emitter": "0.0.3",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
+    "log-suppress": "^1.0.3",
     "react": "15.2.1",
     "react-native": "0.30.0",
     "react-native-audio-streaming": "git+https://git@github.com/egm0121/react-native-audio-streaming.git#feature/multiple-instances",
