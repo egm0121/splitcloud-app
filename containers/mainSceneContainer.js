@@ -36,14 +36,7 @@ class MainSceneContainer extends Component {
     this.onLoginStart = this.onLoginStart.bind(this);
     this.purgeStore = this.purgeStore.bind(this);
     this.renderPlaybackModeTabBar = this.renderPlaybackModeTabBar.bind(this);
-    this.state = {
-      mode : 'S',
-      players : [{
-        side:'L'
-      },{
-        side:'R'
-      }]
-    };
+    
     this.modeButtons = [
       {mode:'L',label:'LEFT'},
       {mode:'S',label:'SPLIT'},
@@ -122,11 +115,11 @@ class MainSceneContainer extends Component {
           }
         </View>
         <View style={[styles.player,playerLStyle]}>
-          {this.renderPlayer(this.state.players[0])}
+          {this.renderPlayer(this.props.players[0])}
         </View>
         {this.isSplitMode() ? <View style={styles.separator}></View> : null}
         <View style={[styles.player,playerRStyle]}>
-          {this.renderPlayer(this.state.players[1])}
+          {this.renderPlayer(this.props.players[1])}
         </View>
         {this.renderPlaybackModeTabBar()}
       </View>
@@ -198,7 +191,6 @@ const styles = StyleSheet.create({
   }
 });
 let mapStateToProps  =  (state) => {
-  /* @TODO: players list should be rendered according to redux state */
   return { mode : state.mode , players: state.players };
 };
 let mapDispatchToProps = (dispatch) => {

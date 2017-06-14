@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-
+/* global __DEV__ */
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -17,6 +17,11 @@ import {
   Hits as GAHits
 } from 'react-native-google-analytics';
 import { store } from './redux/store/configure';
+
+if(!__DEV__){
+  /* avoid any logging to prevent performance drops in prod mode */
+  console.log = () => {};
+}
 
 class SplitCloudApp extends Component {
   constructor(props){
