@@ -11,16 +11,19 @@ const actionTypeWhitelist = [
   actionTypes.DECREMENT_CURR_PLAY_INDEX,
   actionTypes.CHANGE_CURR_PLAY_INDEX
 ];
+const getCategoryFromAction = (action) => {
+  return action.side ? 'side-'+action.side : 'app-wide';
+};
 const AnalyticsMiddleware = store => {
   return next => {
     return action => {
       if( actionTypeWhitelist.indexOf(action.type) > -1 ){
         console.info('Analytics Midd: action ->', action);
         AnalyticsService.sendEvent({
-          category :'redux-action',
+          category :getCategoryFromAction(action),
           action : action.type,
-          label :'testing-redux-events',
-          value : action.type
+          label :'redux-action',
+          value : 1
         });
       }
       let result = next(action);
