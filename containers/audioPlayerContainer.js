@@ -435,72 +435,74 @@ class AudioPlayerContainer extends Component {
                 require('../assets/alt_artwork.png')
                }
               resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
-              <View style={tracknameStyles}>
-                <TouchableOpacity  onPress={this._onPickerToggle}>
-                  <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
-                   { trackLabelPlaceholder }
-                  </Text>
-                </TouchableOpacity>
-                {this.renderInFullscreen(<TouchableOpacity onPress={this._openScUploaderLink} >
-                  <Text style={[styles.trackDescription]}>
-                    { trackDescription }
-                  </Text>
-                </TouchableOpacity>)}
-              </View>
-              {this.renderInFullscreen(this.renderForegroundArtCover())}
-              <View style={[styles.horizontalContainer,styles.playbackHorizontal]} >
-                <Text style={[styles.playbackTime,textShadowStyle,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
-                <View style={styles.playbackTrackContainer}>
-                  <MultiSlider
-                    values={this.state.sliderOneValue}
-                    min={0}
-                    max={100}
-                    onValuesChange={this._onMultiSliderValuesChange}
-                    onValuesChangeFinish={this._onSeekToTime}
-                    onValuesChangeStart={this._onSeekToTimeStart}
-                    sliderLength={progressTrackLength}
-                    trackStyle={{ borderRadius: 12, height: 3 }}
-                    selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
-                    unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
-                    markerStyle={markerStyle} />
+              <View style={styles.backgroundOverlay}>
+                <View style={tracknameStyles}>
+                  <TouchableOpacity  onPress={this._onPickerToggle}>
+                    <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                     { trackLabelPlaceholder }
+                    </Text>
+                  </TouchableOpacity>
+                  {this.renderInFullscreen(<TouchableOpacity onPress={this._openScUploaderLink} >
+                    <Text style={[styles.trackDescription]}>
+                      { trackDescription }
+                    </Text>
+                  </TouchableOpacity>)}
                 </View>
-                <Text style={[styles.playbackTime,textShadowStyle]}>{this._formatAsMinutes(this.state.duration)}</Text>
-              </View>
-              <View style={styles.horizontalContainer}>
-                <TouchableOpacity style={[styles.container,styles.playlistButton]} onPress={this._toggleCurrentPlaylist}>
-                  <Image style={[styles.playerIcon,styles.playerIconSuperSmall]} source={require('../assets/flat_select.png')} resizeMode={'contain'}/>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
-                  <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.container} onPress={this._onPlayTogglePress}>
+                {this.renderInFullscreen(this.renderForegroundArtCover())}
+                <View style={[styles.horizontalContainer]} >
+                  <Text style={[styles.playbackTime,textShadowStyle,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
+                  <View style={styles.playbackTrackContainer}>
+                    <MultiSlider
+                      values={this.state.sliderOneValue}
+                      min={0}
+                      max={100}
+                      onValuesChange={this._onMultiSliderValuesChange}
+                      onValuesChangeFinish={this._onSeekToTime}
+                      onValuesChangeStart={this._onSeekToTimeStart}
+                      sliderLength={progressTrackLength}
+                      trackStyle={{ borderRadius: 12, height: 3 }}
+                      selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
+                      unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
+                      markerStyle={markerStyle} />
+                  </View>
+                  <Text style={[styles.playbackTime,textShadowStyle]}>{this._formatAsMinutes(this.state.duration)}</Text>
+                </View>
+                <View style={styles.horizontalContainer}>
+                  <TouchableOpacity style={[styles.container,styles.playlistButton]} onPress={this._toggleCurrentPlaylist}>
+                    <Image style={[styles.playerIcon,styles.playerIconSuperSmall]} source={require('../assets/flat_select.png')} resizeMode={'contain'}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
+                    <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.container} onPress={this._onPlayTogglePress}>
+                    <Image
+                       style={[styles.playerIcon,styles.playerIconSmaller]}
+                       source={playbackSource}
+                       resizeMode={'contain'}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.container,styles.endRow]} onPress={this._goToNextTrack}>
+                    <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity  style={[styles.container]} onPress={this._onPickerToggle}>
+                    <SearchIcon style={styles.smallSearchIcon} />
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.horizontalContainer}>
+                  <View style={styles.volumeSlider}>
+                    <Slider step={0.05}
+                      minimumTrackTintColor={sliderTrackStyles.min}
+                      maximumTrackTintColor={sliderTrackStyles.max}
+                      onValueChange={this._onVolumeValueChange}
+                      value={this.state.initialSliderValue} />
+                  </View>
+                </View>
+                <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
                   <Image
-                     style={[styles.playerIcon,styles.playerIconSmaller]}
-                     source={playbackSource}
-                     resizeMode={'contain'}/>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.container,styles.endRow]} onPress={this._goToNextTrack}>
-                  <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
-                </TouchableOpacity>
-                <TouchableOpacity  style={[styles.container]} onPress={this._onPickerToggle}>
-                  <SearchIcon style={styles.smallSearchIcon} />
+                  style={[styles.scCopyImage]}
+                  source={require('../assets/powered_by_large_white.png')}
+                  resizeMode={'contain'} />
                 </TouchableOpacity>
               </View>
-              <View style={styles.horizontalContainer}>
-                <View style={styles.volumeSlider}>
-                  <Slider step={0.05}
-                    minimumTrackTintColor={sliderTrackStyles.min}
-                    maximumTrackTintColor={sliderTrackStyles.max}
-                    onValueChange={this._onVolumeValueChange}
-                    value={this.state.initialSliderValue} />
-                </View>
-              </View>
-              <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
-                <Image
-                style={[styles.scCopyImage]}
-                source={require('../assets/powered_by_large_white.png')}
-                resizeMode={'contain'} />
-              </TouchableOpacity>
             </Image>
          </View>
       </View>
@@ -581,14 +583,18 @@ const styles = StyleSheet.create({
   endRow:{
     alignItems:'flex-start'
   },
+  backgroundOverlay : {
+    flex:1,
+    backgroundColor:THEME.textOverlayBgColor
+  },
   horizontalContainer: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor:THEME.textOverlayBgColor
   },
-  playbackHorizontal : {
-    borderTopWidth:1,
-    borderColor: 'red'
+  tracknameContainer:{
+    flex:2,
+    flexDirection:'column',
+    justifyContent:'center',
   },
   progressSlider : {
     flex:1,
@@ -630,12 +636,6 @@ const styles = StyleSheet.create({
   playerIconSuperSmall:{
     width: 30,
     height: 30
-  },
-  tracknameContainer:{
-    flex:2,
-    flexDirection:'column',
-    justifyContent:'center',
-    backgroundColor:THEME.textOverlayBgColor
   },
   tracknameFullscreen:{
     flex:0,
