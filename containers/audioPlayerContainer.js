@@ -435,11 +435,8 @@ class AudioPlayerContainer extends Component {
                 require('../assets/alt_artwork.png')
                }
               resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
-
               <View style={tracknameStyles}>
-
                 <TouchableOpacity  onPress={this._onPickerToggle}>
-
                   <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                    { trackLabelPlaceholder }
                   </Text>
@@ -451,7 +448,7 @@ class AudioPlayerContainer extends Component {
                 </TouchableOpacity>)}
               </View>
               {this.renderInFullscreen(this.renderForegroundArtCover())}
-              <View style={styles.horizontalContainer} >
+              <View style={[styles.horizontalContainer,styles.playbackHorizontal]} >
                 <Text style={[styles.playbackTime,textShadowStyle,styles.playbackTimeInitial]}>{this._formatAsMinutes(this.state.elapsed)}</Text>
                 <View style={styles.playbackTrackContainer}>
                   <MultiSlider
@@ -489,12 +486,6 @@ class AudioPlayerContainer extends Component {
                   <SearchIcon style={styles.smallSearchIcon} />
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
-                <Image
-                style={[styles.scCopyImage]}
-                source={require('../assets/powered_by_large_white.png')}
-                resizeMode={'contain'} />
-              </TouchableOpacity>
               <View style={styles.horizontalContainer}>
                 <View style={styles.volumeSlider}>
                   <Slider step={0.05}
@@ -504,9 +495,14 @@ class AudioPlayerContainer extends Component {
                     value={this.state.initialSliderValue} />
                 </View>
               </View>
+              <TouchableOpacity onPress={this._openScUploaderLink} style={[styles.scCopyContainer]}>
+                <Image
+                style={[styles.scCopyImage]}
+                source={require('../assets/powered_by_large_white.png')}
+                resizeMode={'contain'} />
+              </TouchableOpacity>
             </Image>
-        </View>
-
+         </View>
       </View>
     );
   }
@@ -589,6 +585,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     backgroundColor:THEME.textOverlayBgColor
+  },
+  playbackHorizontal : {
+    borderTopWidth:1,
+    borderColor: 'red'
   },
   progressSlider : {
     flex:1,

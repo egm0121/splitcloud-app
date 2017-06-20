@@ -18,7 +18,6 @@ const AnalyticsMiddleware = store => {
   return next => {
     return action => {
       if( actionTypeWhitelist.indexOf(action.type) > -1 ){
-        console.info('Analytics Midd: action ->', action);
         AnalyticsService.sendEvent({
           category :getCategoryFromAction(action),
           action : action.type,
