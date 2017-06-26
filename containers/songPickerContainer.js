@@ -79,7 +79,6 @@ const mapStateToProps = (state,props) => {
 }
 const mapDispatchToProps = (dispatch,props) =>({
   onLoadingStateChange : (isLoading) => {
-    console.log('onLoadingStateChange:',isLoading);
     return  dispatch(setLoading(props.side,isLoading))
   },
   onSearchTermsChange: (terms) => dispatch(updateSearchTerms(props.side,terms))
