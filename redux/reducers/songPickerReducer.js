@@ -10,6 +10,13 @@ export function songPickerReducer(state = initialState.songPickers, currAction){
       }
       return {...picker};
     })
+  case actionTypes.SET_PICKER_LOADING_STATE:
+    return state.map((picker) => {
+      if(picker.side == currAction.side){
+        return {...picker, isLoading : currAction.isLoading};
+      }
+      return {...picker};
+    })
   default:
     return state;
   }
