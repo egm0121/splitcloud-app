@@ -11,11 +11,18 @@ function singlePlayerReducer(state,currAction){
     return state;
   }
 }
-export function songPickerReducer(state= initialState.songPickers, currAction){
-  return state.map((picker) => {
-    if(picker.side === currAction.side){
-      return singlePlayerReducer(picker,currAction);
-    }
-    return picker;
-  });
+export function songPickerReducer(state = initialState.songPickers, currAction){
+  switch (currAction.type){
+  case actionTypes.UPDATE_PICKER_SEARCH_TERMS:
+  case actionTypes.SET_PICKER_LOADING_STATE:
+    return state.map((picker) => {
+      if(picker.side === currAction.side){
+        return singlePlayerReducer(picker,currAction);
+      }
+      return {...picker};
+    });
+  default:
+    return state;
+  }
+
 }

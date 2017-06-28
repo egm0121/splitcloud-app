@@ -23,11 +23,7 @@ const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {
   constructor(props){
     super(props);
-    this.onSearchTermsChange = this.onSearchTermsChange.bind(this);
     console.log('SongPicekrContainer mounted with picker props',this.props.picker);
-  }
-  onSearchTermsChange(terms){
-    this.props.onSearchTermsChange(terms);
   }
   render() {
 
@@ -39,7 +35,7 @@ class SongPickerContainer extends Component {
             scResultLimit={SC_RESULT_LIMIT}
             showStreamableOnly={true}
             debounceWait={DEBOUNCE_MILLISEC}
-            onSearchTermsChange={this.onSearchTermsChange}
+            onSearchTermsChange={this.props.onSearchTermsChange}
             onLoadingStateChange={this.props.onLoadingStateChange}
             currentPlayingTrack={
               this.props.playlist.tracks[this.props.playlist.currentTrackIndex]
@@ -78,9 +74,7 @@ const mapStateToProps = (state,props) => {
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
-  onLoadingStateChange : (isLoading) => {
-    return  dispatch(setLoading(props.side,isLoading))
-  },
+  onLoadingStateChange : (isLoading) => dispatch(setLoading(props.side,isLoading)),
   onSearchTermsChange: (terms) => dispatch(updateSearchTerms(props.side,terms))
 });
 const ConnectedSongPickerContainer = connect(mapStateToProps,mapDispatchToProps)(SongPickerContainer);

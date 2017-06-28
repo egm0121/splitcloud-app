@@ -61,17 +61,28 @@ class SongPicker extends Component {
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
-      this.prevQueryCancelToken.cancel('Old Query, invalidate request');
+      this.prevQueryCancelToken.cancel({aborted:true});
     }
   }
   performSoundcloudApiSearch(term){
     this._invalidatePrevRequest();
+    console.log('set loading true')
     this.props.onLoadingStateChange(true);
     this.prevQueryCancelToken = axios.CancelToken.source();
     let requestPromise = axios.get(
       `http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
       {cancelToken: this.prevQueryCancelToken.token});
-    requestPromise.catch(() => Promise.resolve(true)).then(() => this.props.onLoadingStateChange(false));
+    requestPromise.catch((err) => Promise.resolve(err)).then(
+      (val) => {
+        console.log('resolved with:',val);
+        if(axios.isCancel(val)){
+          console.log('abort load change');
+          return false;
+        }
+        console.log('set loading false');
+        this.props.onLoadingStateChange(false);
+      }
+    );
     return requestPromise.then((resp) => resp.data);
   }
   updateResultList(resp){
