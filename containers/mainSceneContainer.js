@@ -13,7 +13,8 @@ import {
   TouchableWithoutFeedback,
   TouchableHighlight,
   LayoutAnimation,
-  Linking
+  Linking,
+  Image
 } from 'react-native';
 import config from '../helpers/config';
 import THEME from '../styles/variables';
@@ -35,14 +36,7 @@ class MainSceneContainer extends Component {
     this.onLoginStart = this.onLoginStart.bind(this);
     this.purgeStore = this.purgeStore.bind(this);
     this.renderPlaybackModeTabBar = this.renderPlaybackModeTabBar.bind(this);
-    this.state = {
-      mode : 'S',
-      players : [{
-        side:'L'
-      },{
-        side:'R'
-      }]
-    };
+    
     this.modeButtons = [
       {mode:'L',label:'LEFT'},
       {mode:'S',label:'SPLIT'},
@@ -70,6 +64,9 @@ class MainSceneContainer extends Component {
   }
   purgeStore(){
     persistor.purge();
+  }
+  isSplitMode(){
+    return this.props.mode == playbackModeTypes.SPLIT;
   }
   renderPlayer(player){
     return <AudioPlayerContainer
@@ -107,9 +104,7 @@ class MainSceneContainer extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>
-             SplitCloud
-          </Text>
+          <Image style={styles.appLogo} source={require('../assets/splitcloud.logo.png')} resizeMode={'contain'}/>
           {/*<TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
@@ -120,13 +115,13 @@ class MainSceneContainer extends Component {
           }
         </View>
         <View style={[styles.player,playerLStyle]}>
-          {this.renderPlayer(this.state.players[0])}
+          {this.renderPlayer(this.props.players[0])}
         </View>
-        {this.getFullScreenPlayer() ? null : this.renderPlaybackModeTabBar()}
+        {this.isSplitMode() ? <View style={styles.separator}></View> : null}
         <View style={[styles.player,playerRStyle]}>
-          {this.renderPlayer(this.state.players[1])}
+          {this.renderPlayer(this.props.players[1])}
         </View>
-        {this.getFullScreenPlayer() ? this.renderPlaybackModeTabBar() :null}
+        {this.renderPlaybackModeTabBar()}
       </View>
 
     );
@@ -142,6 +137,12 @@ const styles = StyleSheet.create({
   header :{
     borderBottomWidth: 2,
     borderBottomColor: THEME.contentBorderColor
+  },
+  appLogo:{
+    alignSelf:'center',
+    marginBottom:8,
+    marginTop:17,
+    height:25
   },
   headerText: {
     fontSize: 25,
@@ -161,11 +162,16 @@ const styles = StyleSheet.create({
     flex:0,
     height:0
   },
+  separator:{
+    height:1,
+    backgroundColor: THEME.contentBorderColor
+  },
   panToggleContainer:{
     height:40,
-    borderWidth: 1,
+    borderWidth: 2,
     borderLeftWidth:0,
     borderRightWidth:0,
+    borderBottomWidth:0,
     borderColor: THEME.contentBorderColor
   },
   horizontalContainer:{
@@ -185,7 +191,6 @@ const styles = StyleSheet.create({
   }
 });
 let mapStateToProps  =  (state) => {
-  /* @TODO: players list should be rendered according to redux state */
   return { mode : state.mode , players: state.players };
 };
 let mapDispatchToProps = (dispatch) => {

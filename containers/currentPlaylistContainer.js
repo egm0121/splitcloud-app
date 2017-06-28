@@ -24,12 +24,9 @@ import THEME from '../styles/variables';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
-    console.log('CurrentPlaylistContainer init props',this.props);
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
   }
-  componentWillReceiveProps(newProps){
-    console.log('currentPlaylistContainer received props',newProps);
-  }
+  componentWillReceiveProps(newProps){}
   _markAsCurrentTrack(item){
     const currTrack =
       this.props.playlist.tracks[this.props.playlist.currentTrackIndex] || {};

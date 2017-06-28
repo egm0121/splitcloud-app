@@ -14,7 +14,8 @@ function currentPlaylistReducer(state , currAction){
     }
     return {
       ...state,
-      tracks : [...state.tracks, currAction.track]
+      tracks : [currAction.track, ...state.tracks],
+      currentTrackIndex : state.tracks.length ? state.currentTrackIndex + 1 : 0
     };
   case actionTypes.SET_PLAYLIST:
     return {

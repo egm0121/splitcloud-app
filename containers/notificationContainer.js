@@ -6,11 +6,11 @@ import React, { PropTypes, Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  View
+  View,
+  LayoutAnimation
 } from 'react-native';
 import config from '../helpers/config';
 import { connect } from 'react-redux';
-
 import NotificationOverlay from '../components/notificationOverlay';
 import {clearNotificationById} from '../redux/actions/notificationActions';
 import THEME from '../styles/variables';
@@ -22,13 +22,18 @@ class NotificationContainer extends Component {
 
   }
   componentWillReceiveProps(newProps){
+    if(this.props.notifications.list !==  newProps.notifications.list){
+      LayoutAnimation.configureNext({
+        ...LayoutAnimation.Presets.linear,
+        duration:200
+      });
+    }
     console.log('NotificationContainer received props',newProps);
   }
-
   render() {
     let isForeground = this.props.notifications.list.length > 0;
     return (
-      <View style={[styles.container,{zIndex:isForeground ? 1:-1}]}>
+      <View style={[styles.container,{height:isForeground ? null : 0}]}>
         {this.props.notifications.list.map((notification) => {
           return <NotificationOverlay
             message={notification.message}
@@ -68,10 +73,11 @@ const mapDispatchToProps = (dispatch,props) => ({
     console.log('should dispatch an action to remove the notification from the state');
     dispatch(clearNotificationById(notificationId));
   }
-
 });
-NotificationContainer = connect(mapStateToProps,mapDispatchToProps)(NotificationContainer);
+const ConnectedNotificationContainer =
+  connect(mapStateToProps,mapDispatchToProps)(NotificationContainer);
 
-AppRegistry.registerComponent('NotificationContainer', () => NotificationContainer);
+AppRegistry.registerComponent('NotificationContainer',
+  () => ConnectedNotificationContainer);
 
-export default NotificationContainer;
+export default ConnectedNotificationContainer;

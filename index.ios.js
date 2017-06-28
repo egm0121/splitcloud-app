@@ -1,7 +1,7 @@
 /**
  * @flow
  */
-
+/* global __DEV__ */
 import React, { Component } from 'react';
 import {
   AppRegistry,
@@ -11,7 +11,15 @@ import {
 import { Provider } from 'react-redux';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NotificationContainer from './containers/notificationContainer';
+import AnalyticsService from './modules/analyticsService';
 import { store } from './redux/store/configure';
+
+AnalyticsService.initialize('UA-100899493-2','SplitcloudApp');
+
+if(!__DEV__){
+  /* avoid any logging to prevent performance drops in prod mode */
+  console.log = () => {};
+}
 
 class SplitCloudApp extends Component {
   constructor(props){
@@ -28,8 +36,11 @@ class SplitCloudApp extends Component {
     return (
         <Provider store={store} >
             <Navigator
-                initialRoute={{ title: 'Initial screen', index: 0, component: MainSceneContainer }}
+                initialRoute={{ title: 'MainSceneContainer', index: 0, component: MainSceneContainer }}
                 renderScene={(route, navigator) => {
+
+                  AnalyticsService.sendScreenView(route.title || 'Component');
+
                   let Component = route.component;
                   return <View style={{flex: 1}}>
                           <Component title={route.title} navigator={navigator} {...route.passProps}/>
