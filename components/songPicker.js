@@ -9,6 +9,7 @@ import {
   Text,
   TextInput,
   ListView,
+  ActivityIndicator,
   View,
   TouchableOpacity
 } from 'react-native';
@@ -60,16 +61,29 @@ class SongPicker extends Component {
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
-      this.prevQueryCancelToken.cancel('Old Query, invalidate request');
+      this.prevQueryCancelToken.cancel({aborted:true});
     }
   }
   performSoundcloudApiSearch(term){
     this._invalidatePrevRequest();
+    console.log('set loading true')
+    this.props.onLoadingStateChange(true);
     this.prevQueryCancelToken = axios.CancelToken.source();
-    return axios.get(
+    let requestPromise = axios.get(
       `http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
-      {cancelToken: this.prevQueryCancelToken.token})
-    .then((resp) => resp.data);
+      {cancelToken: this.prevQueryCancelToken.token});
+    requestPromise.catch((err) => Promise.resolve(err)).then(
+      (val) => {
+        console.log('resolved with:',val);
+        if(axios.isCancel(val)){
+          console.log('abort load change');
+          return false;
+        }
+        console.log('set loading false');
+        this.props.onLoadingStateChange(false);
+      }
+    );
+    return requestPromise.then((resp) => resp.data);
   }
   updateResultList(resp){
     // in case of empty results or no search terms
@@ -110,6 +124,7 @@ class SongPicker extends Component {
             <Text style={styles.clearSearchActionText}>✕</Text>
           </TouchableOpacity>
         </View>
+        <ActivityIndicator animating={this.props.isLoading} style={[styles.loaderStyle]} />
         <View style={styles.searchInputView}>
           <TextInput
             style={styles.searchInput}
@@ -138,9 +153,9 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     height: 40,
     color: THEME.mainHighlightColor,
-    paddingHorizontal: 40,
-    lineHeight:20,
-
+    paddingLeft: 40,
+    paddingRight: 70,
+    lineHeight:20
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
@@ -158,6 +173,12 @@ const styles = StyleSheet.create({
     height:30,
     width:30,
     backgroundColor:THEME.contentBorderColor
+  },
+  loaderStyle:{
+    position:'absolute',
+    right:55,
+    top:27,
+    zIndex:10
   },
   clearSearchActionText:{
     color: THEME.mainHighlightColor,

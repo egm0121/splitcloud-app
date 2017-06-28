@@ -8,11 +8,13 @@ const initialState = {
   songPickers :[{
     side : playbackModeTypes.LEFT,
     searchTerms : '',
+    isLoading: false,
     recentQueryList : []
   },
   {
     side : playbackModeTypes.RIGHT,
     searchTerms : '',
+    isLoading: false,
     recentQueryList : []
   }],
   players : [{

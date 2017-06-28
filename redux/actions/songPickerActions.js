@@ -7,3 +7,11 @@ export function updateSearchTerms(side, terms){
     side
   };
 }
+
+export function setLoading(side, isLoading){
+  return {
+    type : actionTypes.SET_PICKER_LOADING_STATE,
+    isLoading,
+    side
+  };
+}

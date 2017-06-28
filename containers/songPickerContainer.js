@@ -16,17 +16,14 @@ import config from '../helpers/config';
 import { connect } from 'react-redux';
 import SongPicker from '../components/songPicker';
 import BackButton from '../components/backButton';
-import {updateSearchTerms} from '../redux/actions/songPickerActions';
+import { updateSearchTerms, setLoading } from '../redux/actions/songPickerActions';
 const {SC_CLIENT_ID} = config;
 const DEBOUNCE_MILLISEC = 100;
 const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {
   constructor(props){
     super(props);
-    this.onSearchTermsChange = this.onSearchTermsChange.bind(this);
-  }
-  onSearchTermsChange(terms){
-    this.props.dispatch(updateSearchTerms(this.props.side,terms));
+    console.log('SongPicekrContainer mounted with picker props',this.props.picker);
   }
   render() {
 
@@ -38,11 +35,13 @@ class SongPickerContainer extends Component {
             scResultLimit={SC_RESULT_LIMIT}
             showStreamableOnly={true}
             debounceWait={DEBOUNCE_MILLISEC}
-            onSearchTermsChange={this.onSearchTermsChange}
+            onSearchTermsChange={this.props.onSearchTermsChange}
+            onLoadingStateChange={this.props.onLoadingStateChange}
             currentPlayingTrack={
               this.props.playlist.tracks[this.props.playlist.currentTrackIndex]
             }
-            searchTerms = {this.props.picker.searchTerms}
+            searchTerms={this.props.picker.searchTerms}
+            isLoading={this.props.picker.isLoading}
             {...this.props}
             />
       </View>
@@ -74,7 +73,11 @@ const mapStateToProps = (state,props) => {
     playlist : playlistState
   };
 }
-const ConnectedSongPickerContainer = connect(mapStateToProps)(SongPickerContainer);
+const mapDispatchToProps = (dispatch,props) =>({
+  onLoadingStateChange : (isLoading) => dispatch(setLoading(props.side,isLoading)),
+  onSearchTermsChange: (terms) => dispatch(updateSearchTerms(props.side,terms))
+});
+const ConnectedSongPickerContainer = connect(mapStateToProps,mapDispatchToProps)(SongPickerContainer);
 
 AppRegistry.registerComponent('SongPickerContainer', () => ConnectedSongPickerContainer);
 
