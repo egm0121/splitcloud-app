@@ -26,7 +26,8 @@ BackButton.propTypes ={
 const styles = StyleSheet.create({
   closeButtonContainer :{
     position:'absolute',
-    left:10,
+    left:0,
+    paddingLeft:10,
     top:20
   },
   closeButtonIcon:{

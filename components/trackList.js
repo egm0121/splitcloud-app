@@ -82,17 +82,15 @@ class TrackList extends Component {
       <View style={styles.row}>
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
             <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >{rowData.label} </Text>
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{rowData.username} </Text>
+            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{this.props.onTrackDescRender(rowData)} </Text>
           </TouchableOpacity>
-        <View style={styles.rowAction}>
-            {!rowData.isEmpty && this.props.onTrackActionRender(rowData) ?
-              <TouchableOpacity onPress={this._onSongAction.bind(this,rowData)}>
-                <Text style={styles.rowActionText}>
-                  {this.props.onTrackActionRender(rowData)}
-                </Text>
-              </TouchableOpacity>: null
-              }
-        </View>
+          {!rowData.isEmpty ?
+            <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
+              <Text style={[styles.rowActionText].concat((this.props.trackActionStyles || [] ))}>
+                {this.props.onTrackActionRender(rowData)}
+              </Text>
+            </TouchableOpacity>: null
+            }
       </View>
     );
   }
@@ -138,7 +136,7 @@ const styles = StyleSheet.create({
     marginBottom:5,
     marginTop:5,
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 0
   },
   rowLabel : {
     flex: 10,
@@ -177,13 +175,13 @@ const styles = StyleSheet.create({
   },
   rowAction : {
     flex: 2,
-    borderColor: THEME.listBorderColor,
-    borderBottomWidth:0
+    paddingRight:20
   },
   rowActionText :{
     color: THEME.mainColor,
     opacity:0.8,
-    fontSize: 35,
+    fontSize: 40,
+    fontWeight:'200',
     lineHeight:37,
     textAlign : 'right'
   },
@@ -195,7 +193,7 @@ const styles = StyleSheet.create({
   closeAction : {
     flex: 1,
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: '300',
     height: 40,
     padding: 10
   }

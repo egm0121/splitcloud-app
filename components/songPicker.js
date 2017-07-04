@@ -17,6 +17,7 @@ import throttle from 'lodash.throttle';
 import axios from 'axios';
 import THEME from '../styles/variables';
 import TrackList from '../components/trackList';
+import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
   constructor(props){
     super(props);
@@ -25,6 +26,7 @@ class SongPicker extends Component {
     this.updateResultList = this.updateResultList.bind(this);
     this._onClearSearch = this._onClearSearch.bind(this);
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
+    this.onTrackDescRender = this.onTrackDescRender.bind(this);
 
     this.SC_CLIENT_ID = null;
     this.state = {
@@ -97,7 +99,8 @@ class SongPicker extends Component {
         username: t.user.username,
         streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
         artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url
+        scUploaderLink : t.user.permalink_url,
+        duration: t.duration
       })
     );
     this.setState({ pureList : tracks });
@@ -111,6 +114,11 @@ class SongPicker extends Component {
       }
     }
     return item;
+  }
+  onTrackDescRender(rowData){
+    return rowData.duration ?
+      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
+      rowData.username ;
   }
   _onClearSearch(){
     this._onSearchChange('');
@@ -135,6 +143,7 @@ class SongPicker extends Component {
         </View>
         <TrackList
           tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
+          onTrackDescRender={this.onTrackDescRender}
           onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
           highlightProp={'isCurrentTrack'}
           onTrackAction={this.props.onSongQueued}
