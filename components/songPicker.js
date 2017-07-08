@@ -57,6 +57,7 @@ class SongPicker extends Component {
       this._onSearchTermsChange(text);
     } else {
       this._invalidatePrevRequest();
+      this.props.onLoadingStateChange(false);
       this.updateResultList(false);
     }
     this.setState({searchInput:text});
