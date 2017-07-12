@@ -19,12 +19,14 @@ import TrackList from '../components/trackList';
 import BackButton from  '../components/backButton';
 import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
+import {formatDuration} from '../helpers/formatters';
 import THEME from '../styles/variables';
 
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
+    this.onTrackDescRender = this.onTrackDescRender.bind(this);
   }
   componentWillReceiveProps(newProps){}
   _markAsCurrentTrack(item){
@@ -37,6 +39,11 @@ class CurrentPlaylistContainer extends Component {
       }
     }
     return item;
+  }
+  onTrackDescRender(rowData){
+    return rowData.duration ?
+      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
+      rowData.username ;
   }
   render() {
     const playlistTracksData =
@@ -53,7 +60,9 @@ class CurrentPlaylistContainer extends Component {
         <TrackList
             tracksData={playlistTracksData}
             onTrackAction={this.props.onRemoveTrack}
-            onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '✕'}
+            onTrackDescRender={this.onTrackDescRender}
+            onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '×'}
+            trackActionStyles={[{fontSize:45}]}
             highlightProp={'isCurrentTrack'}
             {...this.props}
             />
@@ -76,7 +85,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle : {
     color: THEME.mainHighlightColor,
-    fontSize: 17
+    fontSize: 16,
+    fontWeight:'600'
   },
   clearButton: {
     position:'absolute',

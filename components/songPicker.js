@@ -15,8 +15,10 @@ import {
 } from 'react-native';
 import throttle from 'lodash.throttle';
 import axios from 'axios';
+import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
 import TrackList from '../components/trackList';
+import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
   constructor(props){
     super(props);
@@ -25,15 +27,17 @@ class SongPicker extends Component {
     this.updateResultList = this.updateResultList.bind(this);
     this._onClearSearch = this._onClearSearch.bind(this);
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
+    this.onTrackDescRender = this.onTrackDescRender.bind(this);
+    this.isSearchEmpty = this.isSearchEmpty.bind(this);
 
-    this.SC_CLIENT_ID = null;
     this.state = {
       searchInput: this.props.searchTerms || '',
       pureList : []
     };
   }
   componentWillMount(){
-    this.SC_CLIENT_ID = this.props.scClientId;
+    this.scApi = new SoundCloudApi({clientId :this.props.scClientId});
+    this.SC_CLIENT_ID = this.props.scClientId ;
     this.scResultLimit = this.props.scResultLimit;
     this.showStreamableOnly = this.props.showStreamableOnly;
     this._onSearchTermsChange = throttle(
@@ -46,7 +50,7 @@ class SongPicker extends Component {
 
   _onSearchTermsChange(text){
     this.props.onSearchTermsChange(text);
-    this.performSoundcloudApiSearch(text).then(this.updateResultList,(err) => {
+    this.performScPublicSearch(text).then(this.updateResultList,(err) => {
       console.log('ignore as old term request',err)
     });
   }
@@ -55,7 +59,12 @@ class SongPicker extends Component {
       this._onSearchTermsChange(text);
     } else {
       this._invalidatePrevRequest();
+      this.props.onLoadingStateChange(true);
       this.updateResultList(false);
+      this.loadTopSoundCloudTracks().then(
+        this.updateResultList,(err) => {
+          console.log('top sc tracks req interrupted',err)
+        });
     }
     this.setState({searchInput:text});
   }
@@ -64,26 +73,53 @@ class SongPicker extends Component {
       this.prevQueryCancelToken.cancel({aborted:true});
     }
   }
-  performSoundcloudApiSearch(term){
-    this._invalidatePrevRequest();
-    console.log('set loading true')
-    this.props.onLoadingStateChange(true);
+  isSearchEmpty(){
+    return this.state.searchInput.length === 0;
+  }
+  generateRequestInvalidationToken(){
     this.prevQueryCancelToken = axios.CancelToken.source();
-    let requestPromise = axios.get(
-      `http://api.soundcloud.com/tracks?q=${term}&limit=${this.scResultLimit}&streamable=${this.showStreamableOnly}&client_id=${this.SC_CLIENT_ID}`,
-      {cancelToken: this.prevQueryCancelToken.token});
+    return this.prevQueryCancelToken;
+  }
+  performScPublicSearch(term){
+    this._invalidatePrevRequest();
+    this.props.onLoadingStateChange(true);
+
+    let requestPromise = this.scApi.searchPublic(term,{
+      cancelToken : this.generateRequestInvalidationToken().token
+    });
     requestPromise.catch((err) => Promise.resolve(err)).then(
       (val) => {
-        console.log('resolved with:',val);
         if(axios.isCancel(val)){
-          console.log('abort load change');
           return false;
         }
-        console.log('set loading false');
         this.props.onLoadingStateChange(false);
       }
     );
     return requestPromise.then((resp) => resp.data);
+  }
+  loadTopSoundCloudTracks(){
+    this._invalidatePrevRequest();
+    this.props.onLoadingStateChange(true);
+    let requestPromise = this.scApi.getPopularByGenre(SoundCloudApi.genre.ALL,{
+      cancelToken : this.generateRequestInvalidationToken().token
+    });
+    requestPromise.catch((err) => Promise.resolve(err)).then(
+      (val) => {
+        console.log('top tracks',val)
+        if(axios.isCancel(val)){
+          return false;
+        }
+        this.props.onLoadingStateChange(false);
+      }
+    );
+    return requestPromise.then((resp) =>
+      resp.data.collection.map(
+      (item) => {
+        let track = item.track;
+        track.stream_url = track.uri + '/stream'
+        return track;
+      }
+    ));
   }
   updateResultList(resp){
     // in case of empty results or no search terms
@@ -97,7 +133,8 @@ class SongPicker extends Component {
         username: t.user.username,
         streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
         artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url
+        scUploaderLink : t.user.permalink_url,
+        duration: t.duration
       })
     );
     this.setState({ pureList : tracks });
@@ -112,11 +149,16 @@ class SongPicker extends Component {
     }
     return item;
   }
+  onTrackDescRender(rowData){
+    return rowData.duration ?
+      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
+      rowData.username ;
+  }
   _onClearSearch(){
     this._onSearchChange('');
   }
   render() {
-    let clearButtonOpacity = this.state.searchInput.length;
+    let clearButtonOpacity = this.isSearchEmpty() ? 0 : 1;
     return (
       <View style={styles.container}>
         <View style={[styles.clearSearchAction,{opacity:clearButtonOpacity}]}>
@@ -128,13 +170,17 @@ class SongPicker extends Component {
         <View style={styles.searchInputView}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search SoundCloud tracks..."
+            placeholder="Search song or artist "
             value={this.state.searchInput}
             placeholderTextColor={THEME.mainColor}
             onChangeText={this._onSearchChange} />
         </View>
+        {this.isSearchEmpty() ? <View style={styles.listDescription} >
+          <Text style={styles.listDescriptionText}>Popular this week on SoundCloud</Text>
+        </View> : null}
         <TrackList
           tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
+          onTrackDescRender={this.onTrackDescRender}
           onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
           highlightProp={'isCurrentTrack'}
           onTrackAction={this.props.onSongQueued}
@@ -185,6 +231,18 @@ const styles = StyleSheet.create({
     fontSize:20,
     lineHeight:28,
     textAlign:'center'
+  },
+  listDescription : {
+    backgroundColor: THEME.contentBgColor,
+    paddingVertical:15,
+    paddingHorizontal:10,
+    borderBottomWidth:1,
+    borderColor: THEME.contentBorderColor
+  },
+  listDescriptionText :{
+    fontSize : 18,
+    fontWeight:'600',
+    color: THEME.mainHighlightColor
   }
 });
 
