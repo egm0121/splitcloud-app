@@ -255,7 +255,7 @@ class AudioPlayerContainer extends Component {
       component: CurrentPlaylistContainer,
       passProps : {
         side : this.props.side,
-        playlistTitle : `Up Next - ${this.props.side == 'L' ? 'Left' : 'Right'} Player`,
+        playlistTitle : `UP NEXT | ${this.props.side == 'L' ? 'LEFT' : 'RIGHT'} PLAYER`,
         onClose: () => { this.props.navigator.pop() },
         onTrackSelected : (nextTrack) => {
           this._goToTrack(nextTrack);

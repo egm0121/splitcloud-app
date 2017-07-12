@@ -85,7 +85,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle : {
     color: THEME.mainHighlightColor,
-    fontSize: 17
+    fontSize: 16,
+    fontWeight:'600'
   },
   clearButton: {
     position:'absolute',

@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     color: THEME.mainHighlightColor,
     lineHeight:20,
     fontSize: 15,
-    fontWeight:'600'
+    fontWeight:'500'
   },
   rowDescText :{
     color: THEME.mainColor,
