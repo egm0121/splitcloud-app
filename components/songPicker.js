@@ -18,6 +18,7 @@ import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
 import TrackList from '../components/trackList';
+import TopList from '../components/topList';
 import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
   constructor(props){
@@ -49,22 +50,18 @@ class SongPicker extends Component {
   }
 
   _onSearchTermsChange(text){
-    this.props.onSearchTermsChange(text);
     this.performScPublicSearch(text).then(this.updateResultList,(err) => {
       console.log('ignore as old term request',err)
     });
   }
   _onSearchChange(text){
+    this.props.onSearchTermsChange(text);
     if(text){
       this._onSearchTermsChange(text);
     } else {
       this._invalidatePrevRequest();
       this.props.onLoadingStateChange(true);
       this.updateResultList(false);
-      this.loadTopSoundCloudTracks().then(
-        this.updateResultList,(err) => {
-          console.log('top sc tracks req interrupted',err)
-        });
     }
     this.setState({searchInput:text});
   }
@@ -97,30 +94,6 @@ class SongPicker extends Component {
     );
     return requestPromise.then((resp) => resp.data);
   }
-  loadTopSoundCloudTracks(){
-    this._invalidatePrevRequest();
-    this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.getPopularByGenre(SoundCloudApi.genre.ALL,{
-      cancelToken : this.generateRequestInvalidationToken().token
-    });
-    requestPromise.catch((err) => Promise.resolve(err)).then(
-      (val) => {
-        console.log('top tracks',val)
-        if(axios.isCancel(val)){
-          return false;
-        }
-        this.props.onLoadingStateChange(false);
-      }
-    );
-    return requestPromise.then((resp) =>
-      resp.data.collection.map(
-      (item) => {
-        let track = item.track;
-        track.stream_url = track.uri + '/stream'
-        return track;
-      }
-    ));
-  }
   updateResultList(resp){
     // in case of empty results or no search terms
     if(!resp){
@@ -131,7 +104,7 @@ class SongPicker extends Component {
         id: t.id,
         label : t.title,
         username: t.user.username,
-        streamUrl : `${t.stream_url}?client_id=${this.SC_CLIENT_ID}`,
+        streamUrl : t.stream_url,
         artwork : t.artwork_url,
         scUploaderLink : t.user.permalink_url,
         duration: t.duration
@@ -175,9 +148,12 @@ class SongPicker extends Component {
             placeholderTextColor={THEME.mainColor}
             onChangeText={this._onSearchChange} />
         </View>
-        {this.isSearchEmpty() ? <View style={styles.listDescription} >
-          <Text style={styles.listDescriptionText}>Popular this week on SoundCloud</Text>
-        </View> : null}
+        {this.isSearchEmpty() ?
+          <TopList
+            onTrackAction={this.props.onSongQueued}
+            onTrackSelected={this.props.onSongSelected}
+            {...this.props}
+          /> :
         <TrackList
           tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
           onTrackDescRender={this.onTrackDescRender}
@@ -187,6 +163,7 @@ class SongPicker extends Component {
           onTrackSelected={this.props.onSongSelected}
           {...this.props}
           />
+        }
       </View>
     );
   }

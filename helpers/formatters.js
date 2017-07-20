@@ -7,3 +7,6 @@ export function formatDuration(seconds,{milli} = {milli :false}){
 
   return `${pad(min)}:${pad(leftSeconds)}`;
 }
+export function ucFirst(str){
+  return str[0].toUpperCase() + str.substring(1).toLowerCase();
+}

@@ -9,11 +9,8 @@ class SoundCloudApi {
     };
     this.clientId = clientId;
     this.timeout = 2*1e3;
-    this.getPopularByGenre = CacheDecorator.withCache(
-      this.getPopularByGenre.bind(this),
-      'getPopularByGenre',
-      3600*1e3 //cache for an hour
-    );
+
+    this.initializeCacheDecorators();
   }
   _toQueryString(paramObj){
     return Object.keys(paramObj)
@@ -46,6 +43,13 @@ class SoundCloudApi {
     }
     return [cancelToken,opts];
   }
+  initializeCacheDecorators(){
+    this.getPopularByGenre = CacheDecorator.withCache(
+      this.getPopularByGenre.bind(this),
+      'getPopularByGenre',
+      3600*1e3 //cache for an hour
+    );
+  }
   searchPublic(terms, opts = {}){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     return this.request(SoundCloudApi.api.v1,'tracks',{
@@ -74,7 +78,23 @@ SoundCloudApi.api  = {
   v2 :'v2'
 }
 SoundCloudApi.genre = {
-  ALL : 'soundcloud%3Agenres%3Aall-music'
+  ALL : 'soundcloud%3Agenres%3Aall-music',
+  ALTERNATIVE_ROCK : 'soundcloud%3Agenres%3Aalternativerock',
+  AMBIENT : 'soundcloud%3Agenres%3Aambient',
+  CLASSICAL : 'soundcloud%3Agenres%3Aclassical',
+  COUNTRY : 'soundcloud%3Agenres%3Acountry',
+  EDM : 'soundcloud%3Agenres%3Adanceedm',
+  DANCEALL : 'soundcloud%3Agenres%3Adancehall',
+  DEEP_HOUSE : 'soundcloud%3Agenres%3Adeephouse',
+  DISCO : 'soundcloud%3Agenres%3Adisco',
+  DRUM_BASS: 'soundcloud%3Agenres%3Adrumbass',
+  DUBSTEP : 'soundcloud%3Agenres%3Adubstep',
+  ELECTRONIC : 'soundcloud%3Agenres%3Aelectronic',
+  FOLK : 'soundcloud%3Agenres%3Afolksingersongwriter',
+  HOUSE : 'soundcloud%3Agenres%3Ahouse',
+  HIPHOP : 'soundcloud%3Agenres%3Ahiphoprap',
+  INDIE : 'soundcloud%3Agenres%3Aindie'
+
 }
 SoundCloudApi.methods = {
   GET:'get',
