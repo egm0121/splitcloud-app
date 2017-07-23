@@ -132,14 +132,16 @@ class SongPicker extends Component {
   }
   render() {
     let clearButtonOpacity = this.isSearchEmpty() ? 0 : 1;
+    let spinnerPosition = this.isSearchEmpty() ? styles.pushRightSpinner : {};
     return (
       <View style={styles.container}>
-        <View style={[styles.clearSearchAction,{opacity:clearButtonOpacity}]}>
+        {this.isSearchEmpty() ? null :
+        <View style={[styles.clearSearchAction]}>
           <TouchableOpacity onPress={this._onClearSearch} style={styles.clearSearchTouchable}>
             <Text style={styles.clearSearchActionText}>✕</Text>
           </TouchableOpacity>
-        </View>
-        <ActivityIndicator animating={this.props.isLoading} style={[styles.loaderStyle]} />
+        </View>}
+        <ActivityIndicator animating={this.props.isLoading} style={[styles.loaderStyle,spinnerPosition]} />
         <View style={styles.searchInputView}>
           <TextInput
             style={styles.searchInput}
@@ -196,6 +198,9 @@ const styles = StyleSheet.create({
     height:30,
     width:30,
     backgroundColor:THEME.contentBorderColor
+  },
+  pushRightSpinner:{
+    right:20,
   },
   loaderStyle:{
     position:'absolute',

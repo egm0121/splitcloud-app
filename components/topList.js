@@ -68,7 +68,6 @@ class TopList extends Component {
     return formatGenreLabel(this.getKeyByValue(SoundCloudApi.genre,genreValue));
   }
   _onGenreChange(genre){
-    console.log('_onGenreChange',genre);
     this.setState({selectedGenre:genre});
   }
   _invalidatePrevRequest(){
