@@ -12,6 +12,7 @@ import {
   Image,
   View,
   TouchableOpacity,
+  Alert
 } from 'react-native';
 import config from '../helpers/config';
 import { connect } from 'react-redux';
@@ -19,7 +20,7 @@ import TrackList from '../components/trackList';
 import BackButton from  '../components/backButton';
 import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
-import {formatDuration} from '../helpers/formatters';
+import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 
 class CurrentPlaylistContainer extends Component {
@@ -27,6 +28,7 @@ class CurrentPlaylistContainer extends Component {
     super(props);
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.onTrackDescRender = this.onTrackDescRender.bind(this);
+    this.onClearPlaylist = this.onClearPlaylist.bind(this);
   }
   componentWillReceiveProps(newProps){}
   _markAsCurrentTrack(item){
@@ -45,6 +47,16 @@ class CurrentPlaylistContainer extends Component {
       `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
       rowData.username ;
   }
+  onClearPlaylist(){
+    Alert.alert(
+      `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`,
+      `This will remove all tracks from your ${formatSidePlayerLabel(this.props.side)} playlist` ,
+      [
+        {text: 'Clear All', onPress: () => this.props.onClearPlaylist(), style:'destructive'},
+        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+      ]
+    )
+  }
   render() {
     const playlistTracksData =
       this.props.playlist.tracks.map(this._markAsCurrentTrack);
@@ -53,7 +65,7 @@ class CurrentPlaylistContainer extends Component {
         <View style={styles.sectionTitleView}>
           <BackButton onPressed={this.props.onClose} />
           <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
-          <TouchableOpacity style={styles.clearButton} onPress={this.props.onClearPlaylist}>
+          <TouchableOpacity style={styles.clearButton} onPress={this.onClearPlaylist}>
               <Image style={[styles.clearListIcon]} source={require('../assets/flat_clear_list.png')} resizeMode={'cover'}/>
           </TouchableOpacity>
         </View>
@@ -119,7 +131,6 @@ const mapStateToProps = (state,props) => {
 }
 const mapDispatchToProps = (dispatch,props) => ({
   onRemoveTrack(track){
-    console.log('should dispatch an action to remove the track from the playlist');
     dispatch(removeQueuedTrack(props.side,track));
     dispatch(pushNotification({message:'Removed Track!',type:'success'}));
   },

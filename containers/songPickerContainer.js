@@ -24,15 +24,6 @@ class SongPickerContainer extends Component {
   constructor(props){
     super(props);
     console.log('SongPicekrContainer mounted with picker props',this.props.picker);
-    this.state = {
-      genreOptions : [{label :'Rap a',value:'a',key:1},{label :'EDM b',value:'b',key:2}],
-      currentSelected : 'b'
-    }
-    this.onValueChange = this.onValueChange.bind(this);
-  }
-  onValueChange(newValue){
-    console.log('onValueChange',newValue);
-    this.setState({currentSelected:newValue})
   }
   render() {
 

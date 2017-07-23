@@ -157,8 +157,8 @@ const styles = StyleSheet.create({
     flex:12
   },
   minimizedPlayer:{
-    flex:0,
-    height:0
+    height:0,
+    flex:0
   },
   separator:{
     height:1,
@@ -194,7 +194,7 @@ let mapStateToProps  =  (state) => {
 let mapDispatchToProps = (dispatch) => {
   return {
     onModeSelected(mode){
-      LayoutAnimation.configureNext({...LayoutAnimation.Presets.linear,duration:200});
+      LayoutAnimation.configureNext({...LayoutAnimation.Presets.easeInEaseOut,duration:300});
       dispatch(changePlaybackMode(mode))
     }
   }

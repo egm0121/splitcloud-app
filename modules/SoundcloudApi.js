@@ -78,28 +78,54 @@ SoundCloudApi.api  = {
   v2 :'v2'
 }
 SoundCloudApi.genre = {
-  ALL : 'soundcloud%3Agenres%3Aall-music',
-  ALTERNATIVE_ROCK : 'soundcloud%3Agenres%3Aalternativerock',
-  AMBIENT : 'soundcloud%3Agenres%3Aambient',
-  CLASSICAL : 'soundcloud%3Agenres%3Aclassical',
-  COUNTRY : 'soundcloud%3Agenres%3Acountry',
-  EDM : 'soundcloud%3Agenres%3Adanceedm',
-  DANCEALL : 'soundcloud%3Agenres%3Adancehall',
-  DEEP_HOUSE : 'soundcloud%3Agenres%3Adeephouse',
-  DISCO : 'soundcloud%3Agenres%3Adisco',
-  DRUM_BASS: 'soundcloud%3Agenres%3Adrumbass',
-  DUBSTEP : 'soundcloud%3Agenres%3Adubstep',
-  ELECTRONIC : 'soundcloud%3Agenres%3Aelectronic',
-  FOLK : 'soundcloud%3Agenres%3Afolksingersongwriter',
-  HOUSE : 'soundcloud%3Agenres%3Ahouse',
-  HIPHOP : 'soundcloud%3Agenres%3Ahiphoprap',
-  INDIE : 'soundcloud%3Agenres%3Aindie'
+  ALL : 'soundcloud:genres:all-music',
+  ALTERNATIVE_ROCK : 'soundcloud:genres:alternativerock',
+  AMBIENT : 'soundcloud:genres:ambient',
+  CLASSICAL : 'soundcloud:genres:classical',
+  COUNTRY : 'soundcloud:genres:country',
+  DANCE_EDM: 'soundcloud:genres:danceedm',
+  DANCEHALL : 'soundcloud:genres:dancehall',
+  DEEP_HOUSE : 'soundcloud:genres:deephouse',
+  DISCO : 'soundcloud:genres:disco',
+  DRUM_AND_BASS: 'soundcloud:genres:drumbass',
+  DUBSTEP: 'soundcloud:genres:dubstep',
+  ELECTRONIC :'soundcloud:genres:electronic',
+  SONG_WRITER:'soundcloud:genres:folksingersongwriter',
+  HIP_HOP : 'soundcloud:genres:hiphoprap',
+  HOUSE : 'soundcloud:genres:house',
+  INDIE : 'soundcloud:genres:indie',
+  JAZZ_AND_BLUES : 'soundcloud:genres:jazzblues',
+  LATIN : 'soundcloud:genres:latin',
+  METAL : 'soundcloud:genres:metal',
+  PIANO : 'soundcloud:genres:piano',
+  POP : 'soundcloud:genres:pop',
+  RNB_AND_SOUL : 'soundcloud:genres:rbsoul',
+  RAGGAE : 'soundcloud:genres:reggae',
+  REGGAETON : 'soundcloud:genres:reggaeton',
+  ROCK : 'soundcloud:genres:rock',
+  SOUNDTRACK : 'soundcloud:genres:soundtrack',
+  TECHNO: 'soundcloud:genres:techno',
+  TRANCE : 'soundcloud:genres:trance',
+  TRAP : 'soundcloud:genres:trap',
+  TRIP_HOP: 'soundcloud:genres:triphop',
+  WORLD : 'soundcloud:genres:world',
+  AUDIOBOOKS : 'soundcloud:genres:audiobooks',
+  BUSINESS : 'soundcloud:genres:business',
+  COMEDY : 'soundcloud:genres:comedy',
 
-}
+  ENTERTAINMENT : 'soundcloud:genres:entertainment',
+  LEARNING : 'soundcloud:genres:learning',
+  POLITICS : 'soundcloud:genres:newspolitics',
+  RELIGION : 'soundcloud:genres:religionspirituality',
+  SCIENCE : 'soundcloud:genres:science',
+  SPORTS : 'soundcloud:genres:sports',
+  STORYTELLING : 'soundcloud:genres:storytelling',
+  TECHNOLOGY : 'soundcloud:genres:technology'
+};
 SoundCloudApi.methods = {
   GET:'get',
   POST:'post',
   PUT:'put',
   DELETE: 'delete'
-}
+};
 export default SoundCloudApi;

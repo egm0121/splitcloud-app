@@ -20,7 +20,7 @@ import THEME from '../styles/variables';
 import { ucFirst } from '../helpers/formatters';
 import TrackList from '../components/trackList';
 import ModalPicker from '../components/modalPicker';
-import {formatDuration} from '../helpers/formatters';
+import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 class TopList extends Component {
   constructor(props){
     super(props);
@@ -51,10 +51,11 @@ class TopList extends Component {
       });
     }
   }
+
   getGenreOptionsList(){
     return Object.keys(SoundCloudApi.genre).map((key,i) => {
       return {
-        label : ucFirst(key.replace('_',' ')),
+        label : formatGenreLabel(key),
         value : SoundCloudApi.genre[key],
         key : i
       }
@@ -64,7 +65,7 @@ class TopList extends Component {
     return Object.keys(obj).find((key) => obj[key] == value);
   }
   getLabelForGenre(genreValue){
-    return ucFirst(this.getKeyByValue(SoundCloudApi.genre,genreValue).replace('_',' '));
+    return formatGenreLabel(this.getKeyByValue(SoundCloudApi.genre,genreValue));
   }
   _onGenreChange(genre){
     console.log('_onGenreChange',genre);
@@ -148,7 +149,7 @@ class TopList extends Component {
       <View style={styles.container}>
         <View style={styles.listDescription} >
           <View style={styles.descContainer}>
-            <Text style={styles.listDescriptionText}>Popular this week </Text>
+            <Text style={styles.listDescriptionText}>Top Tracks</Text>
           </View>
           <TouchableHighlight style={styles.genreSelectionBtn} onPress={this.openGenrePicker}>
             <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
@@ -179,11 +180,12 @@ const styles = StyleSheet.create({
     flex: 1
   },
   descContainer :{
-    flex:1
+    flex: 1
   },
   genreSelectionBtn :{
-    flex:1,
-    alignItems:'flex-end'
+    flex:2,
+    alignItems:'flex-end',
+    paddingVertical:10
   },
   genreSelectionText : {
     color : THEME.mainActiveColor,
@@ -192,7 +194,6 @@ const styles = StyleSheet.create({
   },
   listDescription : {
     backgroundColor: THEME.contentBgColor,
-    paddingVertical:15,
     paddingHorizontal:10,
     borderBottomWidth:1,
     borderColor: THEME.contentBorderColor,
@@ -201,6 +202,7 @@ const styles = StyleSheet.create({
   },
   listDescriptionText :{
     fontSize : 18,
+    lineHeight: 30,
     fontWeight:'600',
     color: THEME.mainHighlightColor
   }

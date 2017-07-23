@@ -66,14 +66,15 @@ const styles = StyleSheet.create({
     height:250,
     bottom:0,
     position:'absolute',
-    backgroundColor:THEME.mainBgColor
+    backgroundColor:THEME.mainBgColor,
+    opacity:0.95
   },
   closeButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     borderTopColor:  THEME.contentBorderColor,
     borderTopWidth: 1,
-    height:30,
+    height:35,
     borderBottomColor: THEME.contentBorderColor,
     borderBottomWidth:1,
     paddingRight:10
@@ -84,8 +85,7 @@ const styles = StyleSheet.create({
   closeButtonText:{
     color:THEME.mainHighlightColor,
     textAlign:'right',
-    lineHeight:20,
-
+    lineHeight:22,
   }
 });
 
