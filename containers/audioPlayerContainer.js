@@ -328,7 +328,6 @@ class AudioPlayerContainer extends Component {
         muted:newProps.muted
       });
       if(newProps.mode == playbackModeTypes.SPLIT){
-        console.log('change now playing info to split mode ')
         this.playerAObj.setNowPlayingInfo(messages.SPLIT_MODE_CONTROLS_DISABLED);
       }
     }
