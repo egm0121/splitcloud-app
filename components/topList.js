@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
   listDescriptionText :{
     fontSize : 18,
-    lineHeight: 30,
+    paddingVertical:10,
     fontWeight:'600',
     color: THEME.mainHighlightColor
   }
@@ -210,8 +210,7 @@ const styles = StyleSheet.create({
 TopList.propTypes = {
   onSongSelected: PropTypes.func.isRequired,
   onSongQueued: PropTypes.func,
-  onClose: PropTypes.func,
-  onSearchTermsChange: PropTypes.func
+  onClose: PropTypes.func
 };
 
 export default TopList;
