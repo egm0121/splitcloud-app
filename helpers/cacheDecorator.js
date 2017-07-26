@@ -1,25 +1,23 @@
 
 export function CacheDecorator() {
-  var that = this;
+  let that = this;
   this.fnCache = {};
   this.timeoutRef = {};
   this.uniqFuncId = 0;
   /* private helpers */
-  var isObject = (value) => value !== null && typeof value === 'object';
-  var copy = (v) => JSON.parse(JSON.stringify(v));
-  var getUniqCacheId = function(){
-    return 'int-id-'+(that.uniqFuncId++);
-  };
-  var isPromiseLike = (prom) => {
+  let isObject = (value) => value !== null && typeof value === 'object';
+  let copy = (v) => JSON.parse(JSON.stringify(v));
+  let getUniqCacheId = () => 'int-id-'+(this.uniqFuncId++);
+  let isPromiseLike = (prom) => {
     return prom && isObject(prom) && 'then' in prom;
   };
-  var rewrapPromise = function(prom){
 
+  let rewrapPromise = function(prom){
     if( isPromiseLike(prom) ){
       return new Promise((res,rej) => {
-        prom.then(function(resp){
-          var originalPayload = resp.data;
-          var cloned = copy(originalPayload);
+        prom.then((resp) => {
+          let originalPayload = resp.data;
+          let cloned = copy(originalPayload);
           resp.data = cloned;
           res(resp);
         }).catch((err) => {
@@ -34,27 +32,13 @@ export function CacheDecorator() {
       //if it's simple value
     return prom;
   };
-  var argsSerializer = function(e){
+  let argsSerializer = (e) => {
     if(e === undefined || e === null ) return 'null';
-
     return isObject(e) ? JSON.stringify(e) : e.toString();
   };
-  var startsWith = function(ns){
-    return function(i){
-      return ns.indexOf(i) === 0;
-    }
-  };
-  var findBy = function(ns){
-    return function(i){
-      return ns === i;
-    }
-  };
-  var not = function(fn){
-    return function(){
-      var a = [].slice.call(arguments,0);
-      return !fn.apply(false,a);
-    };
-  };
+  let startsWith = (ns) => (i) => ns.indexOf(i) === 0;
+  let findBy = (ns) => (i) => ns === i;
+  let not = (fn) => (...args) => !fn(...args);
 
   this.getInternalCache = function(){
     return this.fnCache;
@@ -65,7 +49,7 @@ export function CacheDecorator() {
   }
 
   this.getCache = function(key){
-    var prefix = key.split('-')[0];
+    let prefix = key.split('-')[0];
     return key in  this.fnCache ?  this.fnCache[key] : false;
   };
 
@@ -103,26 +87,25 @@ export function CacheDecorator() {
   this.withCache = function(func,explicitId,timeout){
     let id = explicitId || getUniqCacheId();
 
-    return function(){
-      var args = [].slice.call(arguments,0);
-      var key = id+'-'+args.map(argsSerializer).join('-');
-      var cachedVal = that.getCache(key);
+    return (...args) => {
+      let key = id + '-' + args.map(argsSerializer).join('-');
+      let cachedVal = that.getCache(key);
 
       if (!cachedVal ){
           //cache the original
         console.log('cacheDecorator','cache miss for key : ' + key);
-        cachedVal = func.apply(this,args);
-        that.setCache(key,cachedVal,timeout);
+        cachedVal = func(...args);
+        this.setCache(key,cachedVal,timeout);
       } else {
         console.log('cacheDecorator','cache hit for key : ' + key);
       }
-
       //rewrapPromise, on promise or object will
       //return a copy of the cached value
       //so that the original reference to the cached object doesn't leak.
-      var valueOrPromise = rewrapPromise(cachedVal);
+      let valueOrPromise = rewrapPromise(cachedVal);
       if(isPromiseLike(valueOrPromise)){
         valueOrPromise.catch(() => {
+          console.log('rejected promise, delCache',key);
           this.delCache(key);
         })
       }
@@ -130,6 +113,7 @@ export function CacheDecorator() {
     };
   };
 }
+
 let cacheInstance = new CacheDecorator();
 
 export default cacheInstance;

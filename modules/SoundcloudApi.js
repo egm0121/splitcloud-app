@@ -12,6 +12,17 @@ class SoundCloudApi {
 
     this.initializeCacheDecorators();
   }
+  initializeCacheDecorators(){
+    this.getPopularByGenre = CacheDecorator.withCache(
+      this.getPopularByGenre.bind(this),
+      'getPopularByGenre',
+      3600*1e3 //cache for an hour
+    );
+  }
+  request(...args){
+    let requestObj = this._buildRequestObject(...args);
+    return axios(requestObj);
+  }
   _toQueryString(paramObj){
     return Object.keys(paramObj)
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramObj[key])}`)
@@ -26,11 +37,6 @@ class SoundCloudApi {
       cancelToken
     }
   }
-  request(...args){
-    let requestObj = this._buildRequestObject(...args);
-    console.log(requestObj);
-    return axios(requestObj);
-  }
   _extractCancelToken(opts){
     opts = {...opts};
     if(typeof opts != 'object' || !('cancelToken' in opts) ){
@@ -43,13 +49,7 @@ class SoundCloudApi {
     }
     return [cancelToken,opts];
   }
-  initializeCacheDecorators(){
-    this.getPopularByGenre = CacheDecorator.withCache(
-      this.getPopularByGenre.bind(this),
-      'getPopularByGenre',
-      3600*1e3 //cache for an hour
-    );
-  }
+
   searchPublic(terms, opts = {}){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     return this.request(SoundCloudApi.api.v1,'tracks',{

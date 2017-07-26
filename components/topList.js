@@ -22,6 +22,7 @@ import TrackList from '../components/trackList';
 import ModalPicker from '../components/modalPicker';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 class TopList extends Component {
+
   constructor(props){
     super(props);
     this._onGenreChange = this._onGenreChange.bind(this);
@@ -86,9 +87,11 @@ class TopList extends Component {
     let requestPromise = this.scApi.getPopularByGenre(this.state.selectedGenre,{
       cancelToken : this.generateRequestInvalidationToken().token
     });
-    requestPromise.catch((err) => Promise.resolve(err)).then(
+    requestPromise.catch((err) => {
+      this.props.onRequestFail(err,this.state.selectedGenre);
+      return Promise.resolve(err);
+    }).then(
       (val) => {
-        console.log('top tracks',val)
         if(axios.isCancel(val)){
           return false;
         }
@@ -174,6 +177,9 @@ class TopList extends Component {
     );
   }
 }
+TopList.defaultProps = {
+  onRequestFail(){}
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -210,6 +216,7 @@ const styles = StyleSheet.create({
 TopList.propTypes = {
   onSongSelected: PropTypes.func.isRequired,
   onSongQueued: PropTypes.func,
+  onChartLoadingError :PropTypes.func,
   onClose: PropTypes.func
 };
 

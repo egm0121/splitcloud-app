@@ -84,7 +84,12 @@ class SongPicker extends Component {
     let requestPromise = this.scApi.searchPublic(term,{
       cancelToken : this.generateRequestInvalidationToken().token
     });
-    requestPromise.catch((err) => Promise.resolve(err)).then(
+    requestPromise.catch(
+      (err) =>{
+        this.props.onRequestFail(err,'search',term);
+        return Promise.resolve(err);
+      }
+    ).then(
       (val) => {
         if(axios.isCancel(val)){
           return false;
