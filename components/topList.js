@@ -88,6 +88,7 @@ class TopList extends Component {
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch((err) => {
+
       this.props.onRequestFail(err,this.state.selectedGenre);
       return Promise.resolve(err);
     }).then(
@@ -190,6 +191,7 @@ const styles = StyleSheet.create({
   genreSelectionBtn :{
     flex:2,
     alignItems:'flex-end',
+    paddingRight: 10,
     paddingVertical:10
   },
   genreSelectionText : {
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
   },
   listDescription : {
     backgroundColor: THEME.contentBgColor,
-    paddingHorizontal:10,
+    paddingLeft:10,
     borderBottomWidth:1,
     borderColor: THEME.contentBorderColor,
     justifyContent:'space-between',

@@ -85,8 +85,11 @@ class SongPicker extends Component {
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch(
-      (err) =>{
-        this.props.onRequestFail(err,'search',term);
+      (err) => {
+        let isCancel = err.message && err.message.aborted;
+        if(!isCancel){
+          this.props.onRequestFail(err,'search',term);
+        }
         return Promise.resolve(err);
       }
     ).then(
