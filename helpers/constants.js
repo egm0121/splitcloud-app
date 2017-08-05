@@ -16,3 +16,5 @@ export const audioPlayerStates = {
 export const messages = {
   SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control'
 }
+
+export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';

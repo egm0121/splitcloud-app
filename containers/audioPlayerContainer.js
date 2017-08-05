@@ -12,7 +12,7 @@ import {
   Linking
 } from 'react-native';
 import THEME from '../styles/variables';
-import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes, messages } from '../helpers/constants';
+import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes, messages, NOW_PLAYING_ASSET_NAME } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
@@ -328,7 +328,7 @@ class AudioPlayerContainer extends Component {
         muted:newProps.muted
       });
       if(newProps.mode == playbackModeTypes.SPLIT){
-        this.playerAObj.setNowPlayingInfo(messages.SPLIT_MODE_CONTROLS_DISABLED);
+        this.playerAObj.setNowPlayingInfo(messages.SPLIT_MODE_CONTROLS_DISABLED,NOW_PLAYING_ASSET_NAME);
       }
     }
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
@@ -358,7 +358,7 @@ class AudioPlayerContainer extends Component {
       this._prepareCurrentTrack(shouldAutoPlay);
     }
     if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
-      this.playerAObj.setNowPlayingInfo(this._getCurrentTrackTitle());
+      this.playerAObj.setNowPlayingInfo(this._getCurrentTrackTitle(),NOW_PLAYING_ASSET_NAME);
     }
   }
   componentWillUnmount(){
