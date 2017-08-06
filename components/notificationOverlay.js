@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     height:160,
     borderRadius:10,
     paddingHorizontal:10,
+    marginVertical:20,
     alignItems:'center',
     justifyContent:'center',
     backgroundColor:THEME.notifyBgColor,

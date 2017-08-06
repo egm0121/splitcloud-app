@@ -12,11 +12,12 @@ import {
   Linking
 } from 'react-native';
 import THEME from '../styles/variables';
-import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes } from '../helpers/constants';
+import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes, messages, NOW_PLAYING_ASSET_NAME } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import SearchIcon from '../components/searchIcon';
+import Config from '../helpers/config';
 import {
   addPlaylistItem,
   incrementCurrentPlayIndex,
@@ -60,7 +61,7 @@ class AudioPlayerContainer extends Component {
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.renderInFullscreen = this.renderInFullscreen.bind(this);
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
-
+    this.scClientId = Config.SC_CLIENT_ID;
     this.playerAObj = new ReactNativeStreamingPlayer();
 
     this.state = {
@@ -102,6 +103,7 @@ class AudioPlayerContainer extends Component {
         status : data.status
       });
     });
+
   }
   _onProgressTick(){
     this._updateComponentPlayerState();
@@ -210,7 +212,7 @@ class AudioPlayerContainer extends Component {
     //this strip of https is needed as the ATS excaption for tls version on
     //the info.plist wont work on twice for same request and 302 redirect
     //to a second exceptional domain
-    songObj.streamUrl = stripSSL(songObj.streamUrl);
+    songObj.streamUrl = stripSSL(songObj.streamUrl) + '?client_id='+ this.scClientId;
     songObj.artwork = stripSSL(songObj.artwork);
     return Promise.resolve(songObj);
   }
@@ -234,12 +236,22 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onPickerToggle(){
-    this.props.navigator.push({
+    let prevPickerRoute =
+      this.findRouteByName('SongPickerContainer.' + this.props.side);
+    if(prevPickerRoute){
+      return this.props.navigator.jumpTo(prevPickerRoute);
+    }
+    this.props.navigator.pushToBottom({
       title : 'SongPickerContainer - ' + this.props.side,
+      name : 'SongPickerContainer.' + this.props.side,
       component: SongPickerContainer,
       passProps : {
         side : this.props.side,
-        onClose: () => { this.props.navigator.pop() },
+        onClose: () => {
+          this.props.navigator.jumpTo(
+            this.findRouteByName(this.props.routeName)
+          );
+        },
         onSongSelected : (nextTrack) => {
           this._onSongSelected(nextTrack);
         },
@@ -250,13 +262,23 @@ class AudioPlayerContainer extends Component {
     });
   }
   _toggleCurrentPlaylist(){
-    this.props.navigator.push({
+    let prevRoute =
+      this.findRouteByName('CurrentPlaylistContainer.' + this.props.side);
+    if(prevRoute){
+      return this.props.navigator.jumpTo(prevRoute);
+    }
+    this.props.navigator.pushToBottom({
       title : 'CurrentPlaylistContainer - ' + this.props.side,
+      name : 'CurrentPlaylistContainer.' + this.props.side,
       component: CurrentPlaylistContainer,
       passProps : {
         side : this.props.side,
         playlistTitle : `UP NEXT | ${this.props.side == 'L' ? 'LEFT' : 'RIGHT'} PLAYER`,
-        onClose: () => { this.props.navigator.pop() },
+        onClose: () => {
+          this.props.navigator.jumpTo(
+            this.findRouteByName(this.props.routeName)
+          );
+        },
         onTrackSelected : (nextTrack) => {
           this._goToTrack(nextTrack);
         }
@@ -296,13 +318,18 @@ class AudioPlayerContainer extends Component {
       this.playerAObj.setVolume(this._linearToLogVolume(this.state.userVolume));
     }
   }
-
+  findRouteByName(name){
+    return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
+  }
   componentWillReceiveProps(newProps){
     if(newProps.pan != this.props.pan || newProps.muted != this.props.muted){
       this.setState({
         pan:newProps.pan,
         muted:newProps.muted
       });
+      if(newProps.mode == playbackModeTypes.SPLIT){
+        this.playerAObj.setNowPlayingInfo(messages.SPLIT_MODE_CONTROLS_DISABLED,NOW_PLAYING_ASSET_NAME);
+      }
     }
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
       this.setState({playbackIndex : newProps.playlist.currentTrackIndex})
@@ -330,7 +357,9 @@ class AudioPlayerContainer extends Component {
       let shouldAutoPlay = !this.props.playlist.rehydrate;
       this._prepareCurrentTrack(shouldAutoPlay);
     }
-
+    if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
+      this.playerAObj.setNowPlayingInfo(this._getCurrentTrackTitle(),NOW_PLAYING_ASSET_NAME);
+    }
   }
   componentWillUnmount(){
     console.log('component will unmount! destory player instance')
