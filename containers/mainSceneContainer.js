@@ -36,7 +36,7 @@ class MainSceneContainer extends Component {
     this.onLoginStart = this.onLoginStart.bind(this);
     this.purgeStore = this.purgeStore.bind(this);
     this.renderPlaybackModeTabBar = this.renderPlaybackModeTabBar.bind(this);
-    
+
     this.modeButtons = [
       {mode:'L',label:'LEFT'},
       {mode:'S',label:'SPLIT'},
@@ -69,9 +69,7 @@ class MainSceneContainer extends Component {
     return this.props.mode == playbackModeTypes.SPLIT;
   }
   renderPlayer(player){
-    return <AudioPlayerContainer
-       side={player.side}
-       navigator={this.props.navigator} />
+    return <AudioPlayerContainer side={player.side} {...this.props} />
   }
   getFullScreenPlayer(){
     if(this.props.mode == playbackModeTypes.SPLIT) return false;
@@ -80,7 +78,7 @@ class MainSceneContainer extends Component {
   renderPlaybackModeTabBar(){
     return <View style={styles.panToggleContainer}>
       <View style={styles.horizontalContainer}>
-        {this.modeButtons.map((e,i) => {
+        {this.modeButtons.map((e) => {
           const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
           return <TouchableHighlight style={styles.container} key={e.mode}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
@@ -159,8 +157,8 @@ const styles = StyleSheet.create({
     flex:12
   },
   minimizedPlayer:{
-    flex:0,
-    height:0
+    height:0,
+    flex:0
   },
   separator:{
     height:1,
@@ -196,7 +194,7 @@ let mapStateToProps  =  (state) => {
 let mapDispatchToProps = (dispatch) => {
   return {
     onModeSelected(mode){
-      LayoutAnimation.configureNext({...LayoutAnimation.Presets.linear,duration:200});
+      LayoutAnimation.configureNext({...LayoutAnimation.Presets.easeInEaseOut,duration:300});
       dispatch(changePlaybackMode(mode))
     }
   }
