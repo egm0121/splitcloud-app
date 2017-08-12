@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   sectionTitleView :{
     alignItems: 'center',
     height: 60,
-    paddingTop: 25,
+    paddingTop: 27,
     backgroundColor: THEME.mainBgColor,
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :2
