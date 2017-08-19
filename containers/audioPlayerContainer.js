@@ -328,7 +328,7 @@ class AudioPlayerContainer extends Component {
         muted:newProps.muted
       });
       if(newProps.mode == playbackModeTypes.SPLIT){
-        this.playerAObj.setNowPlayingInfo(messages.SPLIT_MODE_CONTROLS_DISABLED,NOW_PLAYING_ASSET_NAME);
+        this.setNowPlayingDescription({isSplit:true});
       }
     }
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
@@ -358,7 +358,7 @@ class AudioPlayerContainer extends Component {
       this._prepareCurrentTrack(shouldAutoPlay);
     }
     if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
-      this.playerAObj.setNowPlayingInfo(this._getCurrentTrackTitle(),NOW_PLAYING_ASSET_NAME);
+      this.setNowPlayingDescription();
     }
   }
   componentWillUnmount(){
@@ -367,6 +367,14 @@ class AudioPlayerContainer extends Component {
       this.playerAObj.stop();
       this.playerAObj.destroy();
     }
+  }
+  setNowPlayingDescription({isSplit} = {isSplit : false}){
+    let description =
+      `${this._getCurrentTrackTitle()} • ${this._getCurrentTrackDescription()}`;
+    if(isSplit){
+      description = messages.SPLIT_MODE_CONTROLS_DISABLED;
+    }
+    this.playerAObj.setNowPlayingInfo(description,NOW_PLAYING_ASSET_NAME);
   }
   _getCurrentTrackIndex(){
     return this.state.playbackIndex;
