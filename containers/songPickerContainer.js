@@ -74,6 +74,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F50'
   },
   backButton:{
+    position:'absolute',
+    left:0,
+    paddingLeft:10,
+    top:20,
     zIndex:20
   }
 });

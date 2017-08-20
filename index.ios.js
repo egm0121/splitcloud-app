@@ -32,6 +32,7 @@ Navigator.prototype.pushToBottom = function (route) {
     this._transitionTo(destIndex);
   });
 };
+
 AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID,'SplitcloudApp');
 
 if(!__DEV__){
@@ -56,9 +57,7 @@ class SplitCloudApp extends Component {
             <Navigator
                 initialRoute={{ title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }}
                 renderScene={(route, navigator) => {
-
                   AnalyticsService.sendScreenView(route.title || 'Component');
-
                   let Component = route.component;
                   return <View style={{flex: 1}}>
                           <Component title={route.title} routeName={route.name} navigator={navigator} {...route.passProps}/>

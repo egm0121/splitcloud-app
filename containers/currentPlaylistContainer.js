@@ -18,6 +18,8 @@ import config from '../helpers/config';
 import { connect } from 'react-redux';
 import TrackList from '../components/trackList';
 import BackButton from  '../components/backButton';
+import ClearPlaylistButton from '../components/clearPlaylistButton';
+import Button from '../components/button'
 import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
@@ -63,11 +65,9 @@ class CurrentPlaylistContainer extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.sectionTitleView}>
-          <BackButton onPressed={this.props.onClose} />
+          <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
           <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
-          <TouchableOpacity style={styles.clearButton} onPress={this.onClearPlaylist}>
-              <Image style={[styles.clearListIcon]} source={require('../assets/flat_clear_list.png')} resizeMode={'cover'}/>
-          </TouchableOpacity>
+          <ClearPlaylistButton onPressed={this.onClearPlaylist} style={styles.clearButton}/>
         </View>
         <TrackList
             tracksData={playlistTracksData}
@@ -107,14 +107,16 @@ const styles = StyleSheet.create({
     zIndex:10,
     height:30
   },
-  clearListIcon: {
-    width:30,
-    height:30
+  closeButton :{
+    position:'absolute',
+    left:0,
+    paddingLeft:10,
+    top:20
   },
   sectionTitleView :{
     alignItems: 'center',
     height: 60,
-    paddingTop: 25,
+    paddingTop: 27,
     backgroundColor: THEME.mainBgColor,
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :2

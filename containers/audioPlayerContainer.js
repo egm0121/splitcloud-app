@@ -17,6 +17,7 @@ import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import SearchIcon from '../components/searchIcon';
+import Button from '../components/button';
 import Config from '../helpers/config';
 import {
   addPlaylistItem,
@@ -328,7 +329,7 @@ class AudioPlayerContainer extends Component {
         muted:newProps.muted
       });
       if(newProps.mode == playbackModeTypes.SPLIT){
-        this.playerAObj.setNowPlayingInfo(messages.SPLIT_MODE_CONTROLS_DISABLED,NOW_PLAYING_ASSET_NAME);
+        this.setNowPlayingDescription({isSplit:true});
       }
     }
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
@@ -358,7 +359,7 @@ class AudioPlayerContainer extends Component {
       this._prepareCurrentTrack(shouldAutoPlay);
     }
     if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
-      this.playerAObj.setNowPlayingInfo(this._getCurrentTrackTitle(),NOW_PLAYING_ASSET_NAME);
+      this.setNowPlayingDescription();
     }
   }
   componentWillUnmount(){
@@ -367,6 +368,14 @@ class AudioPlayerContainer extends Component {
       this.playerAObj.stop();
       this.playerAObj.destroy();
     }
+  }
+  setNowPlayingDescription({isSplit} = {isSplit : false}){
+    let description =
+      `${this._getCurrentTrackTitle()} • ${this._getCurrentTrackDescription()}`;
+    if(isSplit){
+      description = messages.SPLIT_MODE_CONTROLS_DISABLED;
+    }
+    this.playerAObj.setNowPlayingInfo(description,NOW_PLAYING_ASSET_NAME);
   }
   _getCurrentTrackIndex(){
     return this.state.playbackIndex;
@@ -453,7 +462,7 @@ class AudioPlayerContainer extends Component {
         <View style={styles.artwork}>
             <Image
               style={playerBgImage}
-              blurRadius = {this.props.isFullscreen && !this.props.isSplitMode? 10 : 0}
+              blurRadius = {this.props.isFullscreen && !this.props.isSplitMode? 20 : 0}
               source={ showBgArtCover ?
                 {uri:this._getCurrentTrackArtwork()} :
                 require('../assets/alt_artwork.png')
@@ -492,24 +501,24 @@ class AudioPlayerContainer extends Component {
                   <Text style={[styles.playbackTime,textShadowStyle]}>{formatDuration(this.state.duration)}</Text>
                 </View>
                 <View style={styles.horizontalContainer}>
-                  <TouchableOpacity style={[styles.container,styles.playlistButton]} onPress={this._toggleCurrentPlaylist}>
-                    <Image style={[styles.playerIcon,styles.playerIconSuperSmall]} source={require('../assets/flat_select.png')} resizeMode={'contain'}/>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.container,styles.startRow]} onPress={this._goToPrevTrack}>
-                    <Image style={[styles.playerIcon]} source={require('../assets/flat_prev.png')} resizeMode={'cover'}/>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.container} onPress={this._onPlayTogglePress}>
-                    <Image
-                       style={[styles.playerIcon,styles.playerIconSmaller]}
-                       source={playbackSource}
-                       resizeMode={'contain'}/>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.container,styles.endRow]} onPress={this._goToNextTrack}>
-                    <Image style={[styles.playerIcon]} source={require('../assets/flat_next.png')} resizeMode={'cover'}/>
-                  </TouchableOpacity>
-                  <TouchableOpacity  style={[styles.container]} onPress={this._onPickerToggle}>
-                    <SearchIcon style={styles.smallSearchIcon} />
-                  </TouchableOpacity>
+                  <Button style={[styles.container,styles.playlistButton]}
+                      image={require('../assets/flat_select.png')}
+                      onPressed={this._toggleCurrentPlaylist} />
+                  <Button style={[styles.container,styles.startRow]}
+                          image={require('../assets/flat_prev.png')}
+                          size={'bigger'}
+                          onPressed={this._goToPrevTrack} />
+                        <Button style={[styles.container,styles.playToggleButton]} image={playbackSource}
+                      size={'huge'} onPressed={this._onPlayTogglePress} />
+                  <Button style={[styles.container,styles.endRow]}
+                          image={require('../assets/flat_next.png')}
+                          size={'bigger'}
+                          onPressed={this._goToNextTrack} />
+                        <Button style={[styles.container,styles.searchButton]}
+                      image={require('../assets/flat_search.png')}
+                      onPressed={this._onPickerToggle}
+                      size={'small'}
+                  />
                 </View>
                 <View style={styles.horizontalContainer}>
                   <View style={styles.volumeSlider}>
@@ -649,17 +658,11 @@ const styles = StyleSheet.create({
     margin: 10,
     height: 30
   },textShadowStyle),
-  playerIcon : {
-    width:40,
-    height:40
+  playToggleButton:{
+    top:-5
   },
-  playerIconSmaller : {
-    width: 35,
-    height: 35
-  },
-  playerIconSuperSmall:{
-    width: 30,
-    height: 30
+  searchButton:{
+    top:5
   },
   tracknameFullscreen:{
     flex:0,
