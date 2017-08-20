@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   header :{
     borderBottomWidth: 2,
-    borderBottomColor: THEME.contentBorderColor
+    borderBottomColor: THEME.tabBarBorderColor
   },
   appLogo:{
     alignSelf:'center',
@@ -166,11 +166,8 @@ const styles = StyleSheet.create({
   },
   panToggleContainer:{
     height:40,
-    borderWidth: 2,
-    borderLeftWidth:0,
-    borderRightWidth:0,
-    borderBottomWidth:0,
-    borderColor: THEME.contentBorderColor
+    borderTopWidth: 2,
+    borderColor: THEME.tabBarBorderColor
   },
   horizontalContainer:{
     flex:1,
