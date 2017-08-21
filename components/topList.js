@@ -32,9 +32,17 @@ class TopList extends Component {
     this.openGenrePicker = this.openGenrePicker.bind(this);
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
     this.getGenreOptionsList = this.getGenreOptionsList.bind(this);
+
+    this._onRegionChange = this._onRegionChange.bind(this);
+    this.onCloseRegionPicker = this.onCloseRegionPicker.bind(this);
+    this.openRegionPicker = this.openRegionPicker.bind(this);
+    this.getLabelForRegion = this.getLabelForRegion.bind(this);
+
     this.state = {
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
+      selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getGenreOptionsList(),
+      regionOptions: this.getRegionOptionsList(),
       trackList : []
     };
 
@@ -46,7 +54,10 @@ class TopList extends Component {
     this.loadTopSoundCloudTracks().then(this.updateResultList);
   }
   componentDidUpdate(prevProps,prevState){
-    if(this.state.selectedGenre !== prevState.selectedGenre){
+    if(
+      this.state.selectedGenre !== prevState.selectedGenre ||
+      this.state.selectedRegion !== prevState.selectedRegion
+    ){
       this.loadTopSoundCloudTracks().then(this.updateResultList,(err) => {
         console.log('ignore as old genre request',err)
       });
@@ -62,14 +73,29 @@ class TopList extends Component {
       }
     });
   }
+  getRegionOptionsList(){
+    return Object.keys(SoundCloudApi.region).map((key,i) => {
+      return {
+        label : formatGenreLabel(key),
+        value : SoundCloudApi.region[key],
+        key : i
+      }
+    });
+  }
   getKeyByValue(obj,value){
     return Object.keys(obj).find((key) => obj[key] == value);
   }
   getLabelForGenre(genreValue){
     return formatGenreLabel(this.getKeyByValue(SoundCloudApi.genre,genreValue));
   }
+  getLabelForRegion(regionValue){
+    return formatGenreLabel(this.getKeyByValue(SoundCloudApi.region,regionValue));
+  }
   _onGenreChange(genre){
     this.setState({selectedGenre:genre});
+  }
+  _onRegionChange(region){
+    this.setState({selectedRegion:region});
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
@@ -80,13 +106,13 @@ class TopList extends Component {
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
-
   loadTopSoundCloudTracks(){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.getPopularByGenre(this.state.selectedGenre,{
-      cancelToken : this.generateRequestInvalidationToken().token
-    });
+    let requestPromise = this.scApi.getPopularByGenre(
+      this.state.selectedGenre,
+      this.state.selectedRegion,
+      { cancelToken : this.generateRequestInvalidationToken().token});
     requestPromise.catch((err) => {
 
       this.props.onRequestFail(err,this.state.selectedGenre);
@@ -137,11 +163,18 @@ class TopList extends Component {
     return item;
   }
   onCloseGenrePicker(){
-    this.setState({pickerModalOpen:false});
+    this.setState({pickerModalOpen:false,pickerModalType:'genre'});
   }
   openGenrePicker(){
-    this.setState({pickerModalOpen:true});
+    this.setState({pickerModalOpen:true,pickerModalType:'genre'});
   }
+  onCloseRegionPicker(){
+    this.setState({pickerModalOpen:false,pickerModalType:'region'});
+  }
+  openRegionPicker(){
+    this.setState({pickerModalOpen:true,pickerModalType:'region'});
+  }
+
   onTrackDescRender(rowData){
     return rowData.duration ?
       `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
@@ -154,9 +187,20 @@ class TopList extends Component {
           <View style={styles.descContainer}>
             <Text style={styles.listDescriptionText}>Top Tracks</Text>
           </View>
-          <TouchableHighlight style={styles.genreSelectionBtn} onPress={this.openGenrePicker}>
-            <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
-          </TouchableHighlight>
+        </View>
+        <View style={styles.listDescription}>
+          <View style={styles.genreSelectionBtn}>
+              <Text style={styles.listDetailText} >Region</Text>
+            <TouchableHighlight onPress={this.openRegionPicker}>
+                <Text style={styles.genreSelectionText}>{this.getLabelForRegion(this.state.selectedRegion)}</Text>
+            </TouchableHighlight>
+          </View>
+          <View style={styles.genreSelectionBtn}>
+            <Text style={styles.listDetailText}>Genre</Text>
+            <TouchableHighlight onPress={this.openGenrePicker}>
+                <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
+              </TouchableHighlight>
+          </View>
         </View>
         <TrackList
           tracksData={this.state.trackList.map(this._markAsCurrentTrack)}
@@ -167,15 +211,25 @@ class TopList extends Component {
           onTrackSelected={this.props.onSongSelected}
           {...this.props}
           />
-          {this.state.pickerModalOpen ?
-            <ModalPicker
-              options={this.state.genreOptions}
-              selected={this.state.selectedGenre}
-              onClose={this.onCloseGenrePicker}
-              onValueChange={this._onGenreChange}/>
-            : null }
+          {this.state.pickerModalOpen ? this.renderActivePicker(): null }
       </View>
     );
+  }
+  renderActivePicker(){
+    if(this.state.pickerModalType == 'genre'){
+      return <ModalPicker
+        options={this.state.genreOptions}
+        selected={this.state.selectedGenre}
+        onClose={this.onCloseGenrePicker}
+        onValueChange={this._onGenreChange}/>;
+    }
+    if(this.state.pickerModalType == 'region'){
+      return <ModalPicker
+        options={this.state.regionOptions}
+        selected={this.state.selectedRegion}
+        onClose={this.onCloseRegionPicker}
+        onValueChange={this._onRegionChange}/>;
+    }
   }
 }
 TopList.defaultProps = {
@@ -189,14 +243,14 @@ const styles = StyleSheet.create({
     flex: 1
   },
   genreSelectionBtn :{
-    flex:2,
-    alignItems:'flex-end',
+    flex:1,
     paddingRight: 10,
-    paddingVertical:10
+    paddingVertical:10,
+    alignItems:'center'
   },
   genreSelectionText : {
     color : THEME.mainActiveColor,
-    fontSize : 18,
+    fontSize : 16,
     fontWeight:'600'
   },
   listDescription : {
@@ -212,6 +266,10 @@ const styles = StyleSheet.create({
     paddingVertical:10,
     fontWeight:'600',
     color: THEME.mainHighlightColor
+  },
+  listDetailText :{
+    fontSize : 16,
+    color: THEME.mainColor
   }
 });
 

@@ -3,7 +3,7 @@ const styles = {
   mainBgColor: '#1C1C1F',
   mainHighlightColor : 'rgb(238, 238, 238)',
   mainActiveColor: '#ff8648',
-  mainColor : '#7B7C7F',
+  mainColor : '#a0a0a2',
   scAuthorColor : '#caccd0',
   contentBgColor : 'rgb(18, 19, 20)',
   contentBorderColor : 'rgba(71, 71, 72, 0.3)',//'#474748',
