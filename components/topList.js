@@ -26,26 +26,24 @@ class TopList extends Component {
   constructor(props){
     super(props);
     this._onGenreChange = this._onGenreChange.bind(this);
-    this.onCloseGenrePicker = this.onCloseGenrePicker.bind(this);
+    this.onClosePicker = this.onClosePicker.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.openGenrePicker = this.openGenrePicker.bind(this);
-    this.getLabelForGenre = this.getLabelForGenre.bind(this);
-    this.getGenreOptionsList = this.getGenreOptionsList.bind(this);
-
     this._onRegionChange = this._onRegionChange.bind(this);
-    this.onCloseRegionPicker = this.onCloseRegionPicker.bind(this);
     this.openRegionPicker = this.openRegionPicker.bind(this);
     this.getLabelForRegion = this.getLabelForRegion.bind(this);
+    this.getLabelForGenre = this.getLabelForGenre.bind(this);
 
     this.state = {
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
-      genreOptions : this.getGenreOptionsList(),
-      regionOptions: this.getRegionOptionsList(),
+      genreOptions : this.getOptionsListByType('genre'),
+      regionOptions: this.getOptionsListByType('region'),
+      pickerModalType: 'genre',
       trackList : []
     };
-
+    console.log('genreOptions',this.getOptionsListByType('genre'))
   }
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
@@ -64,24 +62,17 @@ class TopList extends Component {
     }
   }
 
-  getGenreOptionsList(){
-    return Object.keys(SoundCloudApi.genre).map((key,i) => {
+  getOptionsListByType(type){
+    if(!['genre','region'].includes(type)) return [];
+    return Object.keys(SoundCloudApi[type]).map((key,i) => {
       return {
         label : formatGenreLabel(key),
-        value : SoundCloudApi.genre[key],
+        value : SoundCloudApi[type][key],
         key : i
       }
     });
   }
-  getRegionOptionsList(){
-    return Object.keys(SoundCloudApi.region).map((key,i) => {
-      return {
-        label : formatGenreLabel(key),
-        value : SoundCloudApi.region[key],
-        key : i
-      }
-    });
-  }
+
   getKeyByValue(obj,value){
     return Object.keys(obj).find((key) => obj[key] == value);
   }
@@ -162,14 +153,11 @@ class TopList extends Component {
     }
     return item;
   }
-  onCloseGenrePicker(){
-    this.setState({pickerModalOpen:false,pickerModalType:'genre'});
+  onClosePicker(){
+    this.setState({pickerModalOpen:false});
   }
   openGenrePicker(){
     this.setState({pickerModalOpen:true,pickerModalType:'genre'});
-  }
-  onCloseRegionPicker(){
-    this.setState({pickerModalOpen:false,pickerModalType:'region'});
   }
   openRegionPicker(){
     this.setState({pickerModalOpen:true,pickerModalType:'region'});
@@ -220,14 +208,14 @@ class TopList extends Component {
       return <ModalPicker
         options={this.state.genreOptions}
         selected={this.state.selectedGenre}
-        onClose={this.onCloseGenrePicker}
+        onClose={this.onClosePicker}
         onValueChange={this._onGenreChange}/>;
     }
     if(this.state.pickerModalType == 'region'){
       return <ModalPicker
         options={this.state.regionOptions}
         selected={this.state.selectedRegion}
-        onClose={this.onCloseRegionPicker}
+        onClose={this.onClosePicker}
         onValueChange={this._onRegionChange}/>;
     }
   }
