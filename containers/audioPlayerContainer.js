@@ -490,13 +490,13 @@ class AudioPlayerContainer extends Component {
                         resizeMode={'contain'}
                        />
                      </View>
-                     <View style={{flex:2}}>
-                       <TouchableOpacity  onPress={this._onPickerToggle}>
+                     <View style={styles.trackInfoContainer}>
+                       <TouchableOpacity  onPress={this._onPickerToggle} style={styles.trackRowContainer}>
                          <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                           { trackLabelPlaceholder }
                          </Text>
                        </TouchableOpacity>
-                       <TouchableOpacity onPress={this._openScUploaderLink} >
+                       <TouchableOpacity onPress={this._openScUploaderLink} style={styles.trackRowContainer}>
                          <Text style={tracknameTextDescription}>
                            { trackDescription }
                          </Text>
@@ -667,8 +667,9 @@ const styles = StyleSheet.create({
   tracknameContainer:{
     flex:2,
     paddingTop:20,
+    paddingBottom:10,
     flexDirection:'column',
-    justifyContent:'center',
+    justifyContent:'center'
   },
   tracknameFullscreen:{
     flex:0,
@@ -722,13 +723,6 @@ const styles = StyleSheet.create({
   searchButton:{
     top:5
   },
-  tracknameTextFullscreen:{
-    lineHeight: 25,
-    textAlign: 'center',
-    paddingLeft:20,
-    paddingRight:20,
-    height: 30
-  },
   scCopyContainer :{
     position:'absolute',
     bottom:10,
@@ -742,21 +736,35 @@ const styles = StyleSheet.create({
   playlistButton:{
     top:5
   },
+  trackInfoContainer:{
+    flex:2,
+    justifyContent:'center'
+  },
+  trackRowContainer:{
+    height:25
+  },
   trackname : {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: mainFgColor,
     backgroundColor: 'transparent',
-    lineHeight: 35,
-    height: 40,
     paddingRight:20
   },
   trackDescription:{
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: THEME.scAuthorColor
   },
+  tracknameTextFullscreen:{
+    fontSize: 18,
+    lineHeight: 25,
+    textAlign: 'center',
+    paddingLeft:20,
+    paddingRight:20,
+    height: 30
+  },
   trackDescriptionTextFullscreen:{
+    fontSize: 16,
     textAlign: 'center',
     height: 40,
   },
@@ -783,7 +791,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20
   },
   miniFgArtworkContainer:{
-    flex:1
+    flex:1,
+    paddingBottom:0
   }
 });
 const sliderTrackStyles = {

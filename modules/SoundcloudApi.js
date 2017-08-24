@@ -132,7 +132,7 @@ SoundCloudApi.region = {
   FRANCE : 'soundcloud:regions:FR',
   GERMANY : 'soundcloud:regions:DE',
   IRELAND : 'soundcloud:regions:IE',
-  NETHERLANDS : 'soundcloud:regions:AN',
+  NETHERLANDS : 'soundcloud:regions:NL',
   NEW_ZELAND : 'soundcloud:regions:NZ',
   UNITED_KINGDOM : 'soundcloud:regions:GB',
   UNITED_STATES : 'soundcloud:regions:US'

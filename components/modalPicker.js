@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   closeButtonText:{
     color:THEME.mainHighlightColor,
     textAlign:'right',
-    lineHeight:22,
+    lineHeight:25,
   }
 });
 

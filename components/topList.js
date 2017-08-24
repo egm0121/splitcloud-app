@@ -60,8 +60,11 @@ class TopList extends Component {
         console.log('ignore as old genre request',err)
       });
     }
+    if(this.state.trackList !== prevState.trackList){
+      console.log('scroll to top');
+      this.trackListRef.scrollTo({x:0, y:0, animated:true});
+    }
   }
-
   getOptionsListByType(type){
     if(!['genre','region'].includes(type)) return [];
     return Object.keys(SoundCloudApi[type]).map((key,i) => {
@@ -72,7 +75,6 @@ class TopList extends Component {
       }
     });
   }
-
   getKeyByValue(obj,value){
     return Object.keys(obj).find((key) => obj[key] == value);
   }
@@ -178,19 +180,26 @@ class TopList extends Component {
         </View>
         <View style={styles.listDescription}>
           <View style={styles.genreSelectionBtn}>
-              <Text style={styles.listDetailText} >Region</Text>
             <TouchableHighlight onPress={this.openRegionPicker}>
+              <View>
+                <Text style={styles.listDetailText} >Region</Text>
                 <Text style={styles.genreSelectionText}>{this.getLabelForRegion(this.state.selectedRegion)}</Text>
+              </View>
+
             </TouchableHighlight>
           </View>
           <View style={styles.genreSelectionBtn}>
-            <Text style={styles.listDetailText}>Genre</Text>
-            <TouchableHighlight onPress={this.openGenrePicker}>
-                <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
+              <TouchableHighlight onPress={this.openGenrePicker}>
+                <View>
+                  <Text style={styles.listDetailText}>Genre</Text>
+                  <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
+                </View>
+
               </TouchableHighlight>
           </View>
         </View>
         <TrackList
+          listRef={(ref) => this.trackListRef = ref}
           tracksData={this.state.trackList.map(this._markAsCurrentTrack)}
           onTrackDescRender={this.onTrackDescRender}
           onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
@@ -239,6 +248,7 @@ const styles = StyleSheet.create({
   genreSelectionText : {
     color : THEME.mainActiveColor,
     fontSize : 16,
+    textAlign: 'center',
     fontWeight:'600'
   },
   listDescription : {
@@ -257,6 +267,7 @@ const styles = StyleSheet.create({
   },
   listDetailText :{
     fontSize : 16,
+    textAlign: 'center',
     color: THEME.mainColor
   }
 });
