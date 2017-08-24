@@ -16,5 +16,5 @@ export function ucFirst(str){
   return str[0].toUpperCase() + str.substring(1).toLowerCase();
 }
 export function formatGenreLabel(key){
-  return ucFirst(key).replace(/_/g,' ');
+  return key.split('_').map(t => ucFirst(t)).join(' ');
 }

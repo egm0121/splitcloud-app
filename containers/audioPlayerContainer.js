@@ -426,26 +426,35 @@ class AudioPlayerContainer extends Component {
   renderInFullscreen(children){
     return this.props.isFullscreen ? children :null;
   }
+  renderInSplitMode(children){
+    return this.props.isFullscreen ? null : children;
+  }
   render() {
     const sideLabel = {
       'L' : 'left',
       'R' : 'right'
     };
     const isBufferingLabel = 'Buffering - ';
-    let playbackSource = this._isPlayerPlaying() || this._isPlayerBuffering() ?
+    let isUiPlaybackActive = this._isPlayerPlaying() || this._isPlayerBuffering();
+    let playbackSource = isUiPlaybackActive ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
+    let playPauseButtonStyle = [styles.container];
+    playPauseButtonStyle.push(isUiPlaybackActive ?
+      styles.pauseToggleButton : styles.playToggleButton);
+
     let {width} = Dimensions.get('window');
     let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
     let showBgArtCover = this._getCurrentTrackArtwork();
     let tracknameStyles = [styles.tracknameContainer];
     let tracknameTextStyles = [styles.trackname];
+    let tracknameTextDescription = [styles.trackDescription];
     let playerBgImage = [styles.artworkImage];
     if(this.props.isFullscreen){
       tracknameStyles.push(styles.tracknameFullscreen)
       tracknameTextStyles.push(styles.tracknameTextFullscreen)
+      tracknameTextDescription.push(styles.trackDescriptionTextFullscreen)
     }
-    tracknameTextStyles.push( this.props.isFullscreen ? lightTextShadowStyle : textShadowStyle);
     let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
 
@@ -462,28 +471,56 @@ class AudioPlayerContainer extends Component {
         <View style={styles.artwork}>
             <Image
               style={playerBgImage}
-              blurRadius = {this.props.isFullscreen && !this.props.isSplitMode? 20 : 0}
+              blurRadius={20}
               source={ showBgArtCover ?
                 {uri:this._getCurrentTrackArtwork()} :
                 require('../assets/alt_artwork.png')
                }
               resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
               <View style={styles.backgroundOverlay}>
-                <View style={tracknameStyles}>
-                  <TouchableOpacity  onPress={this._onPickerToggle}>
-                    <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
-                     { trackLabelPlaceholder }
-                    </Text>
-                  </TouchableOpacity>
-                  {this.renderInFullscreen(<TouchableOpacity onPress={this._openScUploaderLink} >
-                    <Text style={[styles.trackDescription]}>
-                      { trackDescription }
-                    </Text>
-                  </TouchableOpacity>)}
-                </View>
+                  {this.renderInSplitMode(
+                  <View style={[tracknameStyles]}>
+                    <View style={[styles.horizontalContainer]}>
+                      <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
+                       <Image style={[styles.fgArtCoverImage]}
+                        source={ this._getCurrentTrackArtwork() ?
+                         {uri:this._getCurrentTrackArtwork()} :
+                         require('../assets/empty_album.png')
+                        }
+                        resizeMode={'contain'}
+                       />
+                     </View>
+                     <View style={styles.trackInfoContainer}>
+                       <TouchableOpacity  onPress={this._onPickerToggle} style={styles.trackRowContainer}>
+                         <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                          { trackLabelPlaceholder }
+                         </Text>
+                       </TouchableOpacity>
+                       <TouchableOpacity onPress={this._openScUploaderLink} style={styles.trackRowContainer}>
+                         <Text style={tracknameTextDescription}>
+                           { trackDescription }
+                         </Text>
+                       </TouchableOpacity>
+                     </View>
+                    </View>
+                  </View>
+                  )}
+                {this.renderInFullscreen(
+                  <View style={tracknameStyles}>
+                    <TouchableOpacity  onPress={this._onPickerToggle}>
+                      <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                       { trackLabelPlaceholder }
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this._openScUploaderLink} >
+                      <Text style={tracknameTextDescription}>
+                        { trackDescription }
+                      </Text>
+                    </TouchableOpacity>
+                  </View>)}
                 {this.renderInFullscreen(this.renderForegroundArtCover())}
                 <View style={[styles.horizontalContainer]} >
-                  <Text style={[styles.playbackTime,textShadowStyle,styles.playbackTimeInitial]}>{formatDuration(this.state.elapsed)}</Text>
+                  <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{formatDuration(this.state.elapsed)}</Text>
                   <View style={styles.playbackTrackContainer}>
                     <MultiSlider
                       values={this.state.sliderOneValue}
@@ -498,7 +535,7 @@ class AudioPlayerContainer extends Component {
                       unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                       markerStyle={markerStyle} />
                   </View>
-                  <Text style={[styles.playbackTime,textShadowStyle]}>{formatDuration(this.state.duration)}</Text>
+                  <Text style={[styles.playbackTime]}>{formatDuration(this.state.duration)}</Text>
                 </View>
                 <View style={styles.horizontalContainer}>
                   <Button style={[styles.container,styles.playlistButton]}
@@ -508,21 +545,23 @@ class AudioPlayerContainer extends Component {
                           image={require('../assets/flat_prev.png')}
                           size={'bigger'}
                           onPressed={this._goToPrevTrack} />
-                        <Button style={[styles.container,styles.playToggleButton]} image={playbackSource}
-                      size={'huge'} onPressed={this._onPlayTogglePress} />
+                  <View style={styles.playToggleButtonContainer}>
+                    <Button style={playPauseButtonStyle} image={playbackSource}
+                        size={'huge'} onPressed={this._onPlayTogglePress} />
+                  </View>
                   <Button style={[styles.container,styles.endRow]}
                           image={require('../assets/flat_next.png')}
                           size={'bigger'}
                           onPressed={this._goToNextTrack} />
-                        <Button style={[styles.container,styles.searchButton]}
-                      image={require('../assets/flat_search.png')}
-                      onPressed={this._onPickerToggle}
-                      size={'small'}
-                  />
+                  <Button style={[styles.container,styles.searchButton]}
+                          image={require('../assets/flat_search.png')}
+                          onPressed={this._onPickerToggle}
+                          size={'small'}/>
                 </View>
                 <View style={styles.horizontalContainer}>
                   <View style={styles.volumeSlider}>
                     <Slider step={0.05}
+                      thumbImage={require('../assets/flat_dot.png')}
                       minimumTrackTintColor={sliderTrackStyles.min}
                       maximumTrackTintColor={sliderTrackStyles.max}
                       onValueChange={this._onVolumeValueChange}
@@ -541,6 +580,7 @@ class AudioPlayerContainer extends Component {
       </View>
     );
   }
+
   renderForegroundArtCover() {
     return <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
       <Image style={[styles.fgArtCoverImage]}
@@ -598,8 +638,8 @@ const textShadowStyle = {
 }
 const lightTextShadowStyle = {
   textShadowColor: '#555',
-  textShadowOffset: {width:1,height:1},
-  textShadowRadius : 8
+  textShadowOffset: {width:0,height:0},
+  textShadowRadius : 0
 };
 const styles = StyleSheet.create({
   mainContainer:{
@@ -626,8 +666,14 @@ const styles = StyleSheet.create({
   },
   tracknameContainer:{
     flex:2,
+    paddingTop:20,
+    paddingBottom:10,
     flexDirection:'column',
-    justifyContent:'center',
+    justifyContent:'center'
+  },
+  tracknameFullscreen:{
+    flex:0,
+    height:75
   },
   progressSlider : {
     flex:1,
@@ -635,7 +681,6 @@ const styles = StyleSheet.create({
   playbackTime :{
     textAlign: 'center',
     color: mainFgColor,
-    textShadowColor: overImageShadowColor,
     height:30,
     lineHeight: 22,
     width:50
@@ -658,19 +703,25 @@ const styles = StyleSheet.create({
     margin: 10,
     height: 30
   },textShadowStyle),
+  playToggleButtonContainer:{
+    borderWidth:1.5,
+    borderRadius:50,
+    height:60,
+    width:60,
+    top:-10,
+    borderColor:'rgba(255,255,255,0.5)',
+    marginHorizontal:10
+  },
   playToggleButton:{
-    top:-5
+    top:6,
+    left:3
+  },
+  pauseToggleButton:{
+    top:5,
+    left:-1
   },
   searchButton:{
     top:5
-  },
-  tracknameFullscreen:{
-    flex:0,
-    height:75
-  },
-  tracknameTextFullscreen:{
-    lineHeight: 25,
-    height: 30,
   },
   scCopyContainer :{
     position:'absolute',
@@ -682,30 +733,40 @@ const styles = StyleSheet.create({
     width:45,
     height:45
   },
-  smallSearchIcon: {
-    top:5,
-    width:25,
-    height:25,
-  },
   playlistButton:{
     top:5
   },
+  trackInfoContainer:{
+    flex:2,
+    justifyContent:'center'
+  },
+  trackRowContainer:{
+    height:25
+  },
   trackname : {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    textAlign: 'center',
     color: mainFgColor,
     backgroundColor: 'transparent',
-    lineHeight: 35,
-    height: 40,
-    paddingLeft:20,
     paddingRight:20
   },
   trackDescription:{
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    textAlign: 'center',
     color: THEME.scAuthorColor
+  },
+  tracknameTextFullscreen:{
+    fontSize: 18,
+    lineHeight: 25,
+    textAlign: 'center',
+    paddingLeft:20,
+    paddingRight:20,
+    height: 30
+  },
+  trackDescriptionTextFullscreen:{
+    fontSize: 16,
+    textAlign: 'center',
+    height: 40,
   },
   artwork : {
     justifyContent: 'center',
@@ -718,7 +779,6 @@ const styles = StyleSheet.create({
     height:null,
     backgroundColor:artworkPlaceholderColor
   },
-  artworkBgFullscreen:{},
   fgArtCoverImage :{
     flex:1,
     width:null,
@@ -728,6 +788,11 @@ const styles = StyleSheet.create({
     flex:5,
     borderColor:THEME.contentBorderColor,
     paddingBottom: 20
+  },
+  miniFgArtworkContainer:{
+    flex:1,
+    paddingBottom:0,
+    paddingLeft:5
   }
 });
 const sliderTrackStyles = {
@@ -735,9 +800,9 @@ const sliderTrackStyles = {
   min : mainFgColor
 };
 const markerStyle = {
-  height:15,
-  width:15,
-  borderRadius: 7.5,
+  height:17,
+  width:4,
+  borderRadius: 2,
   backgroundColor:THEME.mainHighlightColor,
   borderWidth: 0,
   shadowColor:'black',

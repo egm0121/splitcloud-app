@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     paddingTop: 10
   },
   header :{
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
     borderBottomColor: THEME.tabBarBorderColor
   },
   appLogo:{
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   panToggleContainer:{
     height:40,
-    borderTopWidth: 2,
+    borderTopWidth: 1,
     borderColor: THEME.tabBarBorderColor
   },
   horizontalContainer:{

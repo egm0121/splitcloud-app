@@ -100,7 +100,7 @@ class TrackList extends Component {
         <ListView contentContainerStyle={styles.list}
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
-          renderRow={this.renderRowWithData.bind(this)} />
+          renderRow={this.renderRowWithData.bind(this)} ref={(ref) => this.props.listRef(ref)} />
 
       </View>
     );
@@ -109,7 +109,8 @@ class TrackList extends Component {
 
 TrackList.defaultProps = {
   emptyLabel : 'Empty Tracklist',
-  onTrackActionRender : () => '+'
+  onTrackActionRender : () => '+',
+  listRef : () => {}
 };
 TrackList.propTypes = {
   tracksData : PropTypes.array.isRequired,

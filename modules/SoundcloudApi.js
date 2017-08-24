@@ -25,6 +25,7 @@ class SoundCloudApi {
   }
   _toQueryString(paramObj){
     return Object.keys(paramObj)
+      .filter((key) => paramObj[key] != undefined)
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramObj[key])}`)
       .join('&');
   }
@@ -60,8 +61,9 @@ class SoundCloudApi {
       ...queryOpts
     }, SoundCloudApi.methods.GET ,cancelToken);
   }
-  getPopularByGenre(genre = SoundCloudApi.genre.ALL, opts = {} ){
+  getPopularByGenre(genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
+    let regionParam = region != SoundCloudApi.region.WORLDWIDE ? region : undefined;
     return this.request(SoundCloudApi.api.v2,'charts',{
       limit:50,
       offset:0,
@@ -69,6 +71,7 @@ class SoundCloudApi {
       high_tier_only:false,
       kind:'top',
       genre,
+      region:regionParam,
       ...queryOpts
     },SoundCloudApi.methods.GET,cancelToken);
   }
@@ -122,6 +125,18 @@ SoundCloudApi.genre = {
   STORYTELLING : 'soundcloud:genres:storytelling',
   TECHNOLOGY : 'soundcloud:genres:technology'
 };
+SoundCloudApi.region = {
+  WORLDWIDE : 'all',
+  AUSTRALIA : 'soundcloud:regions:AU',
+  CANADA : 'soundcloud:regions:CA',
+  FRANCE : 'soundcloud:regions:FR',
+  GERMANY : 'soundcloud:regions:DE',
+  IRELAND : 'soundcloud:regions:IE',
+  NETHERLANDS : 'soundcloud:regions:NL',
+  NEW_ZELAND : 'soundcloud:regions:NZ',
+  UNITED_KINGDOM : 'soundcloud:regions:GB',
+  UNITED_STATES : 'soundcloud:regions:US'
+}
 SoundCloudApi.methods = {
   GET:'get',
   POST:'post',
