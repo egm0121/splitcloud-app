@@ -478,7 +478,7 @@ class AudioPlayerContainer extends Component {
                }
               resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
               <View style={styles.backgroundOverlay}>
-                {this.renderInSplitMode(
+                  {this.renderInSplitMode(
                   <View style={[tracknameStyles]}>
                     <View style={[styles.horizontalContainer]}>
                       <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
@@ -504,7 +504,7 @@ class AudioPlayerContainer extends Component {
                      </View>
                     </View>
                   </View>
-                )}
+                  )}
                 {this.renderInFullscreen(
                   <View style={tracknameStyles}>
                     <TouchableOpacity  onPress={this._onPickerToggle}>
@@ -717,8 +717,8 @@ const styles = StyleSheet.create({
     left:3
   },
   pauseToggleButton:{
-    top:6,
-    left:0
+    top:5,
+    left:-1
   },
   searchButton:{
     top:5
@@ -779,7 +779,6 @@ const styles = StyleSheet.create({
     height:null,
     backgroundColor:artworkPlaceholderColor
   },
-  artworkBgFullscreen:{},
   fgArtCoverImage :{
     flex:1,
     width:null,
@@ -792,7 +791,8 @@ const styles = StyleSheet.create({
   },
   miniFgArtworkContainer:{
     flex:1,
-    paddingBottom:0
+    paddingBottom:0,
+    paddingLeft:5
   }
 });
 const sliderTrackStyles = {

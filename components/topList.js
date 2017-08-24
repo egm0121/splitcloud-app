@@ -185,7 +185,6 @@ class TopList extends Component {
                 <Text style={styles.listDetailText} >Region</Text>
                 <Text style={styles.genreSelectionText}>{this.getLabelForRegion(this.state.selectedRegion)}</Text>
               </View>
-
             </TouchableHighlight>
           </View>
           <View style={styles.genreSelectionBtn}>
@@ -194,7 +193,6 @@ class TopList extends Component {
                   <Text style={styles.listDetailText}>Genre</Text>
                   <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
                 </View>
-
               </TouchableHighlight>
           </View>
         </View>
@@ -248,6 +246,7 @@ const styles = StyleSheet.create({
   genreSelectionText : {
     color : THEME.mainActiveColor,
     fontSize : 16,
+    lineHeight:23,
     textAlign: 'center',
     fontWeight:'600'
   },
