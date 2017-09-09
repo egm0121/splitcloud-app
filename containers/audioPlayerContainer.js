@@ -170,8 +170,8 @@ class AudioPlayerContainer extends Component {
     }
   }
   _onSongSelected(nextTrackResult){
-      this.props.onSongQueued(nextTrackResult);
-      this._goToTrack(nextTrackResult);
+    this.props.onSongQueued(nextTrackResult);
+    this._goToTrack(nextTrackResult);
   }
   _onSongQueued(nextTrackResult){
     this.props.pushNotification({

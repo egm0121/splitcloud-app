@@ -67,7 +67,11 @@ class FileDownloadManager{
     downloadReturn.promise.then((res) => {
       queueItem.resolve(res);
     })
-    .catch((err) => queueItem.reject(err))
+    .catch((err) => {
+      queueItem.reject(err)
+      //use last then block as finally
+      return Promise.resolve();
+    })
     .then(() => {
       this.progressItem = null;
       this.processDownloadQueue();
