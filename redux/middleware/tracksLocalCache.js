@@ -3,7 +3,11 @@ import FileDownloadManager from '../../modules/FileDownloadManager';
 let trackManager = new FileDownloadManager({extension:'mp3'});
 
 console.log('test fix for ios crash on empty body download');
-
+const findTrackInAnyPlaylist = (playlistArr,track) => {
+  return playlistArr.filter( playlist => {
+    return playlist.tracks.find( curr => curr.id == track.id )
+  });
+}
 const trackCacheMiddleware = store => {
   return next => {
     return action => {
@@ -29,7 +33,10 @@ const trackCacheMiddleware = store => {
         });
       }
       if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
-        //TODO: smarter check to see if local asset is not needed by any playlist.
+        if(findTrackInAnyPlaylist(
+          store.getState().playlist,
+          action.track).length
+        ) return false;
         console.info('trackCacheMiddleware: remove local asset');
         trackManager.deleteLocalAssetPath(action.track.id);
       }
