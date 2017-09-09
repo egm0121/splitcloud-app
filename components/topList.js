@@ -132,7 +132,7 @@ class TopList extends Component {
     if(!resp){
       return this.setState({ trackList : [] });
     }
-    let tracks = resp.map((t) => (
+    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(
       {
         id: t.id,
         label : t.title,

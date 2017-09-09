@@ -4,38 +4,47 @@ import md5 from 'js-md5';
 class FileDownloadManager{
   constructor(opts){
     this.options = Object.assign({},FileDownloadManager.defaultOptions,opts);
-    this.options.cachePath = RNFS.MainBundlePath + '/';
-    this.initCacheDir();
+    this.options.cachePath = RNFS.DocumentDirectoryPath + '/' + this.options.cacheNamespace + '/';
     this.downloadQueue = [];
     this.progressItem = null;
+    this.isCacheFolderInit = false;
   }
   initCacheDir(){
-    if(!this.options.cacheNamespace) return false;
-    let path = `${RNFS.MainBundlePath}/${this.options.cacheNamespace}/`;
-    RNFS.mkdir(path,{NSURLIsExcludedFromBackupKey : true});
-    this.options.cachePath = path;
-    console.log('FileDownloadManager caching dir is:',path);
+    if(this.isCacheFolderInit) return Promise.resolve(true);
+    return RNFS.mkdir(this.options.cachePath,{NSURLIsExcludedFromBackupKey : true})
+    .then(() => {
+      console.log('FileDownloadManager caching dir init:',this.options.cachePath);
+      this.isCacheFolderInit = true;
+    });
   }
   hashUrlToFilename(filename){
-    let hash = md5(filename);
+    let hash = md5(filename.toString());
     return this.options.extension ? `${hash}.${this.options.extension}`: hash;
   }
-  storeAsset(assetUrl){
-    return new Promise((res,rej) => {
-      let assetHash = this.hashUrlToFilename(assetUrl);
-      let downloadItem = {
-        fromUrl: assetUrl,
-        toFile: this.options.cachePath + assetHash,
-        hash: assetHash,
-        resolve: res,
-        reject: rej
-      };
-      console.log('push download job in queue');
-      this.downloadQueue.push(downloadItem);
-      if(!this.progressItem){
-        this.processDownloadQueue();
-      }
-    })
+  storeAsset(assetUrl,assetId){
+    return this.initCacheDir().then(() =>{
+      return new Promise((res,rej) => {
+        let assetHash = this.hashUrlToFilename(assetId ? assetId : assetUrl);
+        let downloadItem = {
+          fromUrl: assetUrl,
+          toFile: this.options.cachePath + assetHash,
+          hash: assetHash,
+          resolve: res,
+          reject: rej
+        };
+        console.log('push download job in queue');
+        if((this.progressItem &&
+            this.progressItem.item.hash == downloadItem.hash) ||
+            this.downloadQueue.find((curr) => curr.hash == downloadItem.hash )){
+          console.log('skip download as already queued');
+          return false;
+        }
+        this.downloadQueue.push(downloadItem);
+        if(!this.progressItem){
+          this.processDownloadQueue();
+        }
+      })
+    });
   }
   processDownloadQueue(){
     let queueItem = this.downloadQueue.pop();
@@ -65,11 +74,21 @@ class FileDownloadManager{
     })
     return downloadReturn.promise;
   }
-  getLocalAssetPath(assetUrl){
-    return this.options.cachePath + this.hashUrlToFilename(assetUrl);
+  getLocalAssetPath(assetId){
+    return this.options.cachePath + this.hashUrlToFilename(assetId);
   }
-  hasLocalAsset(assetUrl){
-    return RNFS.exists(this.options.cachePath + this.hashUrlToFilename(assetUrl));
+  hasLocalAsset(assetId){
+    return RNFS.exists(this.options.cachePath + this.hashUrlToFilename(assetId));
+  }
+  deleteLocalAssetPath(assetId){
+    return this.hasLocalAsset(assetId).then((hasAsset) => {
+      if(hasAsset){
+        return RNFS.unlink(this.getLocalAssetPath(assetId));
+      }
+    })
+  }
+  deleteAllStorage(){
+    return RNFS.unlink(this.options.cachePath);
   }
 }
 FileDownloadManager.defaultOptions = {

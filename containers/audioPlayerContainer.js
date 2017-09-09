@@ -169,20 +169,16 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _onSongSelected(nextTrack){
-    this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
-      this.props.onSongQueued(nextTrack);
-      this._goToTrack(nextTrack);
-    });
+  _onSongSelected(nextTrackResult){
+      this.props.onSongQueued(nextTrackResult);
+      this._goToTrack(nextTrackResult);
   }
-  _onSongQueued(nextTrack){
+  _onSongQueued(nextTrackResult){
     this.props.pushNotification({
       type : 'success',
       message : 'Added Track!'
     });
-    this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
-      this.props.onSongQueued(nextTrack);
-    });
+    this.props.onSongQueued(nextTrackResult);
   }
   _goToNextTrack(){
     this.props.goToNextTrack();
@@ -195,6 +191,7 @@ class AudioPlayerContainer extends Component {
     this.props.goToTrack(track);
   }
   _prepareCurrentTrack(shouldAutoPlay){
+
     this._getCurrentTrackStream().then((streamUrl) => {
       console.log('_prepareCurrentTrack url is :',streamUrl,' and play');
       this.playerAObj.isPlaying((err,isPlaying) => {
@@ -214,15 +211,7 @@ class AudioPlayerContainer extends Component {
       });
     }).catch(err => console.log('err hasLocalAsset',err));
   }
-  _resolvePlayableSoundUrl(songObj){
-    let stripSSL = (s) => s ? s.replace(/^(https)/,'http') : s ;
-    //this strip of https is needed as the ATS excaption for tls version on
-    //the info.plist wont work on twice for same request and 302 redirect
-    //to a second exceptional domain
-    songObj.streamUrl = stripSSL(songObj.streamUrl) + '?client_id='+ this.scClientId;
-    songObj.artwork = stripSSL(songObj.artwork);
-    return Promise.resolve(songObj);
-  }
+
   _onPlayTogglePress(){
     if(this._isCurrentMutedSide() || !this._getCurrentTrackUrl()){
       console.log('toggle playback attempted on muted player');
@@ -390,15 +379,19 @@ class AudioPlayerContainer extends Component {
     return this.props.playlist.tracks[this.state.playbackIndex] || {};
   }
   _getCurrentTrackStream(){
-    return this.fileManager.hasLocalAsset(this._getCurrentTrackUrl())
+    return this.fileManager.hasLocalAsset(this._getCurrentTrackId())
     .then(hasLocal => {
       if(hasLocal){
-        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(this._getCurrentTrackUrl());
+        console.log('playback from local cache');
+        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(this._getCurrentTrackId());
         return cachedPath;
       } else {
         return this._getCurrentTrackUrl();
       }
     })
+  }
+  _getCurrentTrackId(){
+    return this._getCurrentTrackObj().id;
   }
   _getCurrentTrackUrl(){
     return this._getCurrentTrackObj().streamUrl;
