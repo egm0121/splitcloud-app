@@ -2,7 +2,7 @@ import { actionTypes } from '../constants/actions';
 import FileDownloadManager from '../../modules/FileDownloadManager';
 let trackManager = new FileDownloadManager({extension:'mp3'});
 
-console.log('test fix for ios crash on empty body download');
+
 const findTrackInAnyPlaylist = (playlistArr,track) => {
   return playlistArr.filter( playlist => {
     return playlist.tracks.find( curr => curr.id == track.id )

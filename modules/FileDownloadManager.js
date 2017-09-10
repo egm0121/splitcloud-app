@@ -55,7 +55,7 @@ class FileDownloadManager{
     console.log('processDownloadQueue item', queueItem);
     let downloadReturn = RNFS.downloadFile({
       fromUrl : queueItem.fromUrl,
-      toFile : queueItem.toFile
+      toFile : queueItem.toFile + this.options.tempStorageExtension
     });
 
     this.progressItem = {
@@ -65,10 +65,13 @@ class FileDownloadManager{
     };
 
     downloadReturn.promise.then((res) => {
-      queueItem.resolve(res);
+      RNFS.moveFile(
+        queueItem.toFile + this.options.tempStorageExtension,
+        queueItem.toFile
+      ).then(move => queueItem.resolve(res));
     })
     .catch((err) => {
-      queueItem.reject(err)
+      queueItem.reject(err);
       //use last then block as finally
       return Promise.resolve();
     })
@@ -98,6 +101,7 @@ class FileDownloadManager{
 FileDownloadManager.defaultOptions = {
   cacheNamespace: 'cache',
   extension: false,
+  tempStorageExtension:'.download',
   ttl : false
 };
 
