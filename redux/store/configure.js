@@ -5,19 +5,21 @@ import { AsyncStorage } from 'react-native'
 import rootReducer from '../reducers/rootReducer';
 import devLogger from '../middleware/logger';
 import analyticsMiddleware from '../middleware/analyticsEvents';
+import tracksLocalCache from '../middleware/tracksLocalCache';
 
 const createStoreWithDebug = withLog => {
   let enhancer = compose(autoRehydrate())
-  let store = __DEV__ && withLog ?
-    createStore(rootReducer,applyMiddleware(analyticsMiddleware,devLogger),enhancer) :
-    createStore(rootReducer,applyMiddleware(analyticsMiddleware),enhancer);
+  let middlewareList = [analyticsMiddleware,tracksLocalCache];
+  if(__DEV__ && withLog){
+    middlewareList.push(devLogger);
+  }
+  let store = createStore(rootReducer,applyMiddleware(...middlewareList),enhancer);
+
   let persistor = persistStore(store, {
     blacklist: ['notifications'],
     storage: AsyncStorage
-  }, () => {
-    console.log('rehydration complete')
-  });
+  }, () => console.log('rehydration complete'));
   return [store, persistor];
 }
-export let [store , persistor] = createStoreWithDebug(false);
+export let [store , persistor] = createStoreWithDebug(true);
 export default store;

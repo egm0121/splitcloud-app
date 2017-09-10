@@ -48,7 +48,6 @@ class SongPicker extends Component {
     //start immediately a search for the initial searchInput value.
     this._onSearchChange(this.state.searchInput);
   }
-
   _onSearchTermsChange(text){
     this.performScPublicSearch(text).then(this.updateResultList,(err) => {
       console.log('ignore as old term request',err)
@@ -107,7 +106,7 @@ class SongPicker extends Component {
     if(!resp){
       return this.setState({ pureList : [] });
     }
-    let tracks = resp.map((t) => (
+    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(
       {
         id: t.id,
         label : t.title,
