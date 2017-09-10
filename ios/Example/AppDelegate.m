@@ -17,8 +17,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
-
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+  
+  if([[[NSProcessInfo processInfo] environment] objectForKey:@"REMOTE_DEBUG"]){
+    jsCodeLocation = [NSURL URLWithString:@"http://egm0121-mbp.local:8081/index.ios.bundle?platform=ios&dev=true"];
+  } else {
+    jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+  }
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"SplitCloudApp"

@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
   disabledButton:{
     opacity:0.5
   },
-
   buttonIcon:{
     width:30,
     height:30

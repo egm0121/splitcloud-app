@@ -1,5 +1,6 @@
 import axios from 'axios';
 import CacheDecorator from '../helpers/cacheDecorator';
+import {stripSSL } from '../helpers/utils';
 class SoundCloudApi {
 
   constructor({endpoints,clientId}){
@@ -74,6 +75,19 @@ class SoundCloudApi {
       region:regionParam,
       ...queryOpts
     },SoundCloudApi.methods.GET,cancelToken);
+  }
+  getClientId(){
+    return this.clientId;
+  }
+  resolvePlayableTrackItem(trackObj){
+    //this strip of https is needed as the ATS excaption for tls version on
+    //the info.plist wont work on twice for same request and 302 redirect
+    //to a second exceptional domain
+    return Object.assign({},trackObj,{
+      streamUrl : stripSSL(trackObj.streamUrl) +
+        '?client_id='+this.getClientId(),
+      artwork : stripSSL(trackObj.artwork)
+    });
   }
 }
 SoundCloudApi.api  = {

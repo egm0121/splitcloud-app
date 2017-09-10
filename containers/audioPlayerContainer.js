@@ -12,7 +12,13 @@ import {
   Linking
 } from 'react-native';
 import THEME from '../styles/variables';
-import { audioPlayerStates, soundcloudEndpoint, playbackModeTypes, messages, NOW_PLAYING_ASSET_NAME } from '../helpers/constants';
+import {
+  audioPlayerStates,
+  soundcloudEndpoint,
+  playbackModeTypes,
+  messages,
+  NOW_PLAYING_ASSET_NAME
+} from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
@@ -33,7 +39,7 @@ import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
 import {formatDuration} from '../helpers/formatters';
-
+import FileDownloadManager from '../modules/FileDownloadManager';
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
 const PLAYBACK_ENABLED_STATES = {
@@ -64,7 +70,7 @@ class AudioPlayerContainer extends Component {
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
     this.playerAObj = new ReactNativeStreamingPlayer();
-
+    this.fileManager = new FileDownloadManager({extension:'mp3'});
     this.state = {
       volume:1,
       userVolume:1,
@@ -163,20 +169,16 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _onSongSelected(nextTrack){
-    this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
-      this.props.onSongQueued(nextTrack);
-      this._goToTrack(nextTrack);
-    });
+  _onSongSelected(nextTrackResult){
+    this.props.onSongQueued(nextTrackResult);
+    this._goToTrack(nextTrackResult);
   }
-  _onSongQueued(nextTrack){
+  _onSongQueued(nextTrackResult){
     this.props.pushNotification({
       type : 'success',
       message : 'Added Track!'
     });
-    this._resolvePlayableSoundUrl(nextTrack).then((nextTrack) => {
-      this.props.onSongQueued(nextTrack);
-    });
+    this.props.onSongQueued(nextTrackResult);
   }
   _goToNextTrack(){
     this.props.goToNextTrack();
@@ -189,36 +191,29 @@ class AudioPlayerContainer extends Component {
     this.props.goToTrack(track);
   }
   _prepareCurrentTrack(shouldAutoPlay){
-    let currentTrack = this._getCurrentTrackStream();
-    console.log('_prepareCurrentTrack',currentTrack,'and play');
-    this.playerAObj.isPlaying((err,isPlaying) => {
-      if(isPlaying) {
-        console.log('pause and set url to next')
-        this.playerAObj.pause();
-      }
-      if(currentTrack){
-        console.log('setSoundUrl');
-        this.playerAObj.setSoundUrl(currentTrack);
-        if( shouldAutoPlay ){
-          console.log('start playback');
-          this.playerAObj.play();
+
+    this._getCurrentTrackStream().then((streamUrl) => {
+      console.log('_prepareCurrentTrack url is :',streamUrl,' and play');
+      this.playerAObj.isPlaying((err,isPlaying) => {
+        if(isPlaying) {
+          console.log('pause and set url to next')
+          this.playerAObj.pause();
         }
-      } else {
-        this.playerAObj.stop();
-      }
-    });
+        if(streamUrl){
+          this.playerAObj.setSoundUrl(streamUrl);
+          if( shouldAutoPlay ){
+            console.log('start playback');
+            this.playerAObj.play();
+          }
+        } else {
+          this.playerAObj.stop();
+        }
+      });
+    }).catch(err => console.log('err hasLocalAsset',err));
   }
-  _resolvePlayableSoundUrl(songObj){
-    let stripSSL = (s) => s ? s.replace(/^(https)/,'http') : s ;
-    //this strip of https is needed as the ATS excaption for tls version on
-    //the info.plist wont work on twice for same request and 302 redirect
-    //to a second exceptional domain
-    songObj.streamUrl = stripSSL(songObj.streamUrl) + '?client_id='+ this.scClientId;
-    songObj.artwork = stripSSL(songObj.artwork);
-    return Promise.resolve(songObj);
-  }
+
   _onPlayTogglePress(){
-    if(this._isCurrentMutedSide() || !this._getCurrentTrackStream()){
+    if(this._isCurrentMutedSide() || !this._getCurrentTrackUrl()){
       console.log('toggle playback attempted on muted player');
       return false;
     }
@@ -384,6 +379,21 @@ class AudioPlayerContainer extends Component {
     return this.props.playlist.tracks[this.state.playbackIndex] || {};
   }
   _getCurrentTrackStream(){
+    return this.fileManager.hasLocalAsset(this._getCurrentTrackId())
+    .then(hasLocal => {
+      if(hasLocal){
+        console.log('playback from local cache');
+        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(this._getCurrentTrackId());
+        return cachedPath;
+      } else {
+        return this._getCurrentTrackUrl();
+      }
+    })
+  }
+  _getCurrentTrackId(){
+    return this._getCurrentTrackObj().id;
+  }
+  _getCurrentTrackUrl(){
     return this._getCurrentTrackObj().streamUrl;
   }
   _getCurrentTrackTitle() {
