@@ -47,15 +47,26 @@ class FileDownloadManager{
     });
   }
   processDownloadQueue(){
-    let queueItem = this.downloadQueue.pop();
+    let queueItem = this.downloadQueue.pop(),connectionTimeout;
     if(!queueItem){
       console.log('no more queued downloads');
       return false;
     }
+
+    connectionTimeout = setTimeout(() => {
+      console.warn('download timed out: clean progressItem')
+      queueItem.reject(new Error('connection Timeout'));
+      this.progressItem = null;
+    },this.options.downloadBeginTimeout);
+
     console.log('processDownloadQueue item', queueItem);
     let downloadReturn = RNFS.downloadFile({
       fromUrl : queueItem.fromUrl,
-      toFile : queueItem.toFile + this.options.tempStorageExtension
+      toFile : queueItem.toFile + this.options.tempStorageExtension,
+      begin : (info) => {
+        console.log('download started');
+        clearTimeout(connectionTimeout);
+      }
     });
 
     this.progressItem = {
@@ -65,10 +76,10 @@ class FileDownloadManager{
     };
 
     downloadReturn.promise.then((res) => {
-      RNFS.moveFile(
+      return RNFS.moveFile(
         queueItem.toFile + this.options.tempStorageExtension,
         queueItem.toFile
-      ).then(move => queueItem.resolve(res));
+      ).then(move => { queueItem.resolve(res); });
     })
     .catch((err) => {
       queueItem.reject(err);
@@ -120,7 +131,8 @@ FileDownloadManager.defaultOptions = {
   cacheNamespace: 'cache',
   extension: false,
   tempStorageExtension:'.download',
-  ttl : false
+  ttl : false,
+  downloadBeginTimeout: 2*1e3
 };
 
 export default FileDownloadManager;
