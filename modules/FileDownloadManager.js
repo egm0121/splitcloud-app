@@ -94,6 +94,24 @@ class FileDownloadManager{
       }
     })
   }
+  _isTempDownloadFile(filename){
+    let testExtension = new RegExp(
+      (this.options.tempStorageExtension.replace('.','\.'))+'$'
+    );
+    return testExtension.test(filename);
+  }
+  cleanupIncompleteDownloads(){
+
+    RNFS.readDir(this.options.cachePath).then((pathsArr) => {
+      let deleteAllPaths = pathsArr.filter(
+        file => this._isTempDownloadFile(file.name)
+      )
+      .map(f =>{ console.log('del file'+f.name); return f})
+      .map(file => RNFS.unlink(file.path));
+
+      return Promise.all(deleteAllPaths);
+    });
+  }
   deleteAllStorage(){
     return RNFS.unlink(this.options.cachePath);
   }

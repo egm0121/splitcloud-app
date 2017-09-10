@@ -2,6 +2,9 @@ import { actionTypes } from '../constants/actions';
 import FileDownloadManager from '../../modules/FileDownloadManager';
 let trackManager = new FileDownloadManager({extension:'mp3'});
 
+trackManager.initCacheDir().then(
+  () => trackManager.cleanupIncompleteDownloads()
+);
 
 const findTrackInAnyPlaylist = (playlistArr,track) => {
   return playlistArr.filter( playlist => {
