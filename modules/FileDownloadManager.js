@@ -36,7 +36,7 @@ class FileDownloadManager{
         if((this.progressItem &&
             this.progressItem.item.hash == downloadItem.hash) ||
             this.downloadQueue.find((curr) => curr.hash == downloadItem.hash )){
-          console.log('skip download as already queued');
+          rej(new Error('skip download as already queued'));
           return false;
         }
         this.downloadQueue.push(downloadItem);
