@@ -80,7 +80,7 @@ class MainSceneContainer extends Component {
       <View style={styles.horizontalContainer}>
         {this.modeButtons.map((e) => {
           const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
-          return <TouchableHighlight style={styles.container} key={e.mode}
+          return <TouchableHighlight style={styles.panButtoncontainer} key={e.mode}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
                     <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
@@ -92,21 +92,23 @@ class MainSceneContainer extends Component {
   }
   render() {
     let playerLStyle = [],
-      playerRStyle = [];
+      playerRStyle = [],
+      headerStyles = [styles.header];
     if(this.props.mode != 'S'){
       playerLStyle = this.props.mode == 'L' ?
           styles.expandedPlayer : styles.minimizedPlayer;
       playerRStyle = this.props.mode == 'R' ?
           styles.expandedPlayer : styles.minimizedPlayer;
+      headerStyles.push(styles.collapseHeight);
     }
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Image style={styles.appLogo} source={require('../assets/splitcloud.logo.png')} resizeMode={'contain'}/>
-          {/*<TouchableHighlight onPress={this.onLoginStart} >
+        <View style={[headerStyles]}>
+          {/*
+            <TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
-          {__DEV__ ?
+          {__DEV__ && false ?
           <TouchableHighlight style={{position:'absolute',top:5,zIndex:10}} onPress={this.purgeStore}>
             <Text style={{color:'gray'}}>Purge store</Text>
           </TouchableHighlight> :null
@@ -129,25 +131,16 @@ class MainSceneContainer extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.mainBgColor,
-    paddingTop: 10
+    backgroundColor: THEME.mainBgColor
+  },
+  collapseHeight:{
+    height:0
   },
   header :{
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.tabBarBorderColor
-  },
-  appLogo:{
-    alignSelf:'center',
-    marginBottom:8,
-    marginTop:17,
-    height:25
+    height: 22
   },
   headerText: {
-    fontSize: 25,
     textAlign: 'center',
-    color: THEME.mainHighlightColor,
-    lineHeight:45,
-    height: 50,
     fontWeight:'200'
   },
   player:{
@@ -165,18 +158,19 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.contentBorderColor
   },
   panToggleContainer:{
-    height:40,
-    borderTopWidth: 1,
-    borderColor: THEME.tabBarBorderColor
+    height:40
   },
   horizontalContainer:{
-    flex:1,
     flexDirection:'row'
+  },
+  panButtoncontainer:{
+    flex:1,
+    height:40
   },
   textSplitControls:{
     textAlign:'center',
     fontSize:15,
-    lineHeight:18,
+    lineHeight:28,
     fontWeight:'400',
     color : THEME.mainColor
   },

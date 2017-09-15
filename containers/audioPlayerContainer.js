@@ -640,7 +640,6 @@ const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
 const overImageShadowOffset = {width:1,height:1};
 const overImageShadowRadious = 8;
-const artworkPlaceholderColor = '#121314';
 const textShadowStyle = {
   textShadowColor: overImageShadowColor,
   textShadowOffset: overImageShadowOffset,
@@ -683,7 +682,8 @@ const styles = StyleSheet.create({
   },
   tracknameFullscreen:{
     flex:0,
-    height:75
+    paddingTop:35,
+    height:100
   },
   progressSlider : {
     flex:1,
@@ -766,7 +766,7 @@ const styles = StyleSheet.create({
     color: THEME.scAuthorColor
   },
   tracknameTextFullscreen:{
-    fontSize: 18,
+    fontSize: 19,
     lineHeight: 25,
     textAlign: 'center',
     paddingLeft:20,
@@ -787,7 +787,7 @@ const styles = StyleSheet.create({
     flex:1,
     width:null,
     height:null,
-    backgroundColor:artworkPlaceholderColor
+    backgroundColor:'#121314'
   },
   fgArtCoverImage :{
     flex:1,
