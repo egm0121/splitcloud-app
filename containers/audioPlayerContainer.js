@@ -344,11 +344,13 @@ class AudioPlayerContainer extends Component {
     if(prevState.muted !== this.state.muted){
       this._onPlayerMuteChange(this.state.muted);
     }
-    if(prevProps.playlist.tracks[prevState.playbackIndex] !==
+    if(this._hasCurrentTrackObj() && 
+       prevProps.playlist.tracks[prevState.playbackIndex] !==
        this.props.playlist.tracks[this.state.playbackIndex]){
       console.log(
          '(state Update) current playing track changed: prepare to play. idx:',
-         this.state.playbackIndex
+         this.state.playbackIndex,
+         'track obj',this.props.playlist.tracks[this.state.playbackIndex]
       );
       let shouldAutoPlay = !this.props.playlist.rehydrate;
       this._prepareCurrentTrack(shouldAutoPlay);
@@ -374,6 +376,9 @@ class AudioPlayerContainer extends Component {
   }
   _getCurrentTrackIndex(){
     return this.state.playbackIndex;
+  }
+  _hasCurrentTrackObj(){
+    return this.props.playlist.tracks[this.state.playbackIndex];
   }
   _getCurrentTrackObj(){
     return this.props.playlist.tracks[this.state.playbackIndex] || {};
@@ -640,7 +645,6 @@ const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
 const overImageShadowOffset = {width:1,height:1};
 const overImageShadowRadious = 8;
-const artworkPlaceholderColor = '#121314';
 const textShadowStyle = {
   textShadowColor: overImageShadowColor,
   textShadowOffset: overImageShadowOffset,
@@ -683,7 +687,8 @@ const styles = StyleSheet.create({
   },
   tracknameFullscreen:{
     flex:0,
-    height:75
+    paddingTop:35,
+    height:100
   },
   progressSlider : {
     flex:1,
@@ -766,7 +771,7 @@ const styles = StyleSheet.create({
     color: THEME.scAuthorColor
   },
   tracknameTextFullscreen:{
-    fontSize: 18,
+    fontSize: 19,
     lineHeight: 25,
     textAlign: 'center',
     paddingLeft:20,
@@ -787,7 +792,7 @@ const styles = StyleSheet.create({
     flex:1,
     width:null,
     height:null,
-    backgroundColor:artworkPlaceholderColor
+    backgroundColor:'#121314'
   },
   fgArtCoverImage :{
     flex:1,

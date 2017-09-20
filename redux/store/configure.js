@@ -21,5 +21,5 @@ const createStoreWithDebug = withLog => {
   }, () => console.log('rehydration complete'));
   return [store, persistor];
 }
-export let [store , persistor] = createStoreWithDebug(true);
+export let [store , persistor] = createStoreWithDebug(false);
 export default store;
