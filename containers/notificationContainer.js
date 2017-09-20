@@ -18,7 +18,6 @@ import THEME from '../styles/variables';
 class NotificationContainer extends Component {
   constructor(props){
     super(props);
-    console.log('NotificationContainer init props',this.props);
 
   }
   componentWillReceiveProps(newProps){
@@ -28,7 +27,6 @@ class NotificationContainer extends Component {
         duration:200
       });
     }
-    console.log('NotificationContainer received props',newProps);
   }
   render() {
     let isForeground = this.props.notifications.list.length > 0;
@@ -70,7 +68,6 @@ const mapStateToProps = (state,props) => {
 }
 const mapDispatchToProps = (dispatch,props) => ({
   onClearNotification(notificationId){
-    console.log('should dispatch an action to remove the notification from the state');
     dispatch(clearNotificationById(notificationId));
   }
 });

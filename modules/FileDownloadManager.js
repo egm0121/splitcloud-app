@@ -22,6 +22,7 @@ class FileDownloadManager{
     return this.options.extension ? `${hash}.${this.options.extension}`: hash;
   }
   storeAsset(assetUrl,assetId){
+    if(!assetId && !assetId) return Promise.reject(new Error('Invalid Input'));
     return this.initCacheDir().then(() =>{
       return new Promise((res,rej) => {
         let assetHash = this.hashUrlToFilename(assetId ? assetId : assetUrl);
@@ -36,7 +37,7 @@ class FileDownloadManager{
         if((this.progressItem &&
             this.progressItem.item.hash == downloadItem.hash) ||
             this.downloadQueue.find((curr) => curr.hash == downloadItem.hash )){
-          console.log('skip download as already queued');
+          rej(new Error('skip download as already queued'));
           return false;
         }
         this.downloadQueue.push(downloadItem);
@@ -93,9 +94,11 @@ class FileDownloadManager{
     return downloadReturn.promise;
   }
   getLocalAssetPath(assetId){
+    if(!assetId) return false;
     return this.options.cachePath + this.hashUrlToFilename(assetId);
   }
   hasLocalAsset(assetId){
+    if(!assetId) return Promise.reject(new Error('Invalid Input'));
     return RNFS.exists(this.options.cachePath + this.hashUrlToFilename(assetId));
   }
   deleteLocalAssetPath(assetId){
