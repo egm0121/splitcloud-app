@@ -31,20 +31,37 @@ const storeLocalTrack = (track) => {
   });
 
 }
+const deleteLocalAsset = (track,store) =>{
+  if(findTrackInAnyPlaylist(store.getState().playlist,track).length) return false;
+  console.info('trackCacheMiddleware: remove local asset:',track);
+  return trackManager.deleteLocalAssetPath(track.id);
+}
 const trackCacheMiddleware = store => {
   return next => {
     return action => {
+      //pre action disptach middleware logic
+      let prevPlaylistTracks;
+      if(action.type == actionTypes.SET_PLAYLIST &&
+       action.tracks.length == 0){
+        console.info('get the deletable tracks assets')
+        prevPlaylistTracks = store.getState().playlist
+        .find(curr => curr.side == action.side).tracks;
+        prevPlaylistTracks = JSON.parse(JSON.stringify(prevPlaylistTracks));//deep copy
+      }
+      // dispatch next action middleware and reducers for action
       let result = next(action);
+      //post action disptach middleware logic
       if(action.type == actionTypes.ADD_PLAYLIST_ITEM){
         storeLocalTrack(action.track);
       }
       if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
-        if(findTrackInAnyPlaylist(
-          store.getState().playlist,
-          action.track).length
-        ) return false;
-        console.info('trackCacheMiddleware: remove local asset');
-        trackManager.deleteLocalAssetPath(action.track.id);
+        deleteLocalAsset(action.track,store);
+      }
+      if(action.type == actionTypes.SET_PLAYLIST &&
+       action.tracks.length == 0){
+        let allDeleted = prevPlaylistTracks.map(
+          (track) => deleteLocalAsset(track,store));
+        Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
       }
       if([
         actionTypes.CHANGE_CURR_PLAY_INDEX,

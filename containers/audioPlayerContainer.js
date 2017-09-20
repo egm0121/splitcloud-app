@@ -344,11 +344,13 @@ class AudioPlayerContainer extends Component {
     if(prevState.muted !== this.state.muted){
       this._onPlayerMuteChange(this.state.muted);
     }
-    if(prevProps.playlist.tracks[prevState.playbackIndex] !==
+    if(this._hasCurrentTrackObj() && 
+       prevProps.playlist.tracks[prevState.playbackIndex] !==
        this.props.playlist.tracks[this.state.playbackIndex]){
       console.log(
          '(state Update) current playing track changed: prepare to play. idx:',
-         this.state.playbackIndex
+         this.state.playbackIndex,
+         'track obj',this.props.playlist.tracks[this.state.playbackIndex]
       );
       let shouldAutoPlay = !this.props.playlist.rehydrate;
       this._prepareCurrentTrack(shouldAutoPlay);
@@ -374,6 +376,9 @@ class AudioPlayerContainer extends Component {
   }
   _getCurrentTrackIndex(){
     return this.state.playbackIndex;
+  }
+  _hasCurrentTrackObj(){
+    return this.props.playlist.tracks[this.state.playbackIndex];
   }
   _getCurrentTrackObj(){
     return this.props.playlist.tracks[this.state.playbackIndex] || {};
