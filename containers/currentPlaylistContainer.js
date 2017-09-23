@@ -32,7 +32,6 @@ class CurrentPlaylistContainer extends Component {
     this.onTrackDescRender = this.onTrackDescRender.bind(this);
     this.onClearPlaylist = this.onClearPlaylist.bind(this);
   }
-  componentWillReceiveProps(newProps){}
   _markAsCurrentTrack(item){
     const currTrack =
       this.props.playlist.tracks[this.props.playlist.currentTrackIndex] || {};
@@ -73,7 +72,7 @@ class CurrentPlaylistContainer extends Component {
             tracksData={playlistTracksData}
             onTrackAction={this.props.onRemoveTrack}
             onTrackDescRender={this.onTrackDescRender}
-            onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '×'}
+            onTrackActionRender={(rowData) => '×'}
             trackActionStyles={[{fontSize:45}]}
             highlightProp={'isCurrentTrack'}
             {...this.props}

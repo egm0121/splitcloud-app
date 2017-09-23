@@ -15,13 +15,15 @@ function currentPlaylistReducer(state , currAction){
     return {
       ...state,
       tracks : [currAction.track, ...state.tracks],
-      currentTrackIndex : state.tracks.length ? state.currentTrackIndex + 1 : 0
+      currentTrackIndex : state.tracks.length ? state.currentTrackIndex + 1 : 0,
+      autoplay : true
     };
   case actionTypes.SET_PLAYLIST:
     return {
       ...state,
       tracks : [...currAction.tracks],
-      currentTrackIndex:0
+      currentTrackIndex:0,
+      autoplay : true
     };
   case actionTypes.REMOVE_PLAYLIST_ITEM:
     let toRemoveIdx = state.tracks.findIndex(findTrackById(currAction.track.id));
@@ -33,7 +35,8 @@ function currentPlaylistReducer(state , currAction){
       ...state,
       tracks : toRemoveIdx > -1 ?
         state.tracks.filter( (t,idx) => idx !== toRemoveIdx) : state.tracks,
-      currentTrackIndex: toTrackIdx
+      currentTrackIndex: toTrackIdx,
+      autoplay : false
     };
   case actionTypes.INCREMENT_CURR_PLAY_INDEX:
     if(state.currentTrackIndex == state.tracks.length-1){
@@ -43,7 +46,8 @@ function currentPlaylistReducer(state , currAction){
     }
     return {
       ...state,
-      currentTrackIndex: toIndex
+      currentTrackIndex: toIndex,
+      autoplay : true
     };
   case actionTypes.DECREMENT_CURR_PLAY_INDEX:
     if(state.currentTrackIndex == 0){
@@ -53,14 +57,16 @@ function currentPlaylistReducer(state , currAction){
     }
     return {
       ...state,
-      currentTrackIndex: toIndex
+      currentTrackIndex: toIndex,
+      autoplay : true
     };
   case actionTypes.CHANGE_CURR_PLAY_INDEX:
     toIndex = state.tracks.findIndex(findTrackById(currAction.track.id));
     if( toIndex == -1 ) toIndex = state.currentTrackIndex;
     return {
       ...state,
-      currentTrackIndex:toIndex
+      currentTrackIndex:toIndex,
+      autoplay : true
     };
   default:
     return state;
@@ -78,13 +84,12 @@ export function playlistReducer(state = initialState.playlist,action){
     return state.map((playlist)=>{
       if(playlist.side == action.side){
         return {
-          ...currentPlaylistReducer(playlist,action),
-          rehydrate:false
+          ...currentPlaylistReducer(playlist,action)
         };
       }
       return {
         ...playlist,
-        rehydrate:false
+        autoplay:true
       };
     });
     /*
@@ -95,7 +100,7 @@ export function playlistReducer(state = initialState.playlist,action){
     return (action.payload.playlist || state).map((playlist) => {
       return {
         ...playlist,
-        rehydrate:true
+        autoplay:false
       }
     });
   default:

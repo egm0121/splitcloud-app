@@ -54,15 +54,6 @@ const trackCacheMiddleware = store => {
       if(action.type == actionTypes.ADD_PLAYLIST_ITEM){
         storeLocalTrack(action.track);
       }
-      if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
-        deleteLocalAsset(action.track,store);
-      }
-      if(action.type == actionTypes.SET_PLAYLIST &&
-       action.tracks.length == 0){
-        let allDeleted = prevPlaylistTracks.map(
-          (track) => deleteLocalAsset(track,store));
-        Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
-      }
       if([
         actionTypes.CHANGE_CURR_PLAY_INDEX,
         actionTypes.INCREMENT_CURR_PLAY_INDEX,
@@ -73,6 +64,15 @@ const trackCacheMiddleware = store => {
         let currPlayingTrack = currPlaylist.tracks[currPlaylist.currentTrackIndex];
         console.info('new currently playing track, attempt download');
         storeLocalTrack(currPlayingTrack);
+      }
+      if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
+        deleteLocalAsset(action.track,store);
+      }
+      if(action.type == actionTypes.SET_PLAYLIST &&
+       action.tracks.length == 0){
+        let allDeleted = prevPlaylistTracks.map(
+          (track) => deleteLocalAsset(track,store));
+        Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
       }
       return result;
     }

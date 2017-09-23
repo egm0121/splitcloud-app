@@ -201,9 +201,10 @@ class AudioPlayerContainer extends Component {
         }
         if(streamUrl){
           this.playerAObj.setSoundUrl(streamUrl);
-          if( shouldAutoPlay ){
-            console.log('start playback');
-            this.playerAObj.play();
+          this.playerAObj.play();
+          if( !shouldAutoPlay ){
+            console.log('pause playback no autoplay');
+            setTimeout(() => this.playerAObj.pause(),10);
           }
         } else {
           this.playerAObj.stop();
@@ -344,7 +345,7 @@ class AudioPlayerContainer extends Component {
     if(prevState.muted !== this.state.muted){
       this._onPlayerMuteChange(this.state.muted);
     }
-    if(this._hasCurrentTrackObj() && 
+    if(this._hasCurrentTrackObj() &&
        prevProps.playlist.tracks[prevState.playbackIndex] !==
        this.props.playlist.tracks[this.state.playbackIndex]){
       console.log(
@@ -352,7 +353,7 @@ class AudioPlayerContainer extends Component {
          this.state.playbackIndex,
          'track obj',this.props.playlist.tracks[this.state.playbackIndex]
       );
-      let shouldAutoPlay = !this.props.playlist.rehydrate;
+      let shouldAutoPlay = this.props.playlist.autoplay;
       this._prepareCurrentTrack(shouldAutoPlay);
     }
     if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
