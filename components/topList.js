@@ -12,11 +12,13 @@ import {
   ActivityIndicator,
   View,
   TouchableOpacity,
-  TouchableHighlight
+  TouchableHighlight,
+  LayoutAnimation
 } from 'react-native';
 import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
+import {animationPresets} from '../helpers/constants';
 import { ucFirst } from '../helpers/formatters';
 import TrackList from '../components/trackList';
 import ModalPicker from '../components/modalPicker';
@@ -34,6 +36,7 @@ class TopList extends Component {
     this.openRegionPicker = this.openRegionPicker.bind(this);
     this.getLabelForRegion = this.getLabelForRegion.bind(this);
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
+    this.getPickerOverlayDisplay = this.getPickerOverlayDisplay.bind(this);
 
     this.state = {
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
@@ -156,12 +159,15 @@ class TopList extends Component {
     return item;
   }
   onClosePicker(){
+    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({pickerModalOpen:false});
   }
   openGenrePicker(){
+    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({pickerModalOpen:true,pickerModalType:'genre'});
   }
   openRegionPicker(){
+    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({pickerModalOpen:true,pickerModalType:'region'});
   }
 
@@ -169,6 +175,10 @@ class TopList extends Component {
     return rowData.duration ?
       `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
       rowData.username ;
+  }
+  getPickerOverlayDisplay(type){
+    return this.state.pickerModalOpen && this.state.pickerModalType == type
+      ? styles.openModalStyle: styles.closedModalStyle;
   }
   render() {
     return (
@@ -206,26 +216,22 @@ class TopList extends Component {
           onTrackSelected={this.props.onSongSelected}
           {...this.props}
           />
-          {this.state.pickerModalOpen ? this.renderActivePicker(): null }
+          <ModalPicker
+            overlayStyle={this.getPickerOverlayDisplay('genre')}
+            options={this.state.genreOptions}
+            selected={this.state.selectedGenre}
+            onClose={this.onClosePicker}
+            onValueChange={this._onGenreChange}/>
+          <ModalPicker
+           overlayStyle={this.getPickerOverlayDisplay('region')}
+           options={this.state.regionOptions}
+           selected={this.state.selectedRegion}
+           onClose={this.onClosePicker}
+           onValueChange={this._onRegionChange}/>
       </View>
     );
   }
-  renderActivePicker(){
-    if(this.state.pickerModalType == 'genre'){
-      return <ModalPicker
-        options={this.state.genreOptions}
-        selected={this.state.selectedGenre}
-        onClose={this.onClosePicker}
-        onValueChange={this._onGenreChange}/>;
-    }
-    if(this.state.pickerModalType == 'region'){
-      return <ModalPicker
-        options={this.state.regionOptions}
-        selected={this.state.selectedRegion}
-        onClose={this.onClosePicker}
-        onValueChange={this._onRegionChange}/>;
-    }
-  }
+
 }
 TopList.defaultProps = {
   onRequestFail(){}
@@ -268,6 +274,12 @@ const styles = StyleSheet.create({
     fontSize : 16,
     textAlign: 'center',
     color: THEME.mainColor
+  },
+  openModalStyle : {
+    height: 300
+  },
+  closedModalStyle :{
+    height:0
   }
 });
 

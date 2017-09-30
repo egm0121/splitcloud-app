@@ -2,6 +2,9 @@ import { playbackModeTypes } from '../constants/actions';
 
 const initialState = {
   mode : playbackModeTypes.SPLIT,
+  settings : {
+    offlineMode : true
+  },
   notifications : {
     list : []
   },

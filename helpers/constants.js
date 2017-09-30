@@ -1,3 +1,6 @@
+import {
+  LayoutAnimation
+} from 'react-native';
 export const playbackModeTypes = {
   SPLIT : 'S',
   LEFT : 'L',
@@ -5,6 +8,9 @@ export const playbackModeTypes = {
 };
 export const soundcloudEndpoint ={
   profileUrl : 'https://soundcloud.com/'
+}
+export const globalSettings = {
+  OFFLINE_MODE : 'offlineMode'
 }
 export const audioPlayerStates = {
   PLAYING :'PLAYING',
@@ -18,3 +24,11 @@ export const messages = {
 }
 
 export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';
+
+export const animationPresets = {
+
+  overlaySlideInOut : {
+    ...LayoutAnimation.Presets.easeInEaseOut,
+    duration:100
+  }
+}

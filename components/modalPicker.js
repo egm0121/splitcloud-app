@@ -12,26 +12,18 @@ import {
   PickerIOS
 } from 'react-native';
 import THEME from '../styles/variables';
+import MenuOverlay from './menuOverlay';
 const PickerItemIOS = PickerIOS.Item;
 class ModalPicker extends Component {
   constructor(props){
     super(props);
-
   }
   componentWillMount(){
     console.log('ModalPicker component mounted');
   }
   render() {
-
     return (
-        <View style={styles.container}>
-          <View style={styles.closeButtonContainer}>
-            <TouchableOpacity onPress={ this.props.onClose }
-              underlayColor="transparent"
-              style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Choose</Text>
-            </TouchableOpacity>
-          </View>
+        <MenuOverlay {...this.props} >
           <PickerIOS
             itemStyle={styles.itemStyle}
             selectedValue={this.props.selected}
@@ -44,7 +36,7 @@ class ModalPicker extends Component {
               />
             ))}
           </PickerIOS>
-        </View>
+      </MenuOverlay>
     );
   }
 }
