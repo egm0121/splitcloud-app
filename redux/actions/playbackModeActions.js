@@ -7,6 +7,13 @@ export function changePlaybackMode(mode){
   };
 }
 
+export function invertPlayerSideMapping(inverted){
+  return {
+    type : actionTypes.INVERT_PLAYER_SIDE,
+    inverted
+  }
+}
+
 export function togglePlayerMute(side,mute){
   return {
     type : actionTypes.TOGGLE_PLAYER_MUTE,

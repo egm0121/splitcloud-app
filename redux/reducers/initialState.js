@@ -23,11 +23,13 @@ const initialState = {
   players : [{
     side: playbackModeTypes.LEFT,
     pan :-1,
-    muted : 0
+    muted : 0,
+    inverted : false
   },{
     side: playbackModeTypes.RIGHT,
     pan : 1,
-    muted : 0
+    muted : 0,
+    inverted : false
   }],
   playlist : [{
     tracks:[],

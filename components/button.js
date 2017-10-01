@@ -15,6 +15,7 @@ function Button(props){
   let buttonContainerStyle = [styles.buttonContainer];
   let buttonIconStyle = [styles.buttonIcon];
   if(props.style) buttonContainerStyle.push(props.style);
+  if(props.imageStyle) buttonIconStyle.push(props.imageStyle);
   if(props.size && sizes.includes(props.size)) {
     buttonIconStyle.push(styles['buttonSize'+ucFirst(props.size)]);
   }
