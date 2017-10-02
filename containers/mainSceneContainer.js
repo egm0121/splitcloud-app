@@ -46,8 +46,13 @@ class MainSceneContainer extends Component {
         {mode:'R',label:'RIGHT'}
       ]
     };
-    this.state = {...this.initialButtonsState};
-    
+    this.state = this.initialButtonsState;
+  }
+  componentWillReceiveProps(newProps){
+    this.setState(newProps.isInverted ?
+      this.invertModeButtons(this.initialButtonsState):
+      {...this.initialButtonsState}
+    );
   }
   componentDidMount(){
     Linking.addEventListener('url', this.handleOpenURL);
@@ -81,17 +86,20 @@ class MainSceneContainer extends Component {
     if(this.props.mode == playbackModeTypes.SPLIT) return false;
     return { side : this.props.mode };
   }
+  invertModeButtons(state){
+    let toArr = [...state.modeButtons];
+    let temp = state.modeButtons[1];
+    toArr[1] = toArr[3];
+    toArr[3] = temp;
+    return {
+      ...state,
+      modeButtons : toArr
+    };
+  }
   switchPlaybackSide(){
     console.log('switch order')
     if(this.state.modeButtons[1].mode == 'L'){
-      this.setState({
-        modeButtons :[
-          {label:'INVERT'},
-          {mode:'R',label:'RIGHT'},
-          {mode:'S',label:'SPLIT'},
-          {mode:'L',label:'LEFT'}
-        ]
-      });
+      this.setState(this.invertModeButtons(this.initialButtonsState));
       this.props.onInvertPlayerSide(true);
     } else {
       this.setState({...this.initialButtonsState});

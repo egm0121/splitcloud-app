@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     color: THEME.mainColor
   },
   openModalStyle : {
-    height: 300
+    height: 250
   },
   closedModalStyle :{
     height:0
