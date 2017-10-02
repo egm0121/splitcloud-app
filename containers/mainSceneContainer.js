@@ -110,8 +110,10 @@ class MainSceneContainer extends Component {
     return <View style={styles.panToggleContainer}>
       <View style={styles.horizontalContainer}>
         {this.state.modeButtons.map((e,i) => {
-          const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
+          const isSelected = e.mode === this.props.mode;
+          const isSelectedStyle = isSelected ? [styles.panModeSelected] : [];
           if(!e.mode){
+            if(this.props.mode != 'S') return null;
             let invertImage = this.props.isInverted ?
                 require('../assets/invert_fill_active.png') :
                 require('../assets/invert_fill.png');
@@ -122,6 +124,7 @@ class MainSceneContainer extends Component {
                key={i}
                onPressed={this.switchPlaybackSide} />
           }
+          if( this.props.mode != 'S' && (!isSelected && e.mode != 'S')) return null;
           return <TouchableHighlight style={styles.panButtoncontainer} key={i}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
