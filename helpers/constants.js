@@ -24,7 +24,7 @@ export const messages = {
 }
 
 export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';
-
+export const VERSION_REDUCER_KEY='app';
 export const animationPresets = {
 
   overlaySlideInOut : {

@@ -9,7 +9,9 @@ const actionTypeWhitelist = [
   actionTypes.REMOVE_PLAYLIST_ITEM,
   actionTypes.INCREMENT_CURR_PLAY_INDEX,
   actionTypes.DECREMENT_CURR_PLAY_INDEX,
-  actionTypes.CHANGE_CURR_PLAY_INDEX
+  actionTypes.CHANGE_CURR_PLAY_INDEX,
+  actionTypes.INVERT_PLAYER_SIDE,
+  actionTypes.SET_GLOBAL_SETTING
 ];
 const getCategoryFromAction = (action) => {
   return action.side ? 'side-'+action.side : 'app-wide';

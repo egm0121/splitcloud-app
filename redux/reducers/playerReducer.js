@@ -4,18 +4,24 @@ import { actionTypes, playbackModeTypes } from '../constants/actions';
 export function playerReducer(state = initialState.players, currAction){
   switch(currAction.type){
   case actionTypes.INVERT_PLAYER_SIDE :
-    return [{
-      side : 'L',
-      pan : currAction.inverted ? 1 : -1,
-      muted : 0,
-      inverted : currAction.inverted
-    },
-    {
-      side : 'R',
-      pan : currAction.inverted ? -1 : 1,
-      muted : 0,
-      inverted : currAction.inverted
-    }];
+    return state.map(player => {
+      let panning;
+      if(player.pan != 0){
+        if( player.side == playbackModeTypes.LEFT ){
+          panning = currAction.inverted ? 1 : -1
+        } else {
+          panning = currAction.inverted ? -1 : 1
+        }
+      } else {
+        panning = 0;
+      }
+      return {
+        side : player.side,
+        pan : panning,
+        muted : player.muted,
+        inverted : currAction.inverted
+      }
+    });
   case actionTypes.CHANGE_PLAYBACK_MODE :
     return state.map((player) => {
       const mode = currAction.mode;

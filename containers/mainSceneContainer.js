@@ -47,6 +47,7 @@ class MainSceneContainer extends Component {
       ]
     };
     this.state = {...this.initialButtonsState};
+    
   }
   componentDidMount(){
     Linking.addEventListener('url', this.handleOpenURL);
