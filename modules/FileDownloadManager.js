@@ -127,7 +127,9 @@ class FileDownloadManager{
     });
   }
   deleteAllStorage(){
-    return RNFS.unlink(this.options.cachePath);
+    return RNFS.unlink(this.options.cachePath).then(()=>{
+      this.isCacheFolderInit = false;
+    });
   }
 }
 FileDownloadManager.defaultOptions = {

@@ -12,6 +12,7 @@ import {
   Image,
   View,
   TouchableOpacity,
+  LayoutAnimation,
   Alert
 } from 'react-native';
 import config from '../helpers/config';
@@ -19,8 +20,13 @@ import { connect } from 'react-redux';
 import TrackList from '../components/trackList';
 import BackButton from  '../components/backButton';
 import ClearPlaylistButton from '../components/clearPlaylistButton';
-import Button from '../components/button'
+import Button from '../components/button';
+import FilterInput from '../components/filterInput';
+import MenuOverlay from '../components/menuOverlay';
+import MenuOverlayItem from '../components/menuOverlayItem';
+import {globalSettings,animationPresets} from '../helpers/constants';
 import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
+import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
@@ -31,6 +37,18 @@ class CurrentPlaylistContainer extends Component {
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.onTrackDescRender = this.onTrackDescRender.bind(this);
     this.onClearPlaylist = this.onClearPlaylist.bind(this);
+    this.onFilterTextChange = this.onFilterTextChange.bind(this);
+    this._filterMatchingTracks = this._filterMatchingTracks.bind(this);
+    this.onClearFilter = this.onClearFilter.bind(this);
+    this.onOverlayClosed = this.onOverlayClosed.bind(this);
+    this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
+    this.onOfflineModeToggle = this.onOfflineModeToggle.bind(this);
+    this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
+
+    this.state = {
+      filterListValue : '',
+      isOverlayMenuOpen:false
+    }
   }
   _markAsCurrentTrack(item){
     const currTrack =
@@ -53,20 +71,78 @@ class CurrentPlaylistContainer extends Component {
       `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`,
       `This will remove all tracks from your ${formatSidePlayerLabel(this.props.side)} playlist` ,
       [
-        {text: 'Clear All', onPress: () => this.props.onClearPlaylist(), style:'destructive'},
+        { text: 'Clear All',
+          onPress: () =>{
+            this.props.onClearPlaylist();
+            this.onOverlayClosed();
+          }, style:'destructive'},
         {text: 'Cancel', onPress: () => {}, style: 'cancel'},
       ]
     )
   }
+  onPlaylistMenuOpen(){
+    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
+    this.setState({isOverlayMenuOpen :true});
+  }
+  onFilterTextChange(text){
+    this.setState({filterListValue:text});
+  }
+  onClearFilter(){
+    this.setState({filterListValue:''});
+  }
+  onOverlayClosed(){
+    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
+    this.setState({isOverlayMenuOpen:false});
+  }
+  toggleOfflineModeSetting(){
+    this.props.setGlobalSetting(
+       globalSettings.OFFLINE_MODE,!this.props.settings.offlineMode
+    );
+    this.onOverlayClosed();
+  }
+  onOfflineModeToggle(){
+    if(!this.props.settings.offlineMode) return this.toggleOfflineModeSetting();
+    Alert.alert(
+      'Disable Offline Mode',
+      'This will remove all local music from your device. Are you sure?' ,
+      [
+        { text: 'Yes',
+          onPress: this.toggleOfflineModeSetting,
+          style:'destructive'
+        },
+        {text: 'Cancel', onPress: () => {}, style: 'cancel'},
+      ]
+    );
+  }
+  _filterMatchingTracks(track){
+    if(!this.state.filterListValue.length) return true;
+    let matchString = track.label.toLowerCase() + '' + track.username.toLowerCase();
+    return matchString.indexOf(this.state.filterListValue.toLowerCase()) != -1;
+  }
   render() {
-    const playlistTracksData =
-      this.props.playlist.tracks.map(this._markAsCurrentTrack);
+    const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
+    const playlistTracksData = this.props.playlist.tracks
+      .filter(this._filterMatchingTracks)
+      .map(this._markAsCurrentTrack);
     return (
       <View style={styles.container}>
         <View style={styles.sectionTitleView}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
           <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
-          <ClearPlaylistButton onPressed={this.onClearPlaylist} style={styles.clearButton}/>
+
+          <Button
+            size="small"
+            style={styles.playlistMenuButton}
+            image={require('../assets/menu_dots_vertical.png')}
+            onPressed={this.onPlaylistMenuOpen} ></Button>
+        </View>
+        <View style={styles.filterContainerView}>
+          <FilterInput
+            placeholder={'Filter songs...'}
+            value={this.state.filterListValue}
+            onChangeText={this.onFilterTextChange}
+            onClearFilter={this.onClearFilter}
+            />
         </View>
         <TrackList
             tracksData={playlistTracksData}
@@ -77,6 +153,20 @@ class CurrentPlaylistContainer extends Component {
             highlightProp={'isCurrentTrack'}
             {...this.props}
             />
+            <MenuOverlay onClose={this.onOverlayClosed}
+               closeLabel={'Close'}
+               overlayStyle={[styles.playlistMenuOverlay,overlayStyle]}>
+              <MenuOverlayItem
+                onPress={this.onClearPlaylist} >
+                {`Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`}
+              </MenuOverlayItem>
+              <MenuOverlayItem onPress={this.onOfflineModeToggle}>
+                {this.props.settings.offlineMode ?
+                  'Disable Offline Mode':
+                  'Enable Offline Mode'
+                }
+              </MenuOverlayItem>
+            </MenuOverlay>
       </View>
     );
   }
@@ -99,12 +189,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight:'600'
   },
-  clearButton: {
+  iconText:{
+    color: THEME.mainHighlightColor,
+    fontSize: 16,
+    fontWeight:'600'
+  },
+  playlistMenuButton: {
     position:'absolute',
-    right:20,
-    top:20,
+    right:0,
+    top:24,
     zIndex:10,
-    height:30
+    height:30,
+    paddingHorizontal:10
   },
   closeButton :{
     position:'absolute',
@@ -119,6 +215,16 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.mainBgColor,
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :2
+  },
+  filterContainerView :{
+    height: 50,
+    paddingTop:5,
+    paddingHorizontal:10,
+    paddingBottom:10,
+    backgroundColor: THEME.contentBgColor
+  },
+  playlistMenuOverlay: {
+    height:300
   }
 });
 const mapStateToProps = (state,props) => {
@@ -127,10 +233,14 @@ const mapStateToProps = (state,props) => {
   const playlistState = state.playlist.filter((playlist) => playlist.side === props.side).pop();
   return {
     picker : pickerState,
-    playlist : playlistState
+    playlist : playlistState,
+    settings : state.settings
   };
 }
 const mapDispatchToProps = (dispatch,props) => ({
+  setGlobalSetting(key,value){
+    dispatch(setGlobalSetting(key,value));
+  },
   onRemoveTrack(track){
     dispatch(removeQueuedTrack(props.side,track));
     dispatch(pushNotification({message:'Removed Track!',type:'success'}));
