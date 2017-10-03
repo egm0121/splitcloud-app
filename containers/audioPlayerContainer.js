@@ -204,7 +204,7 @@ class AudioPlayerContainer extends Component {
           this.playerAObj.play();
           if( !shouldAutoPlay ){
             console.log('pause playback no autoplay');
-            setTimeout(() => this.playerAObj.pause(),10);
+            setTimeout(() => this.playerAObj.pause(),50);
           }
         } else {
           this.playerAObj.stop();

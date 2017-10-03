@@ -1,4 +1,5 @@
 import { actionTypes } from '../constants/actions';
+import { globalSettings } from '../../helpers/constants';
 import FileDownloadManager from '../../modules/FileDownloadManager';
 let trackManager = new FileDownloadManager({extension:'mp3'});
 
@@ -36,45 +37,59 @@ const deleteLocalAsset = (track,store) =>{
   console.info('trackCacheMiddleware: remove local asset:',track);
   return trackManager.deleteLocalAssetPath(track.id);
 }
+const deleteAllLocalAssets = () => {
+  console.log('settings offlineMode turned off: delete all assets');
+  trackManager.deleteAllStorage();
+}
 const trackCacheMiddleware = store => {
   return next => {
     return action => {
       //pre action disptach middleware logic
-      let prevPlaylistTracks;
+      let prevPlaylistTracks = [];
       if(action.type == actionTypes.SET_PLAYLIST &&
        action.tracks.length == 0){
         console.info('get the deletable tracks assets')
         prevPlaylistTracks = store.getState().playlist
         .find(curr => curr.side == action.side).tracks;
-        prevPlaylistTracks = JSON.parse(JSON.stringify(prevPlaylistTracks));//deep copy
+        prevPlaylistTracks = prevPlaylistTracks.map(t => ({...t})); //deep copy
       }
       // dispatch next action middleware and reducers for action
       let result = next(action);
       //post action disptach middleware logic
-      if(action.type == actionTypes.ADD_PLAYLIST_ITEM){
-        storeLocalTrack(action.track);
-      }
-      if([
-        actionTypes.CHANGE_CURR_PLAY_INDEX,
-        actionTypes.INCREMENT_CURR_PLAY_INDEX,
-        actionTypes.DECREMENT_CURR_PLAY_INDEX].includes(action.type)
+      if(action.type == actionTypes.SET_GLOBAL_SETTING &&
+         action.key == globalSettings.OFFLINE_MODE &&
+         action.value == false
       ){
-        let currPlaylist = store.getState().playlist
-            .find(curr => curr.side == action.side);
-        let currPlayingTrack = currPlaylist.tracks[currPlaylist.currentTrackIndex];
-        console.info('new currently playing track, attempt download');
-        storeLocalTrack(currPlayingTrack);
+        deleteAllLocalAssets();
       }
-      if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
-        deleteLocalAsset(action.track,store);
+      if(store.getState().settings.offlineMode){
+        if(action.type == actionTypes.ADD_PLAYLIST_ITEM){
+          console.log('new track added to playlist, attempt download');
+          storeLocalTrack(action.track);
+        }
+        if([
+          actionTypes.CHANGE_CURR_PLAY_INDEX,
+          actionTypes.INCREMENT_CURR_PLAY_INDEX,
+          actionTypes.DECREMENT_CURR_PLAY_INDEX].includes(action.type)
+        ){
+          let currPlaylist = store.getState().playlist
+              .find(curr => curr.side == action.side);
+          let currPlayingTrack = currPlaylist.tracks[currPlaylist.currentTrackIndex];
+          console.info('new currently playing track, attempt download');
+          storeLocalTrack(currPlayingTrack);
+        }
+        if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
+          deleteLocalAsset(action.track,store);
+        }
+        if(action.type == actionTypes.SET_PLAYLIST &&
+           action.tracks.length == 0){
+          let allDeleted = prevPlaylistTracks.map((track) => deleteLocalAsset(track,store));
+          Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
+        }
+        return result;
+      } else {
+        return result;
       }
-      if(action.type == actionTypes.SET_PLAYLIST &&
-       action.tracks.length == 0){
-        let allDeleted = prevPlaylistTracks.map(
-          (track) => deleteLocalAsset(track,store));
-        Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
-      }
-      return result;
     }
   }
 }

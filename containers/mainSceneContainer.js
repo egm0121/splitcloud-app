@@ -20,9 +20,10 @@ import config from '../helpers/config';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 import NotificationOverlay from '../components/notificationOverlay';
+import Button from '../components/button';
 import { playbackModeTypes } from '../helpers/constants';
 import { connect } from 'react-redux';
-import { changePlaybackMode } from '../redux/actions/playbackModeActions';
+import { changePlaybackMode, invertPlayerSideMapping } from '../redux/actions/playbackModeActions';
 import { persistor } from '../redux/store/configure';
 const {
   SC_CLIENT_ID,
@@ -36,12 +37,22 @@ class MainSceneContainer extends Component {
     this.onLoginStart = this.onLoginStart.bind(this);
     this.purgeStore = this.purgeStore.bind(this);
     this.renderPlaybackModeTabBar = this.renderPlaybackModeTabBar.bind(this);
-
-    this.modeButtons = [
-      {mode:'L',label:'LEFT'},
-      {mode:'S',label:'SPLIT'},
-      {mode:'R',label:'RIGHT'}
-    ];
+    this.switchPlaybackSide = this.switchPlaybackSide.bind(this);
+    this.initialButtonsState = {
+      modeButtons : [
+        {label:'INVERT'},
+        {mode:'L',label:'LEFT'},
+        {mode:'S',label:'SPLIT'},
+        {mode:'R',label:'RIGHT'}
+      ]
+    };
+    this.state = this.initialButtonsState;
+  }
+  componentWillReceiveProps(newProps){
+    this.setState(newProps.isInverted ?
+      this.invertModeButtons(this.initialButtonsState):
+      {...this.initialButtonsState}
+    );
   }
   componentDidMount(){
     Linking.addEventListener('url', this.handleOpenURL);
@@ -75,12 +86,46 @@ class MainSceneContainer extends Component {
     if(this.props.mode == playbackModeTypes.SPLIT) return false;
     return { side : this.props.mode };
   }
+  invertModeButtons(state){
+    let toArr = [...state.modeButtons];
+    let temp = state.modeButtons[1];
+    toArr[1] = toArr[3];
+    toArr[3] = temp;
+    return {
+      ...state,
+      modeButtons : toArr
+    };
+  }
+  switchPlaybackSide(){
+    console.log('switch order')
+    if(this.state.modeButtons[1].mode == 'L'){
+      this.setState(this.invertModeButtons(this.initialButtonsState));
+      this.props.onInvertPlayerSide(true);
+    } else {
+      this.setState({...this.initialButtonsState});
+      this.props.onInvertPlayerSide(false);
+    }
+  }
   renderPlaybackModeTabBar(){
     return <View style={styles.panToggleContainer}>
       <View style={styles.horizontalContainer}>
-        {this.modeButtons.map((e) => {
-          const isSelectedStyle = e.mode === this.props.mode ? [styles.panModeSelected] : [];
-          return <TouchableHighlight style={styles.panButtoncontainer} key={e.mode}
+        {this.state.modeButtons.map((e,i) => {
+          const isSelected = e.mode === this.props.mode;
+          const isSelectedStyle = isSelected ? [styles.panModeSelected] : [];
+          if(!e.mode){
+            if(this.props.mode != 'S') return null;
+            let invertImage = this.props.isInverted ?
+                require('../assets/invert_fill_active.png') :
+                require('../assets/invert_fill.png');
+
+            return <Button style={styles.invertSwitchStyle}
+               image={invertImage}
+               size={'small'}
+               key={i}
+               onPressed={this.switchPlaybackSide} />
+          }
+          if( this.props.mode != 'S' && (!isSelected && e.mode != 'S')) return null;
+          return <TouchableHighlight style={styles.panButtoncontainer} key={i}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
                     <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
@@ -158,35 +203,45 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.contentBorderColor
   },
   panToggleContainer:{
-    height:40
   },
   horizontalContainer:{
     flexDirection:'row'
   },
   panButtoncontainer:{
     flex:1,
-    height:40
+    height:35,
+    alignItems:'center',
+    justifyContent:'center'
   },
   textSplitControls:{
     textAlign:'center',
     fontSize:15,
-    lineHeight:28,
-    fontWeight:'400',
+    lineHeight:20,
+    fontWeight:'600',
     color : THEME.mainColor
   },
+  invertSwitchStyle:{
+    flex:1,
+    height:35,
+    alignItems:'center',
+    justifyContent:'center',
+    backgroundColor:'#2e2e2e'
+  },
   panModeSelected:{
-    color:THEME.mainActiveColor,
-    fontWeight:'600',
+    color:THEME.mainActiveColor
   }
 });
 let mapStateToProps  =  (state) => {
-  return { mode : state.mode , players: state.players };
+  return { mode : state.mode , players: state.players , isInverted : state.players[0].inverted};
 };
 let mapDispatchToProps = (dispatch) => {
   return {
     onModeSelected(mode){
       LayoutAnimation.configureNext({...LayoutAnimation.Presets.easeInEaseOut,duration:300});
       dispatch(changePlaybackMode(mode))
+    },
+    onInvertPlayerSide(inverted){
+      dispatch(invertPlayerSideMapping(inverted));
     }
   }
 };
