@@ -196,10 +196,11 @@ const styles = StyleSheet.create({
   },
   playlistMenuButton: {
     position:'absolute',
-    right:10,
+    right:0,
     top:24,
     zIndex:10,
-    height:30
+    height:30,
+    paddingHorizontal:10
   },
   closeButton :{
     position:'absolute',
