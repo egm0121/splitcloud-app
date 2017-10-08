@@ -187,7 +187,7 @@ class AudioPlayerContainer extends Component {
     this.props.goToPrevTrack();
   }
   _goToTrack(track){
-    console.log('goToTrack', this.props.playlist.tracks)
+    console.log('goToTrack', track)
     this.props.goToTrack(track);
   }
   _prepareCurrentTrack(shouldAutoPlay){
@@ -331,11 +331,13 @@ class AudioPlayerContainer extends Component {
     if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
       this.setState({playbackIndex : newProps.playlist.currentTrackIndex})
     }
-    if(newProps.playlist.tracks !== this.props.playlist.tracks){
+    if(newProps.queue !== this.props.queue){
       console.log('(props Update) playlist updated:',newProps.playlist);
     }
   }
   componentDidUpdate(prevProps, prevState){
+    let prevTrackObj = prevProps.queue[prevState.playbackIndex] || {};
+
     if(prevState.volume !== this.state.volume && !this.state.muted){
       this.playerAObj.setVolume(this.state.volume);
     }
@@ -345,16 +347,17 @@ class AudioPlayerContainer extends Component {
     if(prevState.muted !== this.state.muted){
       this._onPlayerMuteChange(this.state.muted);
     }
-    if(this._hasCurrentTrackObj() &&
-       prevProps.playlist.tracks[prevState.playbackIndex] !==
-       this.props.playlist.tracks[this.state.playbackIndex]){
-      console.log(
-         '(state Update) current playing track changed: prepare to play. idx:',
-         this.state.playbackIndex,
-         'track obj',this.props.playlist.tracks[this.state.playbackIndex]
-      );
-      let shouldAutoPlay = this.props.playlist.autoplay;
-      this._prepareCurrentTrack(shouldAutoPlay);
+    if(this._hasCurrentTrackObj()){
+      if(this._getCurrentTrackObj().id != prevTrackObj.id){
+        console.log(
+           '(state Update) current playing track changed: prepare to play. idx:',
+           this.state.playbackIndex,
+           'from',
+           prevState.playbackIndex
+        );
+        let shouldAutoPlay = this.props.playlist.autoplay;
+        this._prepareCurrentTrack(shouldAutoPlay);
+      }
     }
     if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
       this.setNowPlayingDescription();
@@ -379,10 +382,10 @@ class AudioPlayerContainer extends Component {
     return this.state.playbackIndex;
   }
   _hasCurrentTrackObj(){
-    return this.props.playlist.tracks[this.state.playbackIndex];
+    return this.props.queue[this.state.playbackIndex];
   }
   _getCurrentTrackObj(){
-    return this.props.playlist.tracks[this.state.playbackIndex] || {};
+    return this.props.queue[this.state.playbackIndex] || {};
   }
   _getCurrentTrackStream(){
     return this.fileManager.hasLocalAsset(this._getCurrentTrackId())
@@ -474,7 +477,7 @@ class AudioPlayerContainer extends Component {
     let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
 
-    let isPlaylistVisible = this.props.playlist.tracks.length > 1;
+    let isPlaylistVisible = this.props.queue.length > 1;
     if( this._getCurrentTrackTitle() ){
       trackLabelPlaceholder = this._getCurrentTrackTitle();
       trackDescription = 'by '+this._getCurrentTrackDescription();
@@ -616,6 +619,7 @@ AudioPlayerContainer.propTypes = {
 const mapStateToProps = (state, props) => {
   let player = state.players.filter((player) => player.side === props.side).pop();
   let playlist = state.playlist.filter((playlist) => playlist.side === props.side).pop();
+  let queue = playlist.playbackQueue;
   let isFullscreen = state.mode === props.side;
   let isSplitMode = state.mode === playbackModeTypes.SPLIT;
   return {
@@ -624,6 +628,7 @@ const mapStateToProps = (state, props) => {
     muted : player.muted,
     isFullscreen,
     playlist,
+    queue,
     isSplitMode
   }
 };

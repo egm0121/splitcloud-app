@@ -25,6 +25,23 @@ const createStoreWithDebug = withLog => {
       );
       return toState;
     },
+    3: (state) => {
+      if(!state || !state.playlist) return state;
+      let toState = {...state};
+      toState.playlist = toState.playlist.map(playlist => {
+        playlist.playbackQueue = [...playlist.tracks].map(
+          (t) => {
+            if(!('isVisible' in t)){
+              t.isVisible = true;
+            }
+            return t;
+          }
+        );
+        playlist.filterTracks = '';
+        return playlist;
+      });
+      return toState;
+    }
   };
 
   const migration = createMigration(manifest, VERSION_REDUCER_KEY)
