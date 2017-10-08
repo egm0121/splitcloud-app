@@ -14,7 +14,6 @@ function applyFilterVisibility(value){
   }
 }
 function getNextVisibleIndex(index,queue,originIndex){
-  if(index == queue.length-1) return 0;
   let next = index,foundIndex = false;
   while(queue[++next]){
     if(queue[next].isVisible){
@@ -23,7 +22,11 @@ function getNextVisibleIndex(index,queue,originIndex){
     }
   }
   if(foundIndex == false){
-    return index == 0 ? originIndex : getNextVisibleIndex(0,queue,index);
+    if(index == 0 && originIndex != undefined){
+      return originIndex;
+    } else{
+      return queue[0].isVisible ? 0 : getNextVisibleIndex(0,queue,index);
+    }
   }
   return foundIndex;
 }
