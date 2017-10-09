@@ -24,7 +24,7 @@ function getNextVisibleIndex(index,queue,originIndex){
   if(foundIndex == false){
     if(index == 0 && originIndex != undefined){
       return originIndex;
-    } else{
+    } else {
       return queue[0].isVisible ? 0 : getNextVisibleIndex(0,queue,index);
     }
   }
