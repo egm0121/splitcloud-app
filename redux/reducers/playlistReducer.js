@@ -83,6 +83,7 @@ function currentPlaylistReducer(state , currAction){
       autoplay : false
     };
   case actionTypes.INCREMENT_CURR_PLAY_INDEX:
+    if(state.playbackQueue.length == 0) return state;
     let nextIndex = getNextVisibleIndex(state.currentTrackIndex, state.playbackQueue);
     return {
       ...state,
@@ -90,6 +91,7 @@ function currentPlaylistReducer(state , currAction){
       autoplay : true
     };
   case actionTypes.DECREMENT_CURR_PLAY_INDEX:
+    if(state.playbackQueue.length == 0) return state;
     let prevIndex = getPrevVisibleIndex(state.currentTrackIndex, state.playbackQueue);
     return {
       ...state,
