@@ -25,7 +25,7 @@ import FilterInput from '../components/filterInput';
 import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import {globalSettings,animationPresets} from '../helpers/constants';
-import {removeQueuedTrack, setPlaylist} from '../redux/actions/currentPlaylistActions';
+import {removeQueuedTrack, setPlaylist, filterPlaylist} from '../redux/actions/currentPlaylistActions';
 import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
@@ -38,7 +38,6 @@ class CurrentPlaylistContainer extends Component {
     this.onTrackDescRender = this.onTrackDescRender.bind(this);
     this.onClearPlaylist = this.onClearPlaylist.bind(this);
     this.onFilterTextChange = this.onFilterTextChange.bind(this);
-    this._filterMatchingTracks = this._filterMatchingTracks.bind(this);
     this.onClearFilter = this.onClearFilter.bind(this);
     this.onOverlayClosed = this.onOverlayClosed.bind(this);
     this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
@@ -52,7 +51,7 @@ class CurrentPlaylistContainer extends Component {
   }
   _markAsCurrentTrack(item){
     const currTrack =
-      this.props.playlist.tracks[this.props.playlist.currentTrackIndex] || {};
+      this.props.queue[this.props.playlist.currentTrackIndex] || {};
     if(item.id == currTrack.id){
       return {
         ...item,
@@ -85,10 +84,10 @@ class CurrentPlaylistContainer extends Component {
     this.setState({isOverlayMenuOpen :true});
   }
   onFilterTextChange(text){
-    this.setState({filterListValue:text});
+    this.props.onFilterChange(text);
   }
   onClearFilter(){
-    this.setState({filterListValue:''});
+    this.props.onFilterChange('');
   }
   onOverlayClosed(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
@@ -114,16 +113,13 @@ class CurrentPlaylistContainer extends Component {
       ]
     );
   }
-  _filterMatchingTracks(track){
-    if(!this.state.filterListValue.length) return true;
-    let matchString = track.label.toLowerCase() + '' + track.username.toLowerCase();
-    return matchString.indexOf(this.state.filterListValue.toLowerCase()) != -1;
-  }
+  //TODO: port filtering logic in reducer
+
   render() {
     const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
-    const playlistTracksData = this.props.playlist.tracks
-      .filter(this._filterMatchingTracks)
-      .map(this._markAsCurrentTrack);
+    const playlistTracksData = this.props.queue
+    .map(this._markAsCurrentTrack)
+    .filter((track) => 'isVisible' in track ? track.isVisible : true);
     return (
       <View style={styles.container}>
         <View style={styles.sectionTitleView}>
@@ -139,7 +135,7 @@ class CurrentPlaylistContainer extends Component {
         <View style={styles.filterContainerView}>
           <FilterInput
             placeholder={'Filter songs...'}
-            value={this.state.filterListValue}
+            value={this.props.playlist.filterTracks}
             onChangeText={this.onFilterTextChange}
             onClearFilter={this.onClearFilter}
             />
@@ -231,15 +227,20 @@ const mapStateToProps = (state,props) => {
   const pickerState =
     state.songPickers.filter((playlist) => playlist.side == props.side).pop();
   const playlistState = state.playlist.filter((playlist) => playlist.side === props.side).pop();
+  const queue = playlistState.playbackQueue;
   return {
     picker : pickerState,
     playlist : playlistState,
-    settings : state.settings
+    settings : state.settings,
+    queue
   };
 }
 const mapDispatchToProps = (dispatch,props) => ({
   setGlobalSetting(key,value){
     dispatch(setGlobalSetting(key,value));
+  },
+  onFilterChange(value){
+    dispatch(filterPlaylist(props.side,value));
   },
   onRemoveTrack(track){
     dispatch(removeQueuedTrack(props.side,track));

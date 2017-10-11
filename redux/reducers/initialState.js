@@ -33,11 +33,15 @@ const initialState = {
   }],
   playlist : [{
     tracks:[],
+    playbackQueue:[],
+    filterTracks:'',
     currentTrackIndex: 0,
     side : playbackModeTypes.LEFT
   },
   {
     tracks:[],
+    playbackQueue:[],
+    filterTracks:'',
     currentTrackIndex: 0,
     side : playbackModeTypes.RIGHT
   }]

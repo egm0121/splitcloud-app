@@ -64,6 +64,15 @@ class TrackList extends Component {
 
   renderRowWithData(rowData) {
     const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
+    let isTrack,trackAuthor,trackTitle;
+    if(rowData.id && rowData.label && !rowData.isEmpty){
+      isTrack = true;
+      [trackAuthor,trackTitle] = rowData.label.split('-').map((l) => l.trim());
+      if(!trackTitle || trackTitle.length == 0){
+        trackTitle = trackAuthor;
+        trackAuthor = rowData.username;
+      }
+    }
     if( this.props.highlightProp &&
         rowData[this.props.highlightProp] ){
 
@@ -81,8 +90,21 @@ class TrackList extends Component {
     return (
       <View style={styles.row}>
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >{rowData.label} </Text>
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >{this.props.onTrackDescRender(rowData)} </Text>
+            {isTrack ?
+            (<View>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
+                {trackTitle}
+              </Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
+                {trackAuthor}
+              </Text>
+            </View>) :
+            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >
+              {rowData.label}
+            </Text>}
+            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
+              {this.props.onTrackDescRender(rowData)}
+            </Text>
           </TouchableOpacity>
           {!rowData.isEmpty ?
             <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
@@ -101,7 +123,6 @@ class TrackList extends Component {
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
           renderRow={this.renderRowWithData.bind(this)} ref={(ref) => this.props.listRef(ref)} />
-
       </View>
     );
   }
@@ -141,7 +162,7 @@ const styles = StyleSheet.create({
   },
   rowLabel : {
     flex: 10,
-    height: 52,
+    height: 72,
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0
   },
@@ -160,9 +181,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight:'500'
   },
+  rowTitleText:{
+    color: THEME.mainHighlightColor,
+    lineHeight:20,
+    fontSize: 15,
+    fontWeight:'500'
+  },
+  rowAuthorText:{
+    color: THEME.mainHighlightColor,
+    lineHeight:20,
+    fontSize: 13,
+    fontWeight:'500'
+  },
   rowDescText :{
     color: THEME.mainColor,
     fontSize: 13,
+    fontWeight:'500',
     lineHeight:20
   },
   hightlightText : {
@@ -181,9 +215,9 @@ const styles = StyleSheet.create({
   rowActionText :{
     color: THEME.mainColor,
     opacity:0.8,
-    fontSize: 40,
+    fontSize: 45,
     fontWeight:'200',
-    lineHeight:37,
+    lineHeight:55,
     textAlign : 'right'
   },
   footer : {

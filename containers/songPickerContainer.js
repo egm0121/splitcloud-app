@@ -51,9 +51,7 @@ class SongPickerContainer extends Component {
             onSearchTermsChange={this.props.onSearchTermsChange}
             onLoadingStateChange={this.props.onLoadingStateChange}
             onRequestFail={this.onRequestFail}
-            currentPlayingTrack={
-              this.props.playlist.tracks[this.props.playlist.currentTrackIndex]
-            }
+            currentPlayingTrack={this.props.currentTrack}
             searchTerms={this.props.picker.searchTerms}
             isLoading={this.props.picker.isLoading}
             {...this.props}
@@ -86,9 +84,11 @@ const mapStateToProps = (state,props) => {
     state.songPickers.filter((picker) => picker.side == props.side).pop();
   const playlistState =
     state.playlist.filter((picker) => picker.side == props.side).pop();
+  const queue = playlistState.playbackQueue;
   return {
     picker : pickerState,
-    playlist : playlistState
+    playlist : playlistState,
+    currentTrack : queue[playlistState.currentTrackIndex]
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
