@@ -40,3 +40,10 @@ export function changeCurrentPlayIndex(side,track){
     track
   }
 }
+export function filterPlaylist(side,filterValue) {
+  return {
+    type : actionTypes.FILTER_PLAYLIST,
+    value : filterValue,
+    side
+  };
+}

@@ -9,7 +9,7 @@ trackManager.initCacheDir().then(
 
 const findTrackInAnyPlaylist = (playlistArr,track) => {
   return playlistArr.filter( playlist => {
-    return playlist.tracks.find( curr => curr.id == track.id )
+    return playlist.playbackQueue.find( curr => curr.id == track.id )
   });
 }
 const storeLocalTrack = (track) => {
@@ -50,7 +50,7 @@ const trackCacheMiddleware = store => {
        action.tracks.length == 0){
         console.info('get the deletable tracks assets')
         prevPlaylistTracks = store.getState().playlist
-        .find(curr => curr.side == action.side).tracks;
+        .find(curr => curr.side == action.side).playbackQueue;
         prevPlaylistTracks = prevPlaylistTracks.map(t => ({...t})); //deep copy
       }
       // dispatch next action middleware and reducers for action
@@ -74,15 +74,17 @@ const trackCacheMiddleware = store => {
         ){
           let currPlaylist = store.getState().playlist
               .find(curr => curr.side == action.side);
-          let currPlayingTrack = currPlaylist.tracks[currPlaylist.currentTrackIndex];
+          let currPlayingTrack = currPlaylist.playbackQueue[currPlaylist.currentTrackIndex];
           console.info('new currently playing track, attempt download');
-          storeLocalTrack(currPlayingTrack);
+          if(currPlayingTrack){
+            storeLocalTrack(currPlayingTrack);
+          }
         }
         if(action.type == actionTypes.REMOVE_PLAYLIST_ITEM){
           deleteLocalAsset(action.track,store);
         }
         if(action.type == actionTypes.SET_PLAYLIST &&
-           action.tracks.length == 0){
+           action.playbackQueue.length == 0){
           let allDeleted = prevPlaylistTracks.map((track) => deleteLocalAsset(track,store));
           Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
         }
