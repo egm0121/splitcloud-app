@@ -21,6 +21,7 @@ import {
 } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
+import uploaderProfileContainer from './uploaderProfileContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import SearchIcon from '../components/searchIcon';
 import Button from '../components/button';
@@ -68,6 +69,7 @@ class AudioPlayerContainer extends Component {
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.renderInFullscreen = this.renderInFullscreen.bind(this);
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
+    this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
     this.playerAObj = new ReactNativeStreamingPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
@@ -230,6 +232,27 @@ class AudioPlayerContainer extends Component {
         this.playerAObj.play();
       }
       this._updateComponentPlayerState();
+    });
+  }
+  _onUploaderProfileOpen(){
+    let prevPickerRoute = this.findRouteByName(
+      'uploaderProfileContainer.' + this.props.side
+    );
+    if(prevPickerRoute){
+      return this.props.navigator.jumpTo(prevPickerRoute);
+    }
+    this.props.navigator.pushToBottom({
+      title : 'uploaderProfileContainer - ' + this.props.side,
+      name : 'uploaderProfileContainer.' + this.props.side,
+      component: uploaderProfileContainer,
+      passProps : {
+        side : this.props.side,
+        scUploader : this._getCurrentTrackDescription(),
+        onClose: () => {this.props.navigator.jumpTo(
+            this.findRouteByName(this.props.routeName)
+          );
+        }
+      }
     });
   }
   _onPickerToggle(){
@@ -515,7 +538,7 @@ class AudioPlayerContainer extends Component {
                           { trackLabelPlaceholder }
                          </Text>
                        </TouchableOpacity>
-                       <TouchableOpacity onPress={this._openScUploaderLink} style={styles.trackRowContainer}>
+                       <TouchableOpacity onPress={this._onUploaderProfileOpen} style={styles.trackRowContainer}>
                          <Text style={tracknameTextDescription}>
                            { trackDescription }
                          </Text>
@@ -531,7 +554,7 @@ class AudioPlayerContainer extends Component {
                        { trackLabelPlaceholder }
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this._openScUploaderLink} >
+                    <TouchableOpacity onPress={this._onUploaderProfileOpen} >
                       <Text style={tracknameTextDescription}>
                         { trackDescription }
                       </Text>

@@ -43,6 +43,13 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>pointlineshape.com</key>
+			<dict>
+				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>New item</key>
+				<string></string>
+			</dict>
 			<key>api.soundcloud.com</key>
 			<dict>
 				<key>NSIncludesSubdomains</key>

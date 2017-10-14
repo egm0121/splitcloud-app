@@ -22,7 +22,9 @@ import {animationPresets} from '../helpers/constants';
 import { ucFirst } from '../helpers/formatters';
 import TrackList from '../components/trackList';
 import ModalPicker from '../components/modalPicker';
+import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
+
 class TopList extends Component {
 
   constructor(props){
@@ -37,8 +39,9 @@ class TopList extends Component {
     this.getLabelForRegion = this.getLabelForRegion.bind(this);
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
     this.getPickerOverlayDisplay = this.getPickerOverlayDisplay.bind(this);
-
+    this.onOpenSection = this.onOpenSection.bind(this);
     this.state = {
+      section : 'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -47,6 +50,7 @@ class TopList extends Component {
       trackList : []
     };
     console.log('genreOptions',this.getOptionsListByType('genre'))
+
   }
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
@@ -170,7 +174,11 @@ class TopList extends Component {
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({pickerModalOpen:true,pickerModalType:'region'});
   }
-
+  onOpenSection(sectionName){
+    this.setState({
+      section:sectionName
+    });
+  }
   onTrackDescRender(rowData){
     return rowData.duration ?
       `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
@@ -185,37 +193,47 @@ class TopList extends Component {
       <View style={styles.container}>
         <View style={styles.listDescription} >
           <View style={styles.descContainer}>
-            <Text style={styles.listDescriptionText}>Top Tracks</Text>
-          </View>
-        </View>
-        <View style={styles.listDescription}>
-          <View style={styles.genreSelectionBtn}>
-            <TouchableHighlight onPress={this.openRegionPicker}>
-              <View>
-                <Text style={styles.listDetailText} >Region</Text>
-                <Text style={styles.genreSelectionText}>{this.getLabelForRegion(this.state.selectedRegion)}</Text>
-              </View>
+            <TouchableHighlight onPress={() => this.onOpenSection('TOP')}>
+              <Text style={styles.listDescriptionText}>Top Tracks</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={() => this.onOpenSection('PLS')}>
+              <Text style={styles.listDescriptionText}>PLS Mix</Text>
             </TouchableHighlight>
           </View>
-          <View style={styles.genreSelectionBtn}>
-              <TouchableHighlight onPress={this.openGenrePicker}>
-                <View>
-                  <Text style={styles.listDetailText}>Genre</Text>
-                  <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
-                </View>
-              </TouchableHighlight>
-          </View>
         </View>
-        <TrackList
-          listRef={(ref) => this.trackListRef = ref}
-          tracksData={this.state.trackList.map(this._markAsCurrentTrack)}
-          onTrackDescRender={this.onTrackDescRender}
-          onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
-          highlightProp={'isCurrentTrack'}
-          onTrackAction={this.props.onSongQueued}
-          onTrackSelected={this.props.onSongSelected}
-          {...this.props}
-          />
+        {this.state.section == 'TOP' ?
+          <View style={{flex:1}}>
+            <View style={styles.listDescription}>
+              <View style={styles.genreSelectionBtn}>
+                <TouchableHighlight onPress={this.openRegionPicker}>
+                  <View>
+                    <Text style={styles.listDetailText} >Region</Text>
+                    <Text style={styles.genreSelectionText}>{this.getLabelForRegion(this.state.selectedRegion)}</Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
+              <View style={styles.genreSelectionBtn}>
+                  <TouchableHighlight onPress={this.openGenrePicker}>
+                    <View>
+                      <Text style={styles.listDetailText}>Genre</Text>
+                      <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
+                    </View>
+                  </TouchableHighlight>
+              </View>
+            </View>
+            <TrackList
+              listRef={(ref) => this.trackListRef = ref}
+              tracksData={this.state.trackList.map(this._markAsCurrentTrack)}
+              onTrackDescRender={this.onTrackDescRender}
+              onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
+              highlightProp={'isCurrentTrack'}
+              onTrackAction={this.props.onSongQueued}
+              onTrackSelected={this.props.onSongSelected}
+              {...this.props}
+              />
+          </View>
+          :<DiscoverProviderContainer {...this.props}/>
+          }
           <ModalPicker
             overlayStyle={this.getPickerOverlayDisplay('genre')}
             options={this.state.genreOptions}
@@ -241,7 +259,9 @@ const styles = StyleSheet.create({
     flex: 1
   },
   descContainer :{
-    flex: 1
+    flex: 1,
+    flexDirection:'row',
+    alignItems:'flex-start'
   },
   genreSelectionBtn :{
     flex:1,
@@ -265,6 +285,7 @@ const styles = StyleSheet.create({
     flexDirection:'row'
   },
   listDescriptionText :{
+    paddingRight:20,
     fontSize : 18,
     paddingVertical:10,
     fontWeight:'600',
