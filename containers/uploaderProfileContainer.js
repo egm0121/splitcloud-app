@@ -50,6 +50,9 @@ class uploaderProfileContainer extends Component {
     console.log('uploaderProfileContainer props',this.props.scUploaderLink);
     this.updateProfileTracks(this.props.scUploaderLink);
   }
+  componentWillUnmount(){
+    this.prevQueryCancelToken.cancel();
+  }
   componentWillReceiveProps(newProps){
     console.log('uploaderProfileContainer newProps',newProps.scUploaderLink);
     if(this.props.scUploaderLink != newProps.scUploaderLink){

@@ -18,7 +18,7 @@ import THEME from '../styles/variables'
 import { connect } from 'react-redux';
 import BackButton from '../components/backButton';
 import SoundCloudApi from '../modules/SoundcloudApi';
-import TrackList from '../components/trackList';
+import TrackListContainer from '../containers/trackListContainer';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
@@ -39,28 +39,30 @@ class DiscoverProviderContainer extends Component {
     };
     this.onRequestFail = this.onRequestFail.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
   }
   componentWillMount(){
-    this.loadTracks()
-      .then(this.updateResultList);
+    this.loadTracks().then(this.updateResultList).catch(() =>{});
   }
-  generateRequestInvalidationToken(){
-    this.prevQueryCancelToken = axios.CancelToken.source();
-    return this.prevQueryCancelToken;
+  componentWillUnmount(){
+    this.prevQueryCancelToken.cancel('aborted');
   }
   loadTracks(){
+    this.props.onLoadingStateChange(true);
     let requestPromise = axios({
       url : 'http://pointlineshape.com/api/music/splitcloud',
       timeout : 5000,
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch((err) => {
-
-      this.props.onRequestFail(err,this.state.selectedGenre);
+      console.log(err);
+      if(!axios.isCancel(err)){
+        this.props.onRequestFail(err);
+      }
       return Promise.resolve(err);
-    });
+    }).then(() => {
+      this.props.onLoadingStateChange(false);
+    })
     return requestPromise.then((resp) => {
       let payload = resp.data
       .map((e) => e.attachments.attachments.extra)
@@ -68,18 +70,7 @@ class DiscoverProviderContainer extends Component {
       return payload;
     });
   }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
-  }
   updateResultList(resp){
-    console.log(resp);
     // in case of empty results or no search terms
     if(!resp){
       return this.setState({ trackList : [] });
@@ -95,32 +86,25 @@ class DiscoverProviderContainer extends Component {
         duration: t.duration
       })
     );
-    console.log('hey',tracks);
     this.setState({ trackList : tracks });
   }
-
+  generateRequestInvalidationToken(){
+    this.prevQueryCancelToken = axios.CancelToken.source();
+    return this.prevQueryCancelToken;
+  }
   onRequestFail(err,type){
     this.props.pushNotification({
       type : 'error',
       message : 'Data Request Failed'
     });
   }
-  onTrackDescRender(rowData){
-    return rowData.duration ?
-      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
-      rowData.username ;
-  }
   render() {
     return (
       <View style={styles.container}>
-        <TrackList
-          tracksData={this.state.trackList.map(this._markAsCurrentTrack)}
-          onTrackDescRender={this.onTrackDescRender}
-          onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
-          highlightProp={'isCurrentTrack'}
-          onTrackAction={this.props.onSongQueued}
-          onTrackSelected={this.props.onSongSelected}
-        ></TrackList>
+        <TrackListContainer
+          side={this.props.side}
+          trackList={this.state.trackList}
+        />
       </View>
     );
   }
@@ -152,8 +136,7 @@ const mapStateToProps = (state,props) => {
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
-  pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onTrackSelected : (track) => dispatch(addPlaylistItem(props.side,track))
+  pushNotification: (notification) => dispatch(pushNotification(notification))
 });
 const ConnectedDiscoverProviderContainer = connect(mapStateToProps,mapDispatchToProps)(DiscoverProviderContainer);
 
