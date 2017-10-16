@@ -114,12 +114,14 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state,props) => {
   const playlistState =
     state.playlist.filter((picker) => picker.side == props.side).pop();
+  const uploaderProfile =
+    state.uploaderProfile.filter((profile) => profile.side == props.side).pop();
   const queue = playlistState.playbackQueue;
   const currentTrack =  queue[playlistState.currentTrackIndex]
   return {
     playlist : playlistState,
     currentTrack,
-    scUploaderLink : currentTrack ? currentTrack.scUploaderLink : ''
+    scUploaderLink : uploaderProfile ? uploaderProfile.lastUploaderUrl :null
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({

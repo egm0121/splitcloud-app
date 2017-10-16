@@ -35,6 +35,9 @@ import {
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
+import{
+  updateLastUploaderProfile
+} from '../redux/actions/uploaderProfileActions';
 import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
@@ -235,6 +238,7 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onUploaderProfileOpen(){
+    this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
     let prevPickerRoute = this.findRouteByName(
       'uploaderProfileContainer.' + this.props.side
     );
@@ -660,7 +664,8 @@ const mapDispatchToProps = (dispatch, props) => {
     goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
     goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
     goToTrack: (trackItem) => dispatch(changeCurrentPlayIndex(props.side,trackItem)),
-    pushNotification: (notification) => dispatch(pushNotification(notification))
+    pushNotification: (notification) => dispatch(pushNotification(notification)),
+    onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url))
   };
 };
 let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
