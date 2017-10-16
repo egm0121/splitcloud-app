@@ -247,7 +247,6 @@ class AudioPlayerContainer extends Component {
       component: uploaderProfileContainer,
       passProps : {
         side : this.props.side,
-        scUploader : this._getCurrentTrackDescription(),
         onClose: () => {this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
           );

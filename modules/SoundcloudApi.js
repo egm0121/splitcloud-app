@@ -10,15 +10,16 @@ class SoundCloudApi {
     };
     this.clientId = clientId;
     this.timeout = 2*1e3;
-
+    this.transformTrackPayload = this.transformTrackPayload.bind(this);
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
-    this.getPopularByGenre = CacheDecorator.withCache(
-      this.getPopularByGenre.bind(this),
-      'getPopularByGenre',
-      3600*1e3 //cache for an hour
-    );
+    // fix bug when returning promise not corresponding to complete request payload
+    // this.getPopularByGenre = CacheDecorator.withCache(
+    //   this.getPopularByGenre.bind(this),
+    //   'getPopularByGenre',
+    //   3600*1e3 //cache for an hour
+    // );
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);
@@ -60,7 +61,12 @@ class SoundCloudApi {
       streamable:true,
       q : terms,
       ...queryOpts
-    }, SoundCloudApi.methods.GET ,cancelToken);
+    }, SoundCloudApi.methods.GET ,cancelToken).then(resp => {
+      console.log(resp.data);
+      return resp.data
+        .map(this.normalizeStreamUrlProperty)
+        .map(this.transformTrackPayload);
+    });
   }
   getPopularByGenre(genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
@@ -74,10 +80,55 @@ class SoundCloudApi {
       genre,
       region:regionParam,
       ...queryOpts
-    },SoundCloudApi.methods.GET,cancelToken);
+    },SoundCloudApi.methods.GET,cancelToken)
+    .then(resp => {
+      let retValue = resp.data.collection
+        .map(t => t.track)
+        .map(this.normalizeStreamUrlProperty)
+        .map(this.transformTrackPayload);
+      return retValue;
+    });
+  }
+  resolveScResource(scResourceUrl){
+    return this.request(SoundCloudApi.api.v1,'resolve',{
+      url:scResourceUrl
+    });
+  }
+  getScUserProfile(scUserId){
+    return this.request(SoundCloudApi.api.v1,`users/${scUserId}`);
+  }
+  getScUserProfileTracks(scUserId){
+    return this.request(SoundCloudApi.api.v1,`users/${scUserId}/tracks`)
+    .then(resp => {
+      return resp.data
+        .map(this.normalizeStreamUrlProperty)
+        .map(this.transformTrackPayload);
+    });
+  }
+  getTracksByUploaderLink(scUploaderLink){
+    return this.resolveScResource(scUploaderLink).then(resp => {
+      return this.getScUserProfileTracks(resp.data.id);
+    });
   }
   getClientId(){
     return this.clientId;
+  }
+  normalizeStreamUrlProperty(trackObj){
+    if(trackObj.stream_url)return trackObj;
+    trackObj.stream_url = trackObj.uri + '/stream'
+    return trackObj;
+  }
+  transformTrackPayload(t){
+    return this.resolvePlayableTrackItem(
+      {
+        id: t.id,
+        label : t.title,
+        username: t.user.username,
+        streamUrl : t.stream_url,
+        artwork : t.artwork_url,
+        scUploaderLink : t.user.permalink_url,
+        duration: t.duration
+      });
   }
   resolvePlayableTrackItem(trackObj){
     //this strip of https is needed as the ATS excaption for tls version on

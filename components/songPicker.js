@@ -17,20 +17,16 @@ import throttle from 'lodash.throttle';
 import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
-import TrackList from '../components/trackList';
+import TrackListContainer from '../containers/trackListContainer';
 import TopList from '../components/topList';
 import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
   constructor(props){
     super(props);
-
     this._onSearchChange = this._onSearchChange.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
     this._onClearSearch = this._onClearSearch.bind(this);
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
-    this.onTrackDescRender = this.onTrackDescRender.bind(this);
     this.isSearchEmpty = this.isSearchEmpty.bind(this);
-
     this.state = {
       searchInput: this.props.searchTerms || '',
       pureList : []
@@ -40,7 +36,6 @@ class SongPicker extends Component {
     this.scApi = new SoundCloudApi({clientId :this.props.scClientId});
     this.SC_CLIENT_ID = this.props.scClientId ;
     this.scResultLimit = this.props.scResultLimit;
-    this.showStreamableOnly = this.props.showStreamableOnly;
     this._onSearchTermsChange = throttle(
       this._onSearchTermsChange.bind(this),
       this.props.debounceWait
@@ -79,60 +74,30 @@ class SongPicker extends Component {
   performScPublicSearch(term){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-
     let requestPromise = this.scApi.searchPublic(term,{
       cancelToken : this.generateRequestInvalidationToken().token
     });
-    requestPromise.catch(
-      (err) => {
-        let isCancel = err.message && err.message.aborted;
-        if(!isCancel){
-          this.props.onRequestFail(err,'search',term);
-        }
-        return Promise.resolve(err);
+    requestPromise.catch((err) => {
+      let isCancel = err.message && err.message.aborted;
+      if(!isCancel){
+        this.props.onRequestFail(err,'search',term);
       }
-    ).then(
+      return Promise.resolve(err);
+    }).then(
       (val) => {
-        if(axios.isCancel(val)){
-          return false;
-        }
+        if(axios.isCancel(val)) return false;
         this.props.onLoadingStateChange(false);
       }
     );
-    return requestPromise.then((resp) => resp.data);
+    return requestPromise;
   }
   updateResultList(resp){
+    console.log('search resp',resp)
     // in case of empty results or no search terms
     if(!resp){
       return this.setState({ pureList : [] });
     }
-    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration
-      })
-    );
-    this.setState({ pureList : tracks });
-  }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
-  }
-  onTrackDescRender(rowData){
-    return rowData.duration ?
-      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
-      rowData.username ;
+    this.setState({ pureList : resp });
   }
   _onClearSearch(){
     this._onSearchChange('');
@@ -163,14 +128,9 @@ class SongPicker extends Component {
             onTrackSelected={this.props.onSongSelected}
             {...this.props}
           /> :
-        <TrackList
-          tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
-          onTrackDescRender={this.onTrackDescRender}
-          onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
-          highlightProp={'isCurrentTrack'}
-          onTrackAction={this.props.onSongQueued}
-          onTrackSelected={this.props.onSongSelected}
-          {...this.props}
+        <TrackListContainer {...this.props}
+          trackList={this.state.pureList}
+          side={this.props.side}
           />
         }
       </View>

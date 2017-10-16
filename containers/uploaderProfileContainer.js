@@ -18,7 +18,8 @@ import THEME from '../styles/variables'
 import { connect } from 'react-redux';
 import BackButton from '../components/backButton';
 import SoundCloudApi from '../modules/SoundcloudApi';
-import UploaderProfile from '../components/uploaderProfile';
+import HeaderBar from '../components/headerBar';
+import TrackListContainer from './trackListContainer';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
@@ -31,74 +32,45 @@ class uploaderProfileContainer extends Component {
     super(props);
     console.log(
       'uploaderProfileContainer mounted with props',
-      this.props.scUploader,
+      this.props.scUploaderLink,
       'side',this.props.side
     );
     this.state = {
       trackList : []
     };
+    this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
+  }
+  updateProfileTracks(url){
+    this.loadUploaderProfileTracks(url).then((tracks) =>{
+      this.setState({trackList:tracks});
+    });
+  }
+  componentWillMount(){
+    console.log('uploaderProfileContainer props',this.props.scUploaderLink);
+    this.updateProfileTracks(this.props.scUploaderLink);
+  }
+  componentWillReceiveProps(newProps){
+    console.log('uploaderProfileContainer newProps',newProps.scUploaderLink);
+    if(this.props.scUploaderLink != newProps.scUploaderLink){
+      this.updateProfileTracks(newProps.scUploaderLink);
+    }
   }
   generateRequestInvalidationToken(){
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
-  loadTopSoundCloudTracks(){
-    this._invalidatePrevRequest();
-    this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.getPopularByGenre(
-      this.state.selectedGenre,
-      this.state.selectedRegion,
-      { cancelToken : this.generateRequestInvalidationToken().token});
-    requestPromise.catch((err) => {
-
-      this.props.onRequestFail(err,this.state.selectedGenre);
+  loadUploaderProfileTracks(url){
+    let requestPromise = this.scApi.getTracksByUploaderLink(
+      url,
+      { cancelToken : this.generateRequestInvalidationToken().token}
+    );
+    requestPromise
+    .catch((err) => {
+      this.props.onRequestFail(err);
       return Promise.resolve(err);
-    }).then(
-      (val) => {
-        if(axios.isCancel(val)){
-          return false;
-        }
-        this.props.onLoadingStateChange(false);
-      }
-    );
-    return requestPromise.then((resp) =>
-      resp.data.collection.map(
-      (item) => {
-        let track = item.track;
-        track.stream_url = track.uri + '/stream'
-        return track;
-      }
-    ));
-  }
-  updateResultList(resp){
-    // in case of empty results or no search terms
-    if(!resp){
-      return this.setState({ trackList : [] });
-    }
-    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration
-      })
-    );
-    this.setState({ trackList : tracks });
-  }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
+    });
+    return requestPromise;
   }
   onRequestFail(err,type){
     this.props.pushNotification({
@@ -109,25 +81,24 @@ class uploaderProfileContainer extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <BackButton style={styles.backButton} onPressed={this.props.onClose} />
-        <View>
-        {/*<Text>Uploader profile for sc username: {this.props.scUploader}</Text>*/}
-        <UploaderProfile {...this.props} />
-        </View>
+        <HeaderBar title={`Music by ${this.props.currentTrack.username}`}>
+          <BackButton style={styles.backButton} onPressed={this.props.onClose} />
+        </HeaderBar>
+        <TrackListContainer {...this.props}
+          side={this.props.side}
+          trackList={this.state.trackList} />
       </View>
     );
   }
 }
 uploaderProfileContainer.propTypes = {
   side : PropTypes.string.isRequired,
-  scUploader : PropTypes.string.isRequired,
+  scUploaderLink : PropTypes.string.isRequired,
   onClose : PropTypes.func.isRequired
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop:40,
-    backgroundColor:THEME.mainBgColor
   },
   backButton:{
     position:'absolute',
@@ -141,14 +112,15 @@ const mapStateToProps = (state,props) => {
   const playlistState =
     state.playlist.filter((picker) => picker.side == props.side).pop();
   const queue = playlistState.playbackQueue;
+  const currentTrack =  queue[playlistState.currentTrackIndex]
   return {
     playlist : playlistState,
-    currentTrack : queue[playlistState.currentTrackIndex]
+    currentTrack,
+    scUploaderLink : currentTrack ? currentTrack.scUploaderLink : ''
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
-  pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onTrackSelected : (track) => dispatch(addPlaylistItem(props.side,track))
+  pushNotification: (notification) => dispatch(pushNotification(notification))
 });
 const ConnecteduploaderProfileContainer = connect(mapStateToProps,mapDispatchToProps)(uploaderProfileContainer);
 

@@ -53,7 +53,7 @@ class DiscoverProviderContainer extends Component {
   loadTracks(){
     let requestPromise = axios({
       url : 'http://pointlineshape.com/api/music/splitcloud',
-      timeout : 2000,
+      timeout : 5000,
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch((err) => {
@@ -98,16 +98,7 @@ class DiscoverProviderContainer extends Component {
     console.log('hey',tracks);
     this.setState({ trackList : tracks });
   }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
-  }
+
   onRequestFail(err,type){
     this.props.pushNotification({
       type : 'error',
@@ -120,7 +111,6 @@ class DiscoverProviderContainer extends Component {
       rowData.username ;
   }
   render() {
-
     return (
       <View style={styles.container}>
         <TrackList

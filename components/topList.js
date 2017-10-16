@@ -20,7 +20,7 @@ import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
 import {animationPresets} from '../helpers/constants';
 import { ucFirst } from '../helpers/formatters';
-import TrackList from '../components/trackList';
+import TrackListContainer from '../containers/trackListContainer';
 import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
@@ -32,7 +32,6 @@ class TopList extends Component {
     this._onGenreChange = this._onGenreChange.bind(this);
     this.onClosePicker = this.onClosePicker.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.openGenrePicker = this.openGenrePicker.bind(this);
     this._onRegionChange = this._onRegionChange.bind(this);
     this.openRegionPicker = this.openRegionPicker.bind(this);
@@ -50,7 +49,6 @@ class TopList extends Component {
       trackList : []
     };
     console.log('genreOptions',this.getOptionsListByType('genre'))
-
   }
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
@@ -66,10 +64,6 @@ class TopList extends Component {
       this.loadTopSoundCloudTracks().then(this.updateResultList,(err) => {
         console.log('ignore as old genre request',err)
       });
-    }
-    if(this.state.trackList !== prevState.trackList){
-      console.log('scroll to top');
-      this.trackListRef.scrollTo({x:0, y:0, animated:true});
     }
   }
   getOptionsListByType(type){
@@ -114,7 +108,6 @@ class TopList extends Component {
       this.state.selectedRegion,
       { cancelToken : this.generateRequestInvalidationToken().token});
     requestPromise.catch((err) => {
-
       this.props.onRequestFail(err,this.state.selectedGenre);
       return Promise.resolve(err);
     }).then(
@@ -125,42 +118,14 @@ class TopList extends Component {
         this.props.onLoadingStateChange(false);
       }
     );
-    return requestPromise.then((resp) =>
-      resp.data.collection.map(
-      (item) => {
-        let track = item.track;
-        track.stream_url = track.uri + '/stream'
-        return track;
-      }
-    ));
+    return requestPromise;
   }
   updateResultList(resp){
     // in case of empty results or no search terms
     if(!resp){
       return this.setState({ trackList : [] });
     }
-    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration
-      })
-    );
-    this.setState({ trackList : tracks });
-  }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
+    this.setState({ trackList : resp });
   }
   onClosePicker(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
@@ -178,11 +143,6 @@ class TopList extends Component {
     this.setState({
       section:sectionName
     });
-  }
-  onTrackDescRender(rowData){
-    return rowData.duration ?
-      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
-      rowData.username ;
   }
   getPickerOverlayDisplay(type){
     return this.state.pickerModalOpen && this.state.pickerModalType == type
@@ -221,15 +181,10 @@ class TopList extends Component {
                   </TouchableHighlight>
               </View>
             </View>
-            <TrackList
-              listRef={(ref) => this.trackListRef = ref}
-              tracksData={this.state.trackList.map(this._markAsCurrentTrack)}
-              onTrackDescRender={this.onTrackDescRender}
-              onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
-              highlightProp={'isCurrentTrack'}
-              onTrackAction={this.props.onSongQueued}
-              onTrackSelected={this.props.onSongSelected}
-              {...this.props}
+            <TrackListContainer {...this.props}
+              trackList={this.state.trackList}
+              side={this.props.side}
+              resetToTop={true}
               />
           </View>
           :<DiscoverProviderContainer {...this.props}/>
