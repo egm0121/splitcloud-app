@@ -34,6 +34,7 @@ class DiscoverProviderContainer extends Component {
     console.log(
       'DiscoverProviderContainer mounted with props',this.props.side
     );
+    console.log(this.props.onTrackAction)
     this.state = {
       trackList : []
     };

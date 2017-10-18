@@ -21,20 +21,15 @@ import {
 } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
-import uploaderProfileContainer from './uploaderProfileContainer';
+import UploaderProfileContainer from './uploaderProfileContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import SearchIcon from '../components/searchIcon';
 import Button from '../components/button';
 import Config from '../helpers/config';
 import {
-  addPlaylistItem,
   incrementCurrentPlayIndex,
-  decrementCurrentPlayIndex,
-  changeCurrentPlayIndex
+  decrementCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
-import {
-  pushNotification
-} from '../redux/actions/notificationActions';
 import{
   updateLastUploaderProfile
 } from '../redux/actions/uploaderProfileActions';
@@ -59,7 +54,6 @@ class AudioPlayerContainer extends Component {
     super(props);
     this._onPlayTogglePress = this._onPlayTogglePress.bind(this);
     this._onPickerToggle = this._onPickerToggle.bind(this);
-    this._onSongSelected = this._onSongSelected.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
     this._onSeekToTime = this._onSeekToTime.bind(this);
     this._onSeekToTimeStart = this._onSeekToTimeStart.bind(this);
@@ -174,26 +168,11 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _onSongSelected(nextTrackResult){
-    this.props.onSongQueued(nextTrackResult);
-    this._goToTrack(nextTrackResult);
-  }
-  _onSongQueued(nextTrackResult){
-    this.props.pushNotification({
-      type : 'success',
-      message : 'Added Track!'
-    });
-    this.props.onSongQueued(nextTrackResult);
-  }
   _goToNextTrack(){
     this.props.goToNextTrack();
   }
   _goToPrevTrack(){
     this.props.goToPrevTrack();
-  }
-  _goToTrack(track){
-    console.log('goToTrack', track)
-    this.props.goToTrack(track);
   }
   _prepareCurrentTrack(shouldAutoPlay){
 
@@ -240,15 +219,15 @@ class AudioPlayerContainer extends Component {
   _onUploaderProfileOpen(){
     this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
     let prevPickerRoute = this.findRouteByName(
-      'uploaderProfileContainer.' + this.props.side
+      'UploaderProfileContainer.' + this.props.side
     );
     if(prevPickerRoute){
       return this.props.navigator.jumpTo(prevPickerRoute);
     }
     this.props.navigator.pushToBottom({
-      title : 'uploaderProfileContainer - ' + this.props.side,
-      name : 'uploaderProfileContainer.' + this.props.side,
-      component: uploaderProfileContainer,
+      title : 'UploaderProfileContainer - ' + this.props.side,
+      name : 'UploaderProfileContainer.' + this.props.side,
+      component: UploaderProfileContainer,
       passProps : {
         side : this.props.side,
         onClose: () => {this.props.navigator.jumpTo(
@@ -274,12 +253,6 @@ class AudioPlayerContainer extends Component {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
           );
-        },
-        onSongSelected : (nextTrack) => {
-          this._onSongSelected(nextTrack);
-        },
-        onSongQueued : (nextTrack) => {
-          this._onSongQueued(nextTrack);
         }
       }
     });
@@ -301,9 +274,6 @@ class AudioPlayerContainer extends Component {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
           );
-        },
-        onTrackSelected : (nextTrack) => {
-          this._goToTrack(nextTrack);
         }
       }
     });
@@ -660,11 +630,8 @@ const mapStateToProps = (state, props) => {
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    onSongQueued : (trackItem) => dispatch(addPlaylistItem(props.side,trackItem)),
     goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
     goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
-    goToTrack: (trackItem) => dispatch(changeCurrentPlayIndex(props.side,trackItem)),
-    pushNotification: (notification) => dispatch(pushNotification(notification)),
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url))
   };
 };

@@ -51,7 +51,6 @@ class SongPickerContainer extends Component {
             onSearchTermsChange={this.props.onSearchTermsChange}
             onLoadingStateChange={this.props.onLoadingStateChange}
             onRequestFail={this.onRequestFail}
-            currentPlayingTrack={this.props.currentTrack}
             searchTerms={this.props.picker.searchTerms}
             isLoading={this.props.picker.isLoading}
             {...this.props}
@@ -62,8 +61,6 @@ class SongPickerContainer extends Component {
 }
 SongPickerContainer.propTypes = {
   side : PropTypes.string.isRequired,
-  onSongSelected: PropTypes.func.isRequired,
-  onSongQueued: PropTypes.func,
   onClose: PropTypes.func
 }
 const styles = StyleSheet.create({

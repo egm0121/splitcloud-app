@@ -124,8 +124,6 @@ class SongPicker extends Component {
         </View>
         {this.isSearchEmpty() ?
           <TopList
-            onTrackAction={this.props.onSongQueued}
-            onTrackSelected={this.props.onSongSelected}
             {...this.props}
           /> :
         <TrackListContainer {...this.props}
@@ -196,8 +194,6 @@ const styles = StyleSheet.create({
 });
 
 SongPicker.propTypes = {
-  onSongSelected: PropTypes.func.isRequired,
-  onSongQueued: PropTypes.func,
   onClose: PropTypes.func,
   onSearchTermsChange: PropTypes.func
 };

@@ -38,7 +38,7 @@ class TrackListContainer extends Component {
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.trackListRef = null;
-    
+
   }
   componentWillReceiveProps(newProps){
     if(this.props.resetToTop && (this.props.trackList !== newProps.trackList)){
@@ -109,7 +109,13 @@ const mapStateToProps = (state,props) => {
 }
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onTrackAction : (track) => dispatch(addPlaylistItem(props.side,track)),
+  onTrackAction : (track) => {
+    dispatch(pushNotification({
+      type : 'success',
+      message : 'Added Track!'
+    }));
+    dispatch(addPlaylistItem(props.side,track))
+  },
   onTrackSelected : (track) => {
     console.log('tracklist connect onTrackSelected');
     dispatch(addPlaylistItem(props.side,track));

@@ -260,8 +260,6 @@ const styles = StyleSheet.create({
 });
 
 TopList.propTypes = {
-  onSongSelected: PropTypes.func.isRequired,
-  onSongQueued: PropTypes.func,
   onChartLoadingError :PropTypes.func,
   onClose: PropTypes.func
 };

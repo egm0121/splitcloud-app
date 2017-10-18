@@ -96,8 +96,6 @@ class CurrentPlaylistContainer extends Component {
       ]
     );
   }
-  //TODO: port filtering logic in reducer
-
   render() {
     const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
     const playlistFilteredList = this.props.queue
@@ -150,7 +148,6 @@ CurrentPlaylistContainer.propTypes = {
   side : PropTypes.string.isRequired,
   playlist : PropTypes.object.isRequired,
   playlistTitle : PropTypes.string.isRequired,
-  onTrackSelected: PropTypes.func.isRequired,
   onRemoveTrack: PropTypes.func,
   onClose: PropTypes.func
 }
