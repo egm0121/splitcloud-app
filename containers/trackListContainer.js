@@ -104,7 +104,7 @@ const mapStateToProps = (state,props) => {
   const queue = playlistState.playbackQueue;
   return {
     playlist : playlistState,
-    currentPlayingTrack : queue[playlistState.currentTrackIndex]
+    currentPlayingTrack : queue[playlistState.currentTrackIndex] || {}
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({

@@ -84,7 +84,7 @@ const trackCacheMiddleware = store => {
           deleteLocalAsset(action.track,store);
         }
         if(action.type == actionTypes.SET_PLAYLIST &&
-           action.playbackQueue.length == 0){
+           action.tracks.length == 0){
           let allDeleted = prevPlaylistTracks.map((track) => deleteLocalAsset(track,store));
           Promise.all(allDeleted).then(() => console.info('deleted all track assets'))
         }
