@@ -66,6 +66,7 @@ class TrackListContainer extends Component {
     return (
       <View style={styles.container}>
         <TrackList
+          onHeaderRender={this.props.onHeaderRender}
           listRef={(ref) => this.trackListRef = ref}
           tracksData={trackData}
           onTrackDescRender={this.onTrackDescRender}
@@ -90,7 +91,8 @@ TrackListContainer.propTypes = {
   resetToTop: PropTypes.bool,
   onTrackActionRender: PropTypes.func,
   onTrackAction: PropTypes.func.isRequired,
-  onTrackSelected: PropTypes.func.isRequired
+  onTrackSelected: PropTypes.func.isRequired,
+  onHeaderRender: PropTypes.func
 }
 const styles = StyleSheet.create({
   container: {

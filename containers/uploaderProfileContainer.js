@@ -16,6 +16,7 @@ import axios from 'axios';
 import config from '../helpers/config';
 import THEME from '../styles/variables'
 import { connect } from 'react-redux';
+import ArtistProfileHeader from '../components/artistProfileHeader';
 import BackButton from '../components/backButton';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import HeaderBar from '../components/headerBar';
@@ -26,6 +27,7 @@ import {
 import {
   addPlaylistItem
 } from '../redux/actions/currentPlaylistActions';
+import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 const {SC_CLIENT_ID} = config;
 class uploaderProfileContainer extends Component {
   constructor(props){
@@ -84,12 +86,14 @@ class uploaderProfileContainer extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <HeaderBar title={`Music by ${this.props.currentTrack.username}`}>
+        <HeaderBar title={`${(formatSidePlayerLabel(this.props.side)).toUpperCase()} PLAYER | USER PROFILE`}>
           <BackButton style={styles.backButton} onPressed={this.props.onClose} />
         </HeaderBar>
         <TrackListContainer {...this.props}
           side={this.props.side}
-          trackList={this.state.trackList} />
+          trackList={this.state.trackList}
+          onHeaderRender={() => <ArtistProfileHeader username={this.props.currentTrack.username} />}
+        />
       </View>
     );
   }

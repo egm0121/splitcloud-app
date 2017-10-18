@@ -7,6 +7,7 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  Image,
   TextInput,
   ListView,
   View,
@@ -61,21 +62,26 @@ class TrackList extends Component {
       this.props.onTrackAction(rowData);
     }
   }
-
+  isTrack(rowData){
+    return rowData.id && rowData.label && !rowData.isEmpty
+  }
+  getSmallArtworkUrl(url){
+    if(!url)return;
+    return url.replace('-large', '-t67x67');
+  }
   renderRowWithData(rowData) {
     const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
-    let isTrack,trackAuthor,trackTitle;
-    if(rowData.id && rowData.label && !rowData.isEmpty){
+    let isTrack,trackAuthor,trackTitle,artworkImage;
+    if(this.isTrack(rowData)){
       isTrack = true;
       [trackAuthor,trackTitle] = rowData.label.split('-').map((l) => l.trim());
       if(!trackTitle || trackTitle.length == 0){
         trackTitle = trackAuthor;
         trackAuthor = rowData.username;
       }
+      artworkImage = {url:this.getSmallArtworkUrl(rowData.artwork)};
     }
-    if( this.props.highlightProp &&
-        rowData[this.props.highlightProp] ){
-
+    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
       rowTextStyle.push(styles.hightlightText);
     }
     if(rowData.isEmpty){
@@ -89,22 +95,21 @@ class TrackList extends Component {
     }
     return (
       <View style={styles.row}>
+        {this.props.renderArtwork &&
+          <View style={styles.rowArtworkContainer}>
+            <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
+          </View>
+          }
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-            {isTrack ?
-            (<View>
               <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
                 {trackTitle}
               </Text>
               <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
                 {trackAuthor}
               </Text>
-            </View>) :
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >
-              {rowData.label}
-            </Text>}
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
-              {this.props.onTrackDescRender(rowData)}
-            </Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
+                {this.props.onTrackDescRender(rowData)}
+              </Text>
           </TouchableOpacity>
           {!rowData.isEmpty ?
             <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
@@ -122,6 +127,7 @@ class TrackList extends Component {
         <ListView contentContainerStyle={styles.list}
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
+          renderHeader={this.props.onHeaderRender}
           renderRow={this.renderRowWithData.bind(this)} ref={(ref) => this.props.listRef(ref)} />
       </View>
     );
@@ -131,6 +137,7 @@ class TrackList extends Component {
 TrackList.defaultProps = {
   emptyLabel : 'Empty Tracklist',
   onTrackActionRender : () => '+',
+  renderArtwork: true,
   listRef : () => {}
 };
 TrackList.propTypes = {
@@ -139,6 +146,8 @@ TrackList.propTypes = {
   onTrackSelected: PropTypes.func,
   onTrackAction: PropTypes.func,
   onTrackActionRender: PropTypes.func,
+  renderArtwork: PropTypes.bool,
+  onHeaderRender: PropTypes.func,
   highlightProp : PropTypes.string
 };
 
@@ -159,6 +168,15 @@ const styles = StyleSheet.create({
     marginTop:5,
     paddingLeft: 20,
     paddingRight: 0
+  },
+  rowArtworkImage:{
+    width:40,
+    height:40,
+    backgroundColor: THEME.listBorderColor
+  },
+  rowArtworkContainer:{
+    width:55,
+    paddingTop:5
   },
   rowLabel : {
     flex: 10,
