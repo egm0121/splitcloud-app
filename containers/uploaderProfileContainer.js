@@ -93,7 +93,7 @@ class uploaderProfileContainer extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <HeaderBar title={`${(formatSidePlayerLabel(this.props.side)).toUpperCase()} PLAYER | USER PROFILE`}>
+        <HeaderBar title={`${(formatSidePlayerLabel(this.props.side)).toUpperCase()} PLAYER`}>
           <BackButton style={styles.backButton} onPressed={this.props.onClose} />
         </HeaderBar>
         <TrackListContainer {...this.props}
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer:{
-    flexDirection:'row'  
+    flexDirection:'row'
   },
   backButton:{
     position:'absolute',
