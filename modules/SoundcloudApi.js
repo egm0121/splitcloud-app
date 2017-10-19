@@ -14,12 +14,22 @@ class SoundCloudApi {
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
-    // fix bug when returning promise not corresponding to complete request payload
-    // this.getPopularByGenre = CacheDecorator.withCache(
-    //   this.getPopularByGenre.bind(this),
-    //   'getPopularByGenre',
-    //   3600*1e3 //cache for an hour
-    // );
+    //fix bug when returning promise not corresponding to complete request payload
+    this.getPopularByGenre = CacheDecorator.withCache(
+      this.getPopularByGenre.bind(this),
+      'getPopularByGenre',
+      3600*1e3
+    );
+    this.resolveScResource = CacheDecorator.withCache(
+      this.resolveScResource.bind(this),
+      'resolveScResource',
+      3600*1e3
+    );
+    this.getTracksByUploaderLink = CacheDecorator.withCache(
+      this.getTracksByUploaderLink.bind(this),
+      'getTracksByUploaderLink',
+      3600*1e3
+    );
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);

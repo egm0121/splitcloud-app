@@ -51,6 +51,7 @@ class uploaderProfileContainer extends Component {
   componentWillMount(){
     console.log('uploaderProfileContainer props',this.props.scUploaderLink);
     this.updateProfileTracks(this.props.scUploaderLink);
+    this.updateProfileDetails(this.props.scUploaderLink);
   }
   componentWillUnmount(){
     this.prevQueryCancelToken.cancel();
@@ -59,11 +60,17 @@ class uploaderProfileContainer extends Component {
     console.log('uploaderProfileContainer newProps',newProps.scUploaderLink);
     if(this.props.scUploaderLink != newProps.scUploaderLink){
       this.updateProfileTracks(newProps.scUploaderLink);
+      this.updateProfileDetails(newProps.scUploaderLink);
     }
   }
   generateRequestInvalidationToken(){
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
+  }
+  updateProfileDetails(url){
+    this.scApi.resolveScResource(url).then((resp) => {
+      this.setState({profileDetails:resp.data});
+    });
   }
   loadUploaderProfileTracks(url){
     let requestPromise = this.scApi.getTracksByUploaderLink(
@@ -92,7 +99,10 @@ class uploaderProfileContainer extends Component {
         <TrackListContainer {...this.props}
           side={this.props.side}
           trackList={this.state.trackList}
-          onHeaderRender={() => <ArtistProfileHeader username={this.props.currentTrack.username} />}
+          onHeaderRender={() =>
+            <View style={styles.headerContainer}>
+              <ArtistProfileHeader user={this.state.profileDetails} />
+            </View>}
         />
       </View>
     );
@@ -106,6 +116,9 @@ uploaderProfileContainer.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerContainer:{
+    flexDirection:'row'  
   },
   backButton:{
     position:'absolute',
