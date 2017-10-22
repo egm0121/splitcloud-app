@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ActivityIndicator,
   ListView,
   View,
   TouchableOpacity,
@@ -38,14 +39,22 @@ class uploaderProfileContainer extends Component {
       'side',this.props.side
     );
     this.state = {
-      trackList : []
+      trackList : [],
+      profileDetails:false
     };
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
   }
   updateProfileTracks(url){
+    this.setState({trackList:[]});
     this.loadUploaderProfileTracks(url).then((tracks) =>{
       this.setState({trackList:tracks});
+    });
+  }
+  updateProfileDetails(url){
+    this.setState({profileDetails:false});
+    this.scApi.resolveScResource(url).then((resp) => {
+      this.setState({profileDetails:resp.data});
     });
   }
   componentWillMount(){
@@ -67,11 +76,7 @@ class uploaderProfileContainer extends Component {
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
-  updateProfileDetails(url){
-    this.scApi.resolveScResource(url).then((resp) => {
-      this.setState({profileDetails:resp.data});
-    });
-  }
+
   loadUploaderProfileTracks(url){
     let requestPromise = this.scApi.getTracksByUploaderLink(
       url,
@@ -101,7 +106,10 @@ class uploaderProfileContainer extends Component {
           trackList={this.state.trackList}
           onHeaderRender={() =>
             <View style={styles.headerContainer}>
-              <ArtistProfileHeader user={this.state.profileDetails} />
+              {!this.state.profileDetails ?
+                <ActivityIndicator animating={true} style={styles.loadingIndicator} /> :
+                <ArtistProfileHeader user={this.state.profileDetails} />
+              }
             </View>}
         />
       </View>
@@ -116,6 +124,12 @@ uploaderProfileContainer.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingIndicator:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    height:100
   },
   headerContainer:{
     flexDirection:'row'

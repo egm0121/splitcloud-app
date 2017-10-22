@@ -37,7 +37,7 @@ import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
-import {formatDuration} from '../helpers/formatters';
+import {formatDurationExtended} from '../helpers/formatters';
 import FileDownloadManager from '../modules/FileDownloadManager';
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -472,7 +472,12 @@ class AudioPlayerContainer extends Component {
     }
     let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
+    let smallTimeText = undefined;
 
+    if(formatDurationExtended(this.state.duration).length > 5){
+      smallTimeText = styles.playbackTimeSmall;
+      progressTrackLength -= 20;
+    }
     let isPlaylistVisible = this.props.queue.length > 1;
     if( this._getCurrentTrackTitle() ){
       trackLabelPlaceholder = this._getCurrentTrackTitle();
@@ -535,7 +540,9 @@ class AudioPlayerContainer extends Component {
                   </View>)}
                 {this.renderInFullscreen(this.renderForegroundArtCover())}
                 <View style={[styles.horizontalContainer]} >
-                  <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{formatDuration(this.state.elapsed)}</Text>
+                  <Text style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
+                      formatDurationExtended(this.state.elapsed)
+                  }</Text>
                   <View style={styles.playbackTrackContainer}>
                     <MultiSlider
                       values={this.state.sliderOneValue}
@@ -550,7 +557,9 @@ class AudioPlayerContainer extends Component {
                       unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                       markerStyle={markerStyle} />
                   </View>
-                  <Text style={[styles.playbackTime]}>{formatDuration(this.state.duration)}</Text>
+                  <Text style={[styles.playbackTime,smallTimeText]}>{
+                      formatDurationExtended(this.state.duration)
+                    }</Text>
                 </View>
                 <View style={styles.horizontalContainer}>
                   <Button style={[styles.container,styles.playlistButton]}
@@ -699,6 +708,10 @@ const styles = StyleSheet.create({
     height:30,
     lineHeight: 22,
     width:50
+  },
+  playbackTimeSmall:{
+    fontSize:12,
+    width:60
   },
   playbackTimeInitial:{
     marginLeft:10

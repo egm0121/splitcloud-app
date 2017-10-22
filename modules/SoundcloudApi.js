@@ -137,7 +137,8 @@ class SoundCloudApi {
         streamUrl : t.stream_url,
         artwork : t.artwork_url,
         scUploaderLink : t.user.permalink_url,
-        duration: t.duration
+        duration: t.duration,
+        playbackCount: t.playback_count
       });
   }
   resolvePlayableTrackItem(trackObj){

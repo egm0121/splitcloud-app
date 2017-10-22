@@ -3,7 +3,7 @@
  */
 import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View, Text,Image } from 'react-native';
-import {formatFollowerCount} from '../helpers/formatters';
+import {formatNumberPrefix} from '../helpers/formatters';
 import THEME from '../styles/variables';
 function ArtistProfileHeader(props){
   if(!props.user) return null;
@@ -19,7 +19,7 @@ function ArtistProfileHeader(props){
             {details.username}
             </Text>
             <Text style={styles.followerCount}>
-            {formatFollowerCount(details.followers_count)} Followers
+            {formatNumberPrefix(details.followers_count)} Followers
             </Text>
           </View>
       </View>

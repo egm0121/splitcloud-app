@@ -26,7 +26,10 @@ import {
   addPlaylistItem,
   changeCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
-import {formatDuration} from '../helpers/formatters';
+import {
+  formatDurationExtended,
+  formatNumberPrefix
+} from '../helpers/formatters';
 const {SC_CLIENT_ID} = config;
 
 class TrackListContainer extends Component {
@@ -58,7 +61,7 @@ class TrackListContainer extends Component {
   }
   onTrackDescRender(rowData){
     return rowData.duration ?
-      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
+      `${formatDurationExtended(rowData.duration,{milli:true})} • ${formatNumberPrefix(rowData.playbackCount)} • ${rowData.username}` :
       rowData.username ;
   }
   render() {
