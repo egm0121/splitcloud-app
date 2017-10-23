@@ -60,9 +60,13 @@ class TrackListContainer extends Component {
     return item;
   }
   onTrackDescRender(rowData){
-    return rowData.duration ?
-      `${formatDurationExtended(rowData.duration,{milli:true})} • ${formatNumberPrefix(rowData.playbackCount)} • ${rowData.username}` :
-      rowData.username ;
+    let
+      duration = rowData.duration ?
+        formatDurationExtended(rowData.duration,{milli:true}) : '',
+      playCount = rowData.playbackCount ?
+        '▶ '+formatNumberPrefix(rowData.playbackCount) : '',
+      username = 'by '+rowData.username;
+    return [duration,playCount,username].filter(e =>e.length).join(' • ') ;
   }
   render() {
     let trackData = this.props.trackList.map(this._markAsCurrentTrack);
