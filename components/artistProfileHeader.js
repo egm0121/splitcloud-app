@@ -10,7 +10,7 @@ function ArtistProfileHeader(props){
   let details = props.user;
   return <View style={styles.headerContainer}>
       <View style={styles.horizontalHeaderBox}>
-          <Image style={styles.profileImage} source={{url:details.avatar_url}} resizeMode={'cover'}/>
+          <Image style={styles.profileImage} source={{url:details.avatarUrl}} resizeMode={'cover'}/>
           <View style={{flex:1}}>
             <Text
             numberOfLines={1}
@@ -19,7 +19,7 @@ function ArtistProfileHeader(props){
             {details.username}
             </Text>
             <Text style={styles.followerCount}>
-            {formatNumberPrefix(details.followers_count)} Followers
+            {formatNumberPrefix(details.followersCount)} Followers
             </Text>
           </View>
       </View>

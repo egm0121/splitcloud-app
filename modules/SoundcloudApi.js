@@ -63,19 +63,30 @@ class SoundCloudApi {
     return [cancelToken,opts];
   }
 
-  searchPublic(terms, opts = {}){
+  searchPublicTracks(terms,limit=100,offset=0,opts = {}){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     return this.request(SoundCloudApi.api.v1,'tracks',{
-      limit:100,
-      offset:0,
+      limit,
+      offset,
       streamable:true,
       q : terms,
       ...queryOpts
     }, SoundCloudApi.methods.GET ,cancelToken).then(resp => {
-      console.log(resp.data);
       return resp.data
         .map(this.normalizeStreamUrlProperty)
         .map(this.transformTrackPayload);
+    });
+  }
+  searchUsers(terms,limit=5,offset=0,opts ={}){
+    let [cancelToken,queryOpts] = this._extractCancelToken(opts);
+    return this.request(SoundCloudApi.api.v1,'users',{
+      limit,
+      offset,
+      q : terms,
+      ...queryOpts
+    }, SoundCloudApi.methods.GET ,cancelToken).then(resp => {
+      return resp.data
+        .map(this.transformUserPayload);
     });
   }
   getPopularByGenre(genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
@@ -115,6 +126,14 @@ class SoundCloudApi {
         .map(this.transformTrackPayload);
     });
   }
+  getScUserProfileFavorites(scUserId){
+    return this.request(SoundCloudApi.api.v1,`users/${scUserId}/favorites`)
+    .then(resp => {
+      return resp.data
+        .map(this.normalizeStreamUrlProperty)
+        .map(this.transformTrackPayload);
+    });
+  }
   getTracksByUploaderLink(scUploaderLink){
     return this.resolveScResource(scUploaderLink).then(resp => {
       return this.getScUserProfileTracks(resp.data.id);
@@ -140,6 +159,24 @@ class SoundCloudApi {
         duration: t.duration,
         playbackCount: t.playback_count
       });
+  }
+  transformUserPayload(user){
+    return {
+      scUploaderLink:user.permalink_url,
+      id:user.id,
+      username: user.username,
+      firstName : user.first_name,
+      lastName: user.last_name,
+      city: user.city,
+      country: user.country,
+      description: user.description,
+      followersCount: user.followers_count,
+      avatarUrl: user.avatar_url,
+      websiteTitle: user.website_title,
+      websiteCount: user.website_count,
+      likesCount: user.likes_count,
+      trackCount: user.track_count
+    };
   }
   resolvePlayableTrackItem(trackObj){
     //this strip of https is needed as the ATS excaption for tls version on

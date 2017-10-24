@@ -18,6 +18,7 @@ import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
 import TrackListContainer from '../containers/trackListContainer';
+import UserFinderContainer from '../containers/userFinderContainer';
 import TopList from '../components/topList';
 import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
@@ -74,7 +75,7 @@ class SongPicker extends Component {
   performScPublicSearch(term){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.searchPublic(term,{
+    let requestPromise = this.scApi.searchPublicTracks(term,100,0,{
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch((err) => {
@@ -127,6 +128,9 @@ class SongPicker extends Component {
             {...this.props}
           /> :
         <TrackListContainer {...this.props}
+          onHeaderRender={() => {
+            return <UserFinderContainer {...this.props} terms={this.state.searchInput} />
+          }}
           trackList={this.state.pureList}
           side={this.props.side}
           />
