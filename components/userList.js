@@ -7,7 +7,7 @@ import {
   TextInput,
   ListView,
   View,
-  TouchableHighlight
+  TouchableOpacity
 } from 'react-native';
 import THEME from '../styles/variables';
 
@@ -19,14 +19,14 @@ class UserList extends Component {
     return <View>
     {this.props.userList.map((user,i) => {
       const name = user.username || user.firstName +' '+user.lastName;
-      return <TouchableHighlight
+      return <TouchableOpacity
         onPress={this.props.onUserSelected.bind(this,user)}
         key={i} >
         <View style={styles.itemContainer}>
           <Image style={styles.profileImage} source={{url:user.avatarUrl}} resizeMode={'cover'}/>
           <Text style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</Text>
         </View>
-      </TouchableHighlight>;
+      </TouchableOpacity>;
     })}
     </View>;
   }

@@ -85,8 +85,7 @@ class SoundCloudApi {
       q : terms,
       ...queryOpts
     }, SoundCloudApi.methods.GET ,cancelToken).then(resp => {
-      return resp.data
-        .map(this.transformUserPayload);
+      return resp.data.map(this.transformUserPayload);
     });
   }
   getPopularByGenre(genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
@@ -116,7 +115,9 @@ class SoundCloudApi {
     });
   }
   getScUserProfile(scUserId){
-    return this.request(SoundCloudApi.api.v1,`users/${scUserId}`);
+    return this.request(SoundCloudApi.api.v1,`users/${scUserId}`).then(resp=>{
+      return this.transformUserPayload(resp.data);
+    });
   }
   getScUserProfileTracks(scUserId){
     return this.request(SoundCloudApi.api.v1,`users/${scUserId}/tracks`)
@@ -228,7 +229,6 @@ SoundCloudApi.genre = {
   AUDIOBOOKS : 'soundcloud:genres:audiobooks',
   BUSINESS : 'soundcloud:genres:business',
   COMEDY : 'soundcloud:genres:comedy',
-
   ENTERTAINMENT : 'soundcloud:genres:entertainment',
   LEARNING : 'soundcloud:genres:learning',
   POLITICS : 'soundcloud:genres:newspolitics',

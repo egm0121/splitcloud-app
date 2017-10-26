@@ -19,10 +19,13 @@ import { connect } from 'react-redux';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import UserList from '../components/userList';
 import throttle from 'lodash.throttle';
+import UploaderProfileContainer from './uploaderProfileContainer';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
-
+import {
+  updateLastUploaderProfile
+} from '../redux/actions/uploaderProfileActions';
 const {SC_CLIENT_ID} = config;
 class UserFinderContainer extends Component {
   constructor(props){
@@ -33,6 +36,7 @@ class UserFinderContainer extends Component {
     };
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
+    this.onUserSelected = this.onUserSelected.bind(this);
     this.searchUsers = throttle(
       this.searchUsers.bind(this),
       this.props.debounceWait
@@ -42,7 +46,7 @@ class UserFinderContainer extends Component {
     if(this.prevQueryCancelToken){
       this.prevQueryCancelToken.cancel({aborted:true});
     }
-    return this.scApi.searchUsers(terms,5,0,{
+    return this.scApi.searchUsers(terms,2,0,{
       cancelToken:this.generateRequestInvalidationToken().token
     });
   }
@@ -57,7 +61,7 @@ class UserFinderContainer extends Component {
   }
   componentWillReceiveProps(newProps){
     if(this.props.terms != newProps.terms){
-      this.searchUsers(this.props.terms).then((users) => {
+      this.searchUsers(newProps.terms).then((users) => {
         this.setState({userList:users});
       }).catch(err => console.log('user search failed',err));
     }
@@ -66,16 +70,43 @@ class UserFinderContainer extends Component {
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
+  userProfileOpen(){ //move this routing code to an HoC
+    let prevPickerRoute = this.findRouteByName(
+      'UploaderProfileContainer.' + this.props.side
+    );
+    if(prevPickerRoute){
+      return this.props.navigator.jumpTo(prevPickerRoute);
+    }
+    this.props.navigator.pushToBottom({
+      title : 'UploaderProfileContainer - ' + this.props.side,
+      name : 'UploaderProfileContainer.' + this.props.side,
+      component: UploaderProfileContainer,
+      passProps : {
+        side : this.props.side,
+        onClose: () => {this.props.navigator.jumpTo(
+            this.findRouteByName(this.props.routeName)
+          );
+        }
+      }
+    });
+  }
+  onUserSelected(user){
+    this.props.onUserSelected(user);
+    this.userProfileOpen();
+  }
   onRequestFail(err,type){
     this.props.pushNotification({
       type : 'error',
       message : 'Data Request Failed'
     });
   }
+  findRouteByName(name){
+    return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
+  }
   render() {
     return <UserList {...this.props}
       userList={this.state.userList}
-      onUserSelected={this.props.onUserSelected}
+      onUserSelected={this.onUserSelected}
     />;
   }
 }
@@ -101,7 +132,9 @@ const mapStateToProps = (state,props) => {
 }
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onUserSelected: (user) => console.log('selected user',user)
+  onUserSelected: (user) => {
+    dispatch(updateLastUploaderProfile(props.side,user.scUploaderLink));
+  }
 });
 const ConnectedUserFinderContainer = connect(mapStateToProps,mapDispatchToProps)(UserFinderContainer);
 

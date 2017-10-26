@@ -54,7 +54,7 @@ class uploaderProfileContainer extends Component {
   updateProfileDetails(url){
     this.setState({profileDetails:false});
     this.scApi.resolveScResource(url).then((resp) => {
-      this.setState({profileDetails:resp.data});
+      this.setState({profileDetails:this.scApi.transformUserPayload(resp.data)});
     });
   }
   componentWillMount(){

@@ -50,6 +50,7 @@ let styles = StyleSheet.create({
     fontSize: 13,
   },
   profileImage:{
+    borderRadius:30,
     width:60,
     height:60,
     marginRight:20
