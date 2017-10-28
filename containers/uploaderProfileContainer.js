@@ -127,7 +127,7 @@ class uploaderProfileContainer extends Component {
           trackList={this.state.trackList}
           onHeaderRender={() =>
             <View style={styles.headerContainer}>
-              <View style={{flexDirection:'column'}}>
+              <View style={styles.horizontalContainer}>
                 {!this.state.profileDetails ?
                   <ActivityIndicator animating={true} style={styles.loadingIndicator} /> :
                   <ArtistProfileHeader user={this.state.profileDetails} />
@@ -162,7 +162,11 @@ const styles = StyleSheet.create({
     height:100
   },
   headerContainer:{
-    flexDirection:'row'
+    flexDirection:'row',
+  },
+  horizontalContainer:{
+    flex:1,
+    flexDirection:'column'
   },
   backButton:{
     position:'absolute',

@@ -31,7 +31,7 @@ class NotificationContainer extends Component {
   render() {
     let isForeground = this.props.notifications.list.length > 0;
     return (
-      <View style={[styles.container,{height:isForeground ? null : 0}]}>
+      <View style={[styles.container,{height:isForeground ? null : 0}]} pointerEvents='none'>
         {this.props.notifications.list.map((notification) => {
           return <NotificationOverlay
             message={notification.message}

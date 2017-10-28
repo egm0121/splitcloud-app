@@ -17,9 +17,8 @@ const styles = StyleSheet.create({
   itemText : {
     color: THEME.mainColor,
     fontSize: 18,
-    lineHeight: 30,
     fontWeight:'600',
-    paddingRight:10
+    paddingRight:20
   },
   itemSelected:{
     color: THEME.mainHighlightColor

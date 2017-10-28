@@ -9,27 +9,27 @@ function ArtistProfileHeader(props){
   if(!props.user) return null;
   let details = props.user;
   return <View style={styles.headerContainer}>
-      <View style={styles.horizontalHeaderBox}>
-          <Image style={styles.profileImage} source={{url:details.avatarUrl}} resizeMode={'cover'}/>
-          <View style={{flex:1}}>
-            <Text
-            numberOfLines={1}
-            ellipsizeMode={'tail'}
-            style={styles.headerText}>
-            {details.username}
-            </Text>
-            <Text style={styles.followerCount}>
-            {formatNumberPrefix(details.followersCount)} Followers
-            </Text>
+          <View style={styles.horizontalHeaderBox}>
+              <Image style={styles.profileImage} source={{url:details.avatarUrl}} resizeMode={'cover'}/>
+              <View>
+                <Text
+                numberOfLines={1}
+                ellipsizeMode={'tail'}
+                style={styles.headerText}>
+                {details.username}
+                </Text>
+                <Text style={styles.followerCount}>
+                {formatNumberPrefix(details.followersCount)} Followers
+                </Text>
+              </View>
           </View>
-      </View>
-      <Text
-        numberOfLines={3}
-        ellipsizeMode={'tail'}
-        style={styles.descText}>
-        {details.description}
-      </Text>
-  </View>;
+        <Text
+          numberOfLines={3}
+          ellipsizeMode={'tail'}
+          style={styles.descText}>
+          {details.description}
+        </Text>
+      </View>;
 }
 let styles = StyleSheet.create({
   headerContainer :{
