@@ -21,6 +21,8 @@ import ArtistProfileHeader from '../components/artistProfileHeader';
 import BackButton from '../components/backButton';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import HeaderBar from '../components/headerBar';
+import SectionTabBar from '../components/sectionTabBar';
+import SectionItem from '../components/sectionItem';
 import TrackListContainer from './trackListContainer';
 import {
   pushNotification
@@ -30,6 +32,10 @@ import {
 } from '../redux/actions/currentPlaylistActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 const {SC_CLIENT_ID} = config;
+const SECTIONS = {
+  UPLOADS:'uploads',
+  FAVORITES:'favorites'
+};
 class uploaderProfileContainer extends Component {
   constructor(props){
     super(props);
@@ -40,14 +46,21 @@ class uploaderProfileContainer extends Component {
     );
     this.state = {
       trackList : [],
+      section : SECTIONS.UPLOADS,
       profileDetails:false
     };
+    this.sectionDataResolver = {
+      [SECTIONS.UPLOADS]:'getTracksByUploaderLink',
+      [SECTIONS.FAVORITES]:'getFavoritesByUploaderLink'
+    }
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
+    this.onSectionChange = this.onSectionChange.bind(this);
   }
-  updateProfileTracks(url){
+  updateTracks(url){
     this.setState({trackList:[]});
-    this.loadUploaderProfileTracks(url).then((tracks) =>{
+    let activeResolver = this.sectionDataResolver[this.state.section];
+    this.fetchTrackList(activeResolver,url).then((tracks) =>{
       this.setState({trackList:tracks});
     });
   }
@@ -59,8 +72,8 @@ class uploaderProfileContainer extends Component {
   }
   componentWillMount(){
     console.log('uploaderProfileContainer props',this.props.scUploaderLink);
-    this.updateProfileTracks(this.props.scUploaderLink);
     this.updateProfileDetails(this.props.scUploaderLink);
+    this.updateTracks(this.props.scUploaderLink);
   }
   componentWillUnmount(){
     this.prevQueryCancelToken.cancel();
@@ -68,17 +81,22 @@ class uploaderProfileContainer extends Component {
   componentWillReceiveProps(newProps){
     console.log('uploaderProfileContainer newProps',newProps.scUploaderLink);
     if(this.props.scUploaderLink != newProps.scUploaderLink){
-      this.updateProfileTracks(newProps.scUploaderLink);
       this.updateProfileDetails(newProps.scUploaderLink);
+      this.updateTracks(newProps.scUploaderLink);
+    }
+  }
+  componentDidUpdate(prevProps,prevState){
+    if(prevState.section != this.state.section){
+      console.log(prevState.section,this.state.section);
+      this.updateTracks(this.props.scUploaderLink);
     }
   }
   generateRequestInvalidationToken(){
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
-
-  loadUploaderProfileTracks(url){
-    let requestPromise = this.scApi.getTracksByUploaderLink(
+  fetchTrackList(method,url){
+    let requestPromise = this.scApi[method](
       url,
       { cancelToken : this.generateRequestInvalidationToken().token}
     );
@@ -95,6 +113,9 @@ class uploaderProfileContainer extends Component {
       message : 'Data Request Failed'
     });
   }
+  onSectionChange(sectionName){
+    this.setState({section:sectionName});
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -106,16 +127,25 @@ class uploaderProfileContainer extends Component {
           trackList={this.state.trackList}
           onHeaderRender={() =>
             <View style={styles.headerContainer}>
-              {!this.state.profileDetails ?
-                <ActivityIndicator animating={true} style={styles.loadingIndicator} /> :
-                <ArtistProfileHeader user={this.state.profileDetails} />
-              }
+              <View style={{flexDirection:'column'}}>
+                {!this.state.profileDetails ?
+                  <ActivityIndicator animating={true} style={styles.loadingIndicator} /> :
+                  <ArtistProfileHeader user={this.state.profileDetails} />
+                }
+                <View>
+                  <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
+                    <SectionItem name={SECTIONS.UPLOADS} label={'Tracks'} />
+                    <SectionItem name={SECTIONS.FAVORITES} label={'Favorites'}  />
+                  </SectionTabBar>
+                </View>
+              </View>
             </View>}
         />
       </View>
     );
   }
 }
+uploaderProfileContainer.SECTIONS = SECTIONS;
 uploaderProfileContainer.propTypes = {
   side : PropTypes.string.isRequired,
   scUploaderLink : PropTypes.string.isRequired,

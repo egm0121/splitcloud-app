@@ -140,6 +140,11 @@ class SoundCloudApi {
       return this.getScUserProfileTracks(resp.data.id);
     });
   }
+  getFavoritesByUploaderLink(scUploaderLink){
+    return this.resolveScResource(scUploaderLink).then(resp => {
+      return this.getScUserProfileFavorites(resp.data.id);
+    });
+  }
   getClientId(){
     return this.clientId;
   }

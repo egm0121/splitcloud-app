@@ -24,6 +24,7 @@ import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
   constructor(props){
     super(props);
+    console.log('route name for songPicker',this.props.routeName);
     this._onSearchChange = this._onSearchChange.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
     this._onClearSearch = this._onClearSearch.bind(this);

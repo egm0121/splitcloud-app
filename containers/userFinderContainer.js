@@ -70,23 +70,14 @@ class UserFinderContainer extends Component {
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
-  userProfileOpen(){ //move this routing code to an HoC
-    let prevPickerRoute = this.findRouteByName(
-      'UploaderProfileContainer.' + this.props.side
-    );
-    if(prevPickerRoute){
-      return this.props.navigator.jumpTo(prevPickerRoute);
-    }
-    this.props.navigator.pushToBottom({
-      title : 'UploaderProfileContainer - ' + this.props.side,
-      name : 'UploaderProfileContainer.' + this.props.side,
+  userProfileOpen(){
+    this.props.navigator.push({
+      title : 'UploaderProfileContainer - searchResult - ' + this.props.side,
+      name : 'UploaderProfileContainer.searchResult' + this.props.side,
       component: UploaderProfileContainer,
       passProps : {
         side : this.props.side,
-        onClose: () => {this.props.navigator.jumpTo(
-            this.findRouteByName(this.props.routeName)
-          );
-        }
+        onClose: () => this.props.navigator.pop()
       }
     });
   }

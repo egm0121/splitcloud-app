@@ -47,7 +47,7 @@ class SplitCloudApp extends Component {
   }
   configureScene(route, routeStack){
     return {
-      ...Navigator.SceneConfigs.VerticalUpSwipeJump,
+      ...Navigator.SceneConfigs.PushFromRight,
       gestures: {}, // or null
     };
   }
@@ -55,7 +55,9 @@ class SplitCloudApp extends Component {
     return (
         <Provider store={store} >
             <Navigator
-                initialRoute={{ title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }}
+                initialRoute={
+                  { title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }
+                }
                 renderScene={(route, navigator) => {
                   AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;

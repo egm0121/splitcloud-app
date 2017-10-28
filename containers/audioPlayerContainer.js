@@ -230,10 +230,9 @@ class AudioPlayerContainer extends Component {
       component: UploaderProfileContainer,
       passProps : {
         side : this.props.side,
-        onClose: () => {this.props.navigator.jumpTo(
+        onClose: () => this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
-          );
-        }
+        )
       }
     });
   }

@@ -29,7 +29,7 @@ const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {
   constructor(props){
     super(props);
-    console.log('SongPicekrContainer mounted with picker props',this.props.picker);
+    console.log('SongPickerContainer mounted with picker props',this.props.picker);
     this.onRequestFail = this.onRequestFail.bind(this);
   }
   onRequestFail(err,type){
