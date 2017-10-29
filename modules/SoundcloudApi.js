@@ -14,7 +14,7 @@ class SoundCloudApi {
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
-    //fix bug when returning promise not corresponding to complete request payload
+
     this.getPopularByGenre = CacheDecorator.withCache(
       this.getPopularByGenre.bind(this),
       'getPopularByGenre',
@@ -25,10 +25,10 @@ class SoundCloudApi {
       'resolveScResource',
       3600*1e3
     );
-    this.getTracksByUploaderLink = CacheDecorator.withCache(
-      this.getTracksByUploaderLink.bind(this),
-      'getTracksByUploaderLink',
-      3600*1e3
+    this.getScUserProfileTracks = CacheDecorator.withCache(
+      this.getScUserProfileTracks.bind(this),
+      'getScUserProfileTracks',
+      600*1e3
     );
   }
   request(...args){
@@ -114,35 +114,37 @@ class SoundCloudApi {
       url:scResourceUrl
     });
   }
-  getScUserProfile(scUserId){
-    return this.request(SoundCloudApi.api.v1,`users/${scUserId}`).then(resp=>{
+  isScResource(val){
+    return typeof val  == 'string' && val.indexOf('//soundcloud.com') > -1;
+  }
+  resolveResourceId(scIdOrUrl){
+    return this.isScResource(scIdOrUrl) ?
+      this.resolveScResource(scIdOrUrl):
+    Promise.resolve({data:{id:scIdOrUrl}});
+  }
+  getScUserProfile(scIdOrUrl){
+    return this.resolveResourceId(scIdOrUrl).then((resp) => {
+      return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}`)
+    }).then(resp=>{
       return this.transformUserPayload(resp.data);
     });
   }
-  getScUserProfileTracks(scUserId){
-    return this.request(SoundCloudApi.api.v1,`users/${scUserId}/tracks`)
-    .then(resp => {
+  getScUserProfileTracks(scIdOrUrl){
+    return this.resolveResourceId(scIdOrUrl).then((resp) => {
+      return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/tracks`)
+    }).then(resp => {
       return resp.data
         .map(this.normalizeStreamUrlProperty)
         .map(this.transformTrackPayload);
     });
   }
-  getScUserProfileFavorites(scUserId){
-    return this.request(SoundCloudApi.api.v1,`users/${scUserId}/favorites`)
-    .then(resp => {
+  getScUserProfileFavorites(scIdOrUrl){
+    return this.resolveResourceId(scIdOrUrl).then((resp) => {
+      return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/favorites`)
+    }).then(resp => {
       return resp.data
         .map(this.normalizeStreamUrlProperty)
         .map(this.transformTrackPayload);
-    });
-  }
-  getTracksByUploaderLink(scUploaderLink){
-    return this.resolveScResource(scUploaderLink).then(resp => {
-      return this.getScUserProfileTracks(resp.data.id);
-    });
-  }
-  getFavoritesByUploaderLink(scUploaderLink){
-    return this.resolveScResource(scUploaderLink).then(resp => {
-      return this.getScUserProfileFavorites(resp.data.id);
     });
   }
   getClientId(){

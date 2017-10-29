@@ -51,8 +51,8 @@ class uploaderProfileContainer extends Component {
       profileDetails:false
     };
     this.sectionDataResolver = {
-      [SECTIONS.UPLOADS]:'getTracksByUploaderLink',
-      [SECTIONS.FAVORITES]:'getFavoritesByUploaderLink'
+      [SECTIONS.UPLOADS]:'getScUserProfileTracks',
+      [SECTIONS.FAVORITES]:'getScUserProfileFavorites'
     }
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
@@ -67,8 +67,8 @@ class uploaderProfileContainer extends Component {
   }
   updateProfileDetails(url){
     this.setState({profileDetails:false});
-    this.scApi.resolveScResource(url).then((resp) => {
-      this.setState({profileDetails:this.scApi.transformUserPayload(resp.data)});
+    this.scApi.getScUserProfile(url).then((details) => {
+      this.setState({profileDetails:details});
     });
   }
   componentWillMount(){

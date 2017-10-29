@@ -19,14 +19,13 @@ class UserList extends Component {
     return <View>
     {this.props.userList.map((user,i) => {
       const name = user.username || user.firstName +' '+user.lastName;
-      return <TouchableOpacity
-        onPress={this.props.onUserSelected.bind(this,user)}
-        key={i} >
-        <View style={styles.itemContainer}>
-          <Image style={styles.profileImage} source={{url:user.avatarUrl}} resizeMode={'cover'}/>
-          <Text style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</Text>
-        </View>
-      </TouchableOpacity>;
+      return   <TouchableOpacity
+          onPress={this.props.onUserSelected.bind(this,user)} key={i} >
+          <View style={styles.itemContainer}>
+            <Image style={styles.profileImage} source={{url:user.avatarUrl}} resizeMode={'cover'}/>
+            <Text style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</Text>
+          </View>
+        </TouchableOpacity>;
     })}
     </View>;
   }
@@ -37,6 +36,7 @@ UserList.propTypes = {
 };
 const styles = StyleSheet.create({
   userText:{
+    flex:1,
     color: THEME.mainHighlightColor,
     fontSize: 17,
     lineHeight: 35,
@@ -49,8 +49,11 @@ const styles = StyleSheet.create({
     height:50,
     marginRight:20
   },
+  outerContainer:{
+    flex:1
+  },
   itemContainer:{
-    flex:1,
+
     flexDirection:'row',
     marginHorizontal:20,
     marginVertical:20

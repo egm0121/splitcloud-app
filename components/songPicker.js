@@ -130,7 +130,11 @@ class SongPicker extends Component {
           /> :
         <TrackListContainer {...this.props}
           onHeaderRender={() => {
-            return <UserFinderContainer {...this.props} terms={this.state.searchInput} />
+            return <View style={{flexDirection:'row'}}>
+                <View style={{flexDirection:'column',flex:1}}>
+                  <UserFinderContainer {...this.props} terms={this.state.searchInput} />
+                </View>
+              </View>;
           }}
           trackList={this.state.pureList}
           side={this.props.side}

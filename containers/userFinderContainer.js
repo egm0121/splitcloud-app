@@ -109,11 +109,7 @@ UserFinderContainer.propTypes = {
   terms : PropTypes.string.isRequired,
   debounceWait: PropTypes.number
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  }
-});
+
 const mapStateToProps = (state,props) => {
   const uploaderProfile =
     state.uploaderProfile.filter((profile) => profile.side == props.side).pop();
