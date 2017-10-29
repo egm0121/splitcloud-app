@@ -81,6 +81,7 @@ class TrackListContainer extends Component {
           highlightProp={this.props.highlightProp}
           onTrackAction={this.props.onTrackAction}
           onTrackSelected={this.props.onTrackSelected}
+          isLoading={this.props.isLoading}
         ></TrackList>
       </View>
     );
@@ -99,7 +100,8 @@ TrackListContainer.propTypes = {
   onTrackActionRender: PropTypes.func,
   onTrackAction: PropTypes.func.isRequired,
   onTrackSelected: PropTypes.func.isRequired,
-  onHeaderRender: PropTypes.func
+  onHeaderRender: PropTypes.func,
+  isLoading: PropTypes.bool
 }
 const styles = StyleSheet.create({
   container: {

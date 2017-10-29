@@ -11,7 +11,8 @@ import {
   TextInput,
   ListView,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import THEME from '../styles/variables';
 
@@ -88,7 +89,10 @@ class TrackList extends Component {
       return (
       <View style={[styles.rowContainerPlaceholder]}>
         <View style={styles.rowPlaceholder}>
-          <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+          {this.props.isLoading ?
+            <ActivityIndicator animating={true} style={styles.loadingIndicator}/> :
+            <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+          }
         </View>
       </View>
       );
@@ -138,6 +142,7 @@ TrackList.defaultProps = {
   emptyLabel : 'Empty Tracklist',
   onTrackActionRender : () => '+',
   renderArtwork: true,
+  isLoading: false,
   listRef : () => {}
 };
 TrackList.propTypes = {
@@ -148,7 +153,8 @@ TrackList.propTypes = {
   onTrackActionRender: PropTypes.func,
   renderArtwork: PropTypes.bool,
   onHeaderRender: PropTypes.func,
-  highlightProp : PropTypes.string
+  highlightProp : PropTypes.string,
+  isLoading: PropTypes.bool
 };
 
 const styles = StyleSheet.create({
@@ -192,6 +198,9 @@ const styles = StyleSheet.create({
   },
   rowPlaceholder :{
     flex : 1,
+  },
+  loadingIndicator:{
+    paddingVertical:10
   },
   rowLabelText: {
     color: THEME.mainHighlightColor,

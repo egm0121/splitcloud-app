@@ -46,6 +46,7 @@ class uploaderProfileContainer extends Component {
     );
     this.state = {
       trackList : [],
+      trackListLoading: false,
       section : SECTIONS.UPLOADS,
       profileDetails:false
     };
@@ -58,10 +59,10 @@ class uploaderProfileContainer extends Component {
     this.onSectionChange = this.onSectionChange.bind(this);
   }
   updateTracks(url){
-    this.setState({trackList:[]});
+    this.setState({trackList:[],trackListLoading:true});
     let activeResolver = this.sectionDataResolver[this.state.section];
     this.fetchTrackList(activeResolver,url).then((tracks) =>{
-      this.setState({trackList:tracks});
+      this.setState({trackList:tracks,trackListLoading:false});
     });
   }
   updateProfileDetails(url){
@@ -71,7 +72,6 @@ class uploaderProfileContainer extends Component {
     });
   }
   componentWillMount(){
-    console.log('uploaderProfileContainer props',this.props.scUploaderLink);
     this.updateProfileDetails(this.props.scUploaderLink);
     this.updateTracks(this.props.scUploaderLink);
   }
@@ -124,6 +124,7 @@ class uploaderProfileContainer extends Component {
         </HeaderBar>
         <TrackListContainer {...this.props}
           side={this.props.side}
+          isLoading={this.state.trackListLoading}
           trackList={this.state.trackList}
           onHeaderRender={() =>
             <View style={styles.headerContainer}>
