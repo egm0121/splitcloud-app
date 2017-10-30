@@ -41,7 +41,7 @@ class TrackListContainer extends Component {
     this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.trackListRef = null;
-
+    console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
   }
   componentWillReceiveProps(newProps){
     if(this.props.resetToTop && (this.props.trackList !== newProps.trackList)){
@@ -82,6 +82,8 @@ class TrackListContainer extends Component {
           onTrackAction={this.props.onTrackAction}
           onTrackSelected={this.props.onTrackSelected}
           isLoading={this.props.isLoading}
+          onEndReached={this.props.onEndReached}
+          onEndThreshold={this.props.onEndThreshold}
         ></TrackList>
       </View>
     );

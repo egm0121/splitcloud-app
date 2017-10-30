@@ -31,6 +31,7 @@ class TrackList extends Component {
       pureList : [],
       renderList: this.ds.cloneWithRows(this.emptyResultRow)
     };
+    console.log('onEndThreshold:',props.onEndThreshold);
   }
   componentWillMount(){
     this.updateResultList(this.props.tracksData);
@@ -132,6 +133,8 @@ class TrackList extends Component {
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
           renderHeader={this.props.onHeaderRender}
+          onEndReached={this.props.onEndReached}
+          onEndReachedThreshold={this.props.onEndThreshold}
           renderRow={this.renderRowWithData.bind(this)} ref={(ref) => this.props.listRef(ref)} />
       </View>
     );
@@ -143,6 +146,7 @@ TrackList.defaultProps = {
   onTrackActionRender : () => '+',
   renderArtwork: true,
   isLoading: false,
+  onEndThreshold: 150,
   listRef : () => {}
 };
 TrackList.propTypes = {

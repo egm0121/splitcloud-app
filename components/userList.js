@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
     flex:1
   },
   itemContainer:{
-
     flexDirection:'row',
     marginHorizontal:20,
     marginVertical:20

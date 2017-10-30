@@ -16,7 +16,7 @@ function ArtistProfileHeader(props){
                 numberOfLines={1}
                 ellipsizeMode={'tail'}
                 style={styles.headerText}>
-                {details.username}
+                  {details.username}
                 </Text>
                 <Text style={styles.followerCount}>
                 {formatNumberPrefix(details.followersCount)} Followers
