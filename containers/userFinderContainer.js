@@ -91,9 +91,6 @@ class UserFinderContainer extends Component {
       message : 'Data Request Failed'
     });
   }
-  findRouteByName(name){
-    return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
-  }
   render() {
     return <UserList {...this.props}
       userList={this.state.userList}
