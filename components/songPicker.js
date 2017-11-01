@@ -42,14 +42,15 @@ class SongPicker extends Component {
     this.scApi = new SoundCloudApi({clientId :this.props.scClientId});
     this.SC_CLIENT_ID = this.props.scClientId ;
     this.scResultLimit = this.props.scResultLimit;
-    this._onSearchTermsChange = throttle(
-      this._onSearchTermsChange.bind(this),
+    this.performSearchDebounced = throttle(
+      this.performSearchDebounced.bind(this),
       this.props.debounceWait
     );
     //start immediately a search for the initial searchInput value.
-    this._onSearchTermsChange(this.state.searchInput);
+    this.performSearchDebounced(this.state.searchInput);
   }
   _onSearchChange(text){
+    //call props to notify search terms have changed
     this.props.onSearchTermsChange(text);
     if(!text){
       this._invalidatePrevRequest();
@@ -65,7 +66,7 @@ class SongPicker extends Component {
   _onClearSearch(){
     this._onSearchChange('');
   }
-  _onSearchTermsChange(text){
+  performSearchDebounced(text){
     this.performScPublicSearch(text).then(this.updateResultList,(err) => {
       console.log('ignore as old term request',err)
     });
@@ -83,17 +84,15 @@ class SongPicker extends Component {
     }
   }
   componentDidUpdate(prevProp,prevState){
-    if(this.state.offset != prevState.offset && this.state.offset > 0){
+    if((this.state.searchInput && this.state.searchInput != prevState.searchInput) ||
+       (this.state.offset != prevState.offset)){
       console.log('fetch new results offset',this.state.offset);
-      this.performScPublicSearch(this.state.searchInput)
-      .then((results) => {
+      this.performScPublicSearch(this.state.searchInput).then((results) => {
         //append results on scroll
-        this.updateResultList(results,true);
+        this.updateResultList(results,this.state.offset > 0);
+      }).catch((err) => {
+        console.log('failed song search request with reason',err);
       });
-    }
-    if(this.state.searchInput && this.state.searchInput != prevState.searchInput){
-      this.performScPublicSearch(this.state.searchInput)
-      .then(this.updateResultList);
     }
   }
   isSearchEmpty(){
@@ -106,21 +105,21 @@ class SongPicker extends Component {
   performScPublicSearch(term){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.searchPublicTracks(term,this.state.limit,this.state.offset,{
-      cancelToken : this.generateRequestInvalidationToken().token
-    });
+    let requestPromise = this.scApi.searchPublicTracks(
+      term,
+      this.state.limit,
+      this.state.offset,
+      {cancelToken : this.generateRequestInvalidationToken().token});
     requestPromise.catch((err) => {
       let isCancel = err.message && err.message.aborted;
       if(!isCancel){
         this.props.onRequestFail(err,'search',term);
       }
       return Promise.resolve(err);
-    }).then(
-      (val) => {
-        if(axios.isCancel(val)) return false;
-        this.props.onLoadingStateChange(false);
-      }
-    );
+    }).then((val) => {
+      if(axios.isCancel(val)) return false;
+      this.props.onLoadingStateChange(false);
+    });
     return requestPromise;
   }
   updateResultList(resp,appendResults){
@@ -133,7 +132,6 @@ class SongPicker extends Component {
       pureList : appendResults ? this.state.pureList.concat(resp) : resp
     });
   }
-
   render() {
     let clearButtonOpacity = this.isSearchEmpty() ? 0 : 1;
     let spinnerPosition = this.isSearchEmpty() ? styles.pushRightSpinner : {};

@@ -43,11 +43,13 @@ class TopList extends Component {
     this.onSectionChange = this.onSectionChange.bind(this);
     this.sections = [{
       name:'TOP',
-      label:'Top Tracks'
+      label:'Top Tracks',
+      enabled:true
     },
     {
       name:'PLS',
-      label:'PointLineShape Mix'
+      label:'PointLineShape Mix',
+      enabled:false
     }];
     this.state = {
       section : this.sections[0].name,
@@ -165,7 +167,9 @@ class TopList extends Component {
         <View style={styles.listDescription} >
           <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
             {
-              this.sections.map(({name,label},key) => <SectionItem key={key} name={name} label={label}/>)
+              this.sections
+              .filter(e => e.enabled)
+              .map(({name,label},key) => <SectionItem key={key} name={name} label={label}/>)
             }
           </SectionTabBar>
         </View>
