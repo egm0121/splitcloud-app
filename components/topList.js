@@ -43,7 +43,14 @@ class TopList extends Component {
     this.onSectionChange = this.onSectionChange.bind(this);
     this.sections = [{
       name:'TOP',
+      scChartType: SoundCloudApi.chartType.TOP,
       label:'Top Tracks',
+      enabled:true
+    },
+    {
+      name:'TRENDING',
+      label:'New & Hot',
+      scChartType: SoundCloudApi.chartType.TRENDING,
       enabled:true
     },
     {
@@ -63,6 +70,9 @@ class TopList extends Component {
 
     console.log('genreOptions',this.getOptionsListByType('genre'))
   }
+  getCurrSectionObj(){
+    return this.sections.filter(s => s.name === this.state.section ).pop();
+  }
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
     this.showStreamableOnly = this.props.showStreamableOnly;
@@ -71,6 +81,7 @@ class TopList extends Component {
   }
   componentDidUpdate(prevProps,prevState){
     if(
+      this.state.section != prevState.section ||
       this.state.selectedGenre !== prevState.selectedGenre ||
       this.state.selectedRegion !== prevState.selectedRegion
     ){
@@ -117,6 +128,7 @@ class TopList extends Component {
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
     let requestPromise = this.scApi.getPopularByGenre(
+      this.getCurrSectionObj().scChartType,
       this.state.selectedGenre,
       this.state.selectedRegion,
       { cancelToken : this.generateRequestInvalidationToken().token});
@@ -173,7 +185,7 @@ class TopList extends Component {
             }
           </SectionTabBar>
         </View>
-        {this.state.section == 'TOP' ?
+        {this.getCurrSectionObj().scChartType ?
           <View style={{flex:1}}>
             <View style={styles.listDescription}>
               <View style={styles.genreSelectionBtn}>

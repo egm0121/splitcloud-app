@@ -88,7 +88,7 @@ class SoundCloudApi {
       return resp.data.map(this.transformUserPayload);
     });
   }
-  getPopularByGenre(genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
+  getPopularByGenre(chartType = SoundCloudApi.chartType.TOP , genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     let regionParam = region != SoundCloudApi.region.WORLDWIDE ? region : undefined;
     return this.request(SoundCloudApi.api.v2,'charts',{
@@ -96,7 +96,7 @@ class SoundCloudApi {
       offset:0,
       streamable:true,
       high_tier_only:false,
-      kind:'top',
+      kind:chartType,
       genre,
       region:regionParam,
       ...queryOpts
@@ -197,9 +197,13 @@ class SoundCloudApi {
     });
   }
 }
-SoundCloudApi.api  = {
+SoundCloudApi.api = {
   v1 :'v1',
   v2 :'v2'
+}
+SoundCloudApi.chartType = {
+  TOP:'top',
+  TRENDING:'trending'
 }
 SoundCloudApi.genre = {
   ALL : 'soundcloud:genres:all-music',
