@@ -5,6 +5,7 @@ import THEME from '../styles/variables';
 export default function SectionItem(props){
   let isActiveStyle = props.active == props.name ? styles.itemSelected:null;
   return <TouchableOpacity
+    key={props.key}
     onPress={() => {
       props.onSelected(props.name)
     }

@@ -20,6 +20,8 @@ import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
 import {animationPresets} from '../helpers/constants';
 import { ucFirst } from '../helpers/formatters';
+import SectionTabBar from '../components/sectionTabBar';
+import SectionItem from '../components/sectionItem';
 import TrackListContainer from '../containers/trackListContainer';
 import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
@@ -38,9 +40,17 @@ class TopList extends Component {
     this.getLabelForRegion = this.getLabelForRegion.bind(this);
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
     this.getPickerOverlayDisplay = this.getPickerOverlayDisplay.bind(this);
-    this.onOpenSection = this.onOpenSection.bind(this);
+    this.onSectionChange = this.onSectionChange.bind(this);
+    this.sections = [{
+      name:'TOP',
+      label:'Top Tracks'
+    },
+    {
+      name:'PLS',
+      label:'PointLineShape Mix'
+    }];
     this.state = {
-      section : 'TOP',
+      section : this.sections[0].name,
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -48,6 +58,7 @@ class TopList extends Component {
       pickerModalType: 'genre',
       trackList : []
     };
+
     console.log('genreOptions',this.getOptionsListByType('genre'))
   }
   componentWillMount(){
@@ -139,7 +150,7 @@ class TopList extends Component {
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({pickerModalOpen:true,pickerModalType:'region'});
   }
-  onOpenSection(sectionName){
+  onSectionChange(sectionName){
     this.setState({
       section:sectionName
     });
@@ -152,14 +163,11 @@ class TopList extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.listDescription} >
-          <View style={styles.descContainer}>
-            <TouchableHighlight onPress={() => this.onOpenSection('TOP')}>
-              <Text style={styles.listDescriptionText}>Top Tracks</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={() => this.onOpenSection('PLS')}>
-              <Text style={styles.listDescriptionText}>PLS Mix</Text>
-            </TouchableHighlight>
-          </View>
+          <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
+            {
+              this.sections.map(({name,label},key) => <SectionItem key={key} name={name} label={label}/>)
+            }
+          </SectionTabBar>
         </View>
         {this.state.section == 'TOP' ?
           <View style={{flex:1}}>
