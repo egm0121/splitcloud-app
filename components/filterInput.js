@@ -76,6 +76,9 @@ const styles = StyleSheet.create({
   activeFilter:{
     backgroundColor : THEME.tabBarBorderColor
   },
+  activeFilterInput:{
+    color: THEME.mainHighlightColor
+  },
   filterInputView :{
     height:30,
     margin:10,
