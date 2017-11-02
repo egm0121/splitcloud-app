@@ -176,15 +176,13 @@ class TopList extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.listDescription} >
-          <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
-            {
-              this.sections
-              .filter(e => e.enabled)
-              .map(({name,label},key) => <SectionItem key={key} name={name} label={label}/>)
-            }
-          </SectionTabBar>
-        </View>
+        <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
+          {
+            this.sections
+            .filter(e => e.enabled)
+            .map(({name,label},key) => <SectionItem key={key} name={name} label={label}/>)
+          }
+        </SectionTabBar>
         {this.getCurrSectionObj().scChartType ?
           <View style={{flex:1}}>
             <View style={styles.listDescription}>
@@ -235,7 +233,8 @@ TopList.defaultProps = {
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: THEME.contentBgColor
   },
   descContainer :{
     flex: 1,
