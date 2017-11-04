@@ -6,6 +6,7 @@ import { playerReducer } from './playerReducer';
 import { notificationReducer } from './notificationReducer';
 import { playlistReducer } from './playlistReducer';
 import { settingsReducer } from './settingsReducer';
+import { uploaderProfileReducer } from './uploaderProfileReducer';
 import { storeVersionReducer } from './storeVersionReducer';
 
 const appReducer = combineReducers({
@@ -15,7 +16,8 @@ const appReducer = combineReducers({
   'players': playerReducer,
   'playlist': playlistReducer,
   'notifications': notificationReducer,
-  'settings': settingsReducer
+  'settings': settingsReducer,
+  'uploaderProfile': uploaderProfileReducer
 });
 
 export default appReducer;

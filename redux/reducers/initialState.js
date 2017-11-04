@@ -20,6 +20,14 @@ const initialState = {
     isLoading: false,
     recentQueryList : []
   }],
+  uploaderProfile:[{
+    side:playbackModeTypes.LEFT,
+    lastUploaderUrl:null
+  },
+  {
+    side:playbackModeTypes.RIGHT,
+    lastUploaderUrl:null
+  }],
   players : [{
     side: playbackModeTypes.LEFT,
     pan :-1,

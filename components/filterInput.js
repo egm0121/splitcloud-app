@@ -39,7 +39,10 @@ class FilterInput extends Component{
     let inputStyle = [styles.filterInput,this.props.inputStyle];
     if(this.state.isFocused){
       inputViewStyle.push(styles.focusedFilterInputView);
-      inputStyle.push(styles.focusedFilterInput);
+    }
+    if(!isEmpty){
+      inputViewStyle.push(styles.activeFilter);
+      inputStyle.push(styles.activeFilterInput);
     }
     return (
        <View style={inputViewStyle}>
@@ -68,7 +71,13 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 30,
     lineHeight:20,
-    fontSize: 14
+    fontSize: 15
+  },
+  activeFilter:{
+    backgroundColor : THEME.tabBarBorderColor
+  },
+  activeFilterInput:{
+    color: THEME.mainHighlightColor
   },
   filterInputView :{
     height:30,
@@ -79,7 +88,7 @@ const styles = StyleSheet.create({
   focusedFilterInputView:{
   },
   focusedFilterInput:{
-    color: THEME.mainHighlightColor,
+    color: THEME.mainHighlightColor
   },
   clearAction:{
     position:'absolute',

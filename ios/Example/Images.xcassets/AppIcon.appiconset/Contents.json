@@ -45,6 +45,12 @@
       "idiom" : "iphone",
       "filename" : "splitr@180.png",
       "scale" : "3x"
+    },
+    {
+      "size" : "1024x1024",
+      "idiom" : "ios-marketing",
+      "filename" : "splitcloud.app.logo_lite.png",
+      "scale" : "1x"
     }
   ],
   "info" : {

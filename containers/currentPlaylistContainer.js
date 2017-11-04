@@ -17,13 +17,14 @@ import {
 } from 'react-native';
 import config from '../helpers/config';
 import { connect } from 'react-redux';
-import TrackList from '../components/trackList';
+import TrackListContainer from '../containers/trackListContainer';
 import BackButton from  '../components/backButton';
 import ClearPlaylistButton from '../components/clearPlaylistButton';
 import Button from '../components/button';
 import FilterInput from '../components/filterInput';
 import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
+import HeaderBar from '../components/headerBar';
 import {globalSettings,animationPresets} from '../helpers/constants';
 import {removeQueuedTrack, setPlaylist, filterPlaylist} from '../redux/actions/currentPlaylistActions';
 import {setGlobalSetting} from '../redux/actions/settingsActions';
@@ -34,8 +35,6 @@ import THEME from '../styles/variables';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
-    this.onTrackDescRender = this.onTrackDescRender.bind(this);
     this.onClearPlaylist = this.onClearPlaylist.bind(this);
     this.onFilterTextChange = this.onFilterTextChange.bind(this);
     this.onClearFilter = this.onClearFilter.bind(this);
@@ -49,29 +48,13 @@ class CurrentPlaylistContainer extends Component {
       isOverlayMenuOpen:false
     }
   }
-  _markAsCurrentTrack(item){
-    const currTrack =
-      this.props.queue[this.props.playlist.currentTrackIndex] || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
-  }
-  onTrackDescRender(rowData){
-    return rowData.duration ?
-      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
-      rowData.username ;
-  }
   onClearPlaylist(){
     Alert.alert(
       `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`,
       `This will remove all tracks from your ${formatSidePlayerLabel(this.props.side)} playlist` ,
       [
         { text: 'Clear All',
-          onPress: () =>{
+          onPress: ()=>{
             this.props.onClearPlaylist();
             this.onOverlayClosed();
           }, style:'destructive'},
@@ -113,25 +96,20 @@ class CurrentPlaylistContainer extends Component {
       ]
     );
   }
-  //TODO: port filtering logic in reducer
-
   render() {
     const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
-    const playlistTracksData = this.props.queue
-    .map(this._markAsCurrentTrack)
-    .filter((track) => 'isVisible' in track ? track.isVisible : true);
+    const playlistFilteredList = this.props.queue
+      .filter((track) => 'isVisible' in track ? track.isVisible : true);
     return (
       <View style={styles.container}>
-        <View style={styles.sectionTitleView}>
+        <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
-          <Text style={styles.sectionTitle}>{this.props.playlistTitle}</Text>
-
           <Button
             size="small"
             style={styles.playlistMenuButton}
             image={require('../assets/menu_dots_vertical.png')}
             onPressed={this.onPlaylistMenuOpen} ></Button>
-        </View>
+        </HeaderBar>
         <View style={styles.filterContainerView}>
           <FilterInput
             placeholder={'Filter songs...'}
@@ -140,29 +118,28 @@ class CurrentPlaylistContainer extends Component {
             onClearFilter={this.onClearFilter}
             />
         </View>
-        <TrackList
-            tracksData={playlistTracksData}
-            onTrackAction={this.props.onRemoveTrack}
-            onTrackDescRender={this.onTrackDescRender}
-            onTrackActionRender={(rowData) => '×'}
-            trackActionStyles={[{fontSize:45}]}
-            highlightProp={'isCurrentTrack'}
+        <TrackListContainer
             {...this.props}
+            trackList={playlistFilteredList}
+            onTrackActionRender={(rowData) => '×'}
+            onTrackAction={this.props.onRemoveTrack}
+            side={this.props.side}
+            trackActionStyles={[{fontSize:45}]}
             />
-            <MenuOverlay onClose={this.onOverlayClosed}
-               closeLabel={'Close'}
-               overlayStyle={[styles.playlistMenuOverlay,overlayStyle]}>
-              <MenuOverlayItem
-                onPress={this.onClearPlaylist} >
-                {`Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`}
-              </MenuOverlayItem>
-              <MenuOverlayItem onPress={this.onOfflineModeToggle}>
-                {this.props.settings.offlineMode ?
-                  'Disable Offline Mode':
-                  'Enable Offline Mode'
-                }
-              </MenuOverlayItem>
-            </MenuOverlay>
+        <MenuOverlay onClose={this.onOverlayClosed}
+           closeLabel={'Close'}
+           overlayStyle={[styles.playlistMenuOverlay,overlayStyle]}>
+          <MenuOverlayItem
+            onPress={this.onClearPlaylist} >
+            {`Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`}
+          </MenuOverlayItem>
+          <MenuOverlayItem onPress={this.onOfflineModeToggle}>
+            {this.props.settings.offlineMode ?
+              'Disable Offline Mode':
+              'Enable Offline Mode'
+            }
+          </MenuOverlayItem>
+        </MenuOverlay>
       </View>
     );
   }
@@ -171,19 +148,12 @@ CurrentPlaylistContainer.propTypes = {
   side : PropTypes.string.isRequired,
   playlist : PropTypes.object.isRequired,
   playlistTitle : PropTypes.string.isRequired,
-  onTrackSelected: PropTypes.func.isRequired,
   onRemoveTrack: PropTypes.func,
   onClose: PropTypes.func
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F50'
-  },
-  sectionTitle : {
-    color: THEME.mainHighlightColor,
-    fontSize: 16,
-    fontWeight:'600'
+    flex: 1
   },
   iconText:{
     color: THEME.mainHighlightColor,
@@ -203,14 +173,6 @@ const styles = StyleSheet.create({
     left:0,
     paddingLeft:10,
     top:20
-  },
-  sectionTitleView :{
-    alignItems: 'center',
-    height: 60,
-    paddingTop: 27,
-    backgroundColor: THEME.mainBgColor,
-    borderColor : THEME.contentBorderColor,
-    borderBottomWidth :2
   },
   filterContainerView :{
     height: 50,

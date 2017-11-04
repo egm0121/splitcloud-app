@@ -7,10 +7,12 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
+  Image,
   TextInput,
   ListView,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import THEME from '../styles/variables';
 
@@ -29,6 +31,7 @@ class TrackList extends Component {
       pureList : [],
       renderList: this.ds.cloneWithRows(this.emptyResultRow)
     };
+    console.log('onEndThreshold:',props.onEndThreshold);
   }
   componentWillMount(){
     this.updateResultList(this.props.tracksData);
@@ -61,50 +64,57 @@ class TrackList extends Component {
       this.props.onTrackAction(rowData);
     }
   }
-
+  isTrack(rowData){
+    return rowData.id && rowData.label && !rowData.isEmpty
+  }
+  getSmallArtworkUrl(url){
+    if(!url)return;
+    return url.replace('-large', '-t67x67');
+  }
   renderRowWithData(rowData) {
     const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
-    let isTrack,trackAuthor,trackTitle;
-    if(rowData.id && rowData.label && !rowData.isEmpty){
+    let isTrack,trackAuthor,trackTitle,artworkImage;
+    if(this.isTrack(rowData)){
       isTrack = true;
       [trackAuthor,trackTitle] = rowData.label.split('-').map((l) => l.trim());
       if(!trackTitle || trackTitle.length == 0){
         trackTitle = trackAuthor;
         trackAuthor = rowData.username;
       }
+      artworkImage = {url:this.getSmallArtworkUrl(rowData.artwork)};
     }
-    if( this.props.highlightProp &&
-        rowData[this.props.highlightProp] ){
-
+    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
       rowTextStyle.push(styles.hightlightText);
     }
     if(rowData.isEmpty){
       return (
       <View style={[styles.rowContainerPlaceholder]}>
         <View style={styles.rowPlaceholder}>
-          <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+          {this.props.isLoading ?
+            <ActivityIndicator animating={true} style={styles.loadingIndicator}/> :
+            <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+          }
         </View>
       </View>
       );
     }
     return (
       <View style={styles.row}>
+        {this.props.renderArtwork &&
+          <View style={styles.rowArtworkContainer}>
+            <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
+          </View>
+          }
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-            {isTrack ?
-            (<View>
               <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
                 {trackTitle}
               </Text>
               <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
                 {trackAuthor}
               </Text>
-            </View>) :
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowLabelText].concat(rowTextStyle)} >
-              {rowData.label}
-            </Text>}
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
-              {this.props.onTrackDescRender(rowData)}
-            </Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
+                {this.props.onTrackDescRender(rowData)}
+              </Text>
           </TouchableOpacity>
           {!rowData.isEmpty ?
             <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
@@ -122,6 +132,9 @@ class TrackList extends Component {
         <ListView contentContainerStyle={styles.list}
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
+          renderHeader={this.props.onHeaderRender}
+          onEndReached={this.props.onEndReached}
+          onEndReachedThreshold={this.props.onEndThreshold}
           renderRow={this.renderRowWithData.bind(this)} ref={(ref) => this.props.listRef(ref)} />
       </View>
     );
@@ -131,6 +144,9 @@ class TrackList extends Component {
 TrackList.defaultProps = {
   emptyLabel : 'Empty Tracklist',
   onTrackActionRender : () => '+',
+  renderArtwork: true,
+  isLoading: false,
+  onEndThreshold: 150,
   listRef : () => {}
 };
 TrackList.propTypes = {
@@ -139,7 +155,10 @@ TrackList.propTypes = {
   onTrackSelected: PropTypes.func,
   onTrackAction: PropTypes.func,
   onTrackActionRender: PropTypes.func,
-  highlightProp : PropTypes.string
+  renderArtwork: PropTypes.bool,
+  onHeaderRender: PropTypes.func,
+  highlightProp : PropTypes.string,
+  isLoading: PropTypes.bool
 };
 
 const styles = StyleSheet.create({
@@ -160,6 +179,15 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 0
   },
+  rowArtworkImage:{
+    width:40,
+    height:40,
+    backgroundColor: THEME.listBorderColor
+  },
+  rowArtworkContainer:{
+    width:55,
+    paddingTop:5
+  },
   rowLabel : {
     flex: 10,
     height: 72,
@@ -174,6 +202,9 @@ const styles = StyleSheet.create({
   },
   rowPlaceholder :{
     flex : 1,
+  },
+  loadingIndicator:{
+    paddingVertical:10
   },
   rowLabelText: {
     color: THEME.mainHighlightColor,
