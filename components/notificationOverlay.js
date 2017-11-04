@@ -26,13 +26,11 @@ class NotificationOverlay extends Component {
   render() {
     const typeIcon = NotificationOverlay.renderForType[this.props.type].icon;
     return (
-
-        <View style={styles.notificationContainer}>
+        <View style={styles.notificationContainer} >
           <Text style={styles.iconText}>{typeIcon}</Text>
           <Text style={styles.messageText}>{this.props.message}</Text>
           {this.props.children}
         </View>
-
     );
   }
 }

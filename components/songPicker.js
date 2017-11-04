@@ -17,22 +17,24 @@ import throttle from 'lodash.throttle';
 import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import THEME from '../styles/variables';
-import TrackList from '../components/trackList';
+import TrackListContainer from '../containers/trackListContainer';
+import UserFinderContainer from '../containers/userFinderContainer';
 import TopList from '../components/topList';
 import {formatDuration} from '../helpers/formatters';
 class SongPicker extends Component {
   constructor(props){
     super(props);
-
+    console.log('route name for songPicker',this.props.routeName);
     this._onSearchChange = this._onSearchChange.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
     this._onClearSearch = this._onClearSearch.bind(this);
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
-    this.onTrackDescRender = this.onTrackDescRender.bind(this);
     this.isSearchEmpty = this.isSearchEmpty.bind(this);
-
+    this.loadMoreResults = this.loadMoreResults.bind(this);
+    this.pageMaxLimit = 20;
     this.state = {
       searchInput: this.props.searchTerms || '',
+      offset:0,
+      limit:this.pageMaxLimit,
       pureList : []
     };
   }
@@ -40,33 +42,57 @@ class SongPicker extends Component {
     this.scApi = new SoundCloudApi({clientId :this.props.scClientId});
     this.SC_CLIENT_ID = this.props.scClientId ;
     this.scResultLimit = this.props.scResultLimit;
-    this.showStreamableOnly = this.props.showStreamableOnly;
-    this._onSearchTermsChange = throttle(
-      this._onSearchTermsChange.bind(this),
+    this.performSearchDebounced = throttle(
+      this.performSearchDebounced.bind(this),
       this.props.debounceWait
     );
     //start immediately a search for the initial searchInput value.
-    this._onSearchChange(this.state.searchInput);
-  }
-  _onSearchTermsChange(text){
-    this.performScPublicSearch(text).then(this.updateResultList,(err) => {
-      console.log('ignore as old term request',err)
-    });
+    this.performSearchDebounced(this.state.searchInput);
   }
   _onSearchChange(text){
+    //call props to notify search terms have changed
     this.props.onSearchTermsChange(text);
-    if(text){
-      this._onSearchTermsChange(text);
-    } else {
+    if(!text){
       this._invalidatePrevRequest();
       this.props.onLoadingStateChange(true);
       this.updateResultList(false);
     }
-    this.setState({searchInput:text});
+    this.setState({
+      searchInput:text,
+      limit:this.pageMaxLimit,
+      offset:0
+    });
+  }
+  _onClearSearch(){
+    this._onSearchChange('');
+  }
+  performSearchDebounced(text){
+    this.performScPublicSearch(text).then(this.updateResultList,(err) => {
+      console.log('ignore as old term request',err)
+    });
+  }
+  loadMoreResults(){
+    if(!this.state.pureList.length){
+      console.log('ignore initial scroll end event')
+      return;
+    }
+    this.setState((state)=> ({offset:state.offset + this.pageMaxLimit}));
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
       this.prevQueryCancelToken.cancel({aborted:true});
+    }
+  }
+  componentDidUpdate(prevProp,prevState){
+    if((this.state.searchInput && this.state.searchInput != prevState.searchInput) ||
+       (this.state.offset != prevState.offset)){
+      console.log('fetch new results offset',this.state.offset);
+      this.performScPublicSearch(this.state.searchInput).then((results) => {
+        //append results on scroll
+        this.updateResultList(results,this.state.offset > 0);
+      }).catch((err) => {
+        console.log('failed song search request with reason',err);
+      });
     }
   }
   isSearchEmpty(){
@@ -79,63 +105,32 @@ class SongPicker extends Component {
   performScPublicSearch(term){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-
-    let requestPromise = this.scApi.searchPublic(term,{
-      cancelToken : this.generateRequestInvalidationToken().token
+    let requestPromise = this.scApi.searchPublicTracks(
+      term,
+      this.state.limit,
+      this.state.offset,
+      {cancelToken : this.generateRequestInvalidationToken().token});
+    requestPromise.catch((err) => {
+      let isCancel = err.message && err.message.aborted;
+      if(!isCancel){
+        this.props.onRequestFail(err,'search',term);
+      }
+      return Promise.resolve(err);
+    }).then((val) => {
+      if(axios.isCancel(val)) return false;
+      this.props.onLoadingStateChange(false);
     });
-    requestPromise.catch(
-      (err) => {
-        let isCancel = err.message && err.message.aborted;
-        if(!isCancel){
-          this.props.onRequestFail(err,'search',term);
-        }
-        return Promise.resolve(err);
-      }
-    ).then(
-      (val) => {
-        if(axios.isCancel(val)){
-          return false;
-        }
-        this.props.onLoadingStateChange(false);
-      }
-    );
-    return requestPromise.then((resp) => resp.data);
+    return requestPromise;
   }
-  updateResultList(resp){
+  updateResultList(resp,appendResults){
+    console.log('search resp',resp)
     // in case of empty results or no search terms
-    if(!resp){
+    if(!resp && !appendResults){
       return this.setState({ pureList : [] });
     }
-    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration
-      })
-    );
-    this.setState({ pureList : tracks });
-  }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
-  }
-  onTrackDescRender(rowData){
-    return rowData.duration ?
-      `${formatDuration(rowData.duration,{milli:true})} • ${rowData.username}` :
-      rowData.username ;
-  }
-  _onClearSearch(){
-    this._onSearchChange('');
+    this.setState({
+      pureList : appendResults ? this.state.pureList.concat(resp) : resp
+    });
   }
   render() {
     let clearButtonOpacity = this.isSearchEmpty() ? 0 : 1;
@@ -159,18 +154,20 @@ class SongPicker extends Component {
         </View>
         {this.isSearchEmpty() ?
           <TopList
-            onTrackAction={this.props.onSongQueued}
-            onTrackSelected={this.props.onSongSelected}
             {...this.props}
           /> :
-        <TrackList
-          tracksData={this.state.pureList.map(this._markAsCurrentTrack)}
-          onTrackDescRender={this.onTrackDescRender}
-          onTrackActionRender={(rowData) => rowData.isCurrentTrack ? null : '+'}
-          highlightProp={'isCurrentTrack'}
-          onTrackAction={this.props.onSongQueued}
-          onTrackSelected={this.props.onSongSelected}
-          {...this.props}
+        <TrackListContainer {...this.props}
+          onEndReached={this.loadMoreResults}
+          onEndThreshold={250}
+          onHeaderRender={() => {
+            return <View style={{flexDirection:'row'}}>
+                <View style={{flexDirection:'column',flex:1}}>
+                  <UserFinderContainer {...this.props} terms={this.state.searchInput} />
+                </View>
+              </View>;
+          }}
+          trackList={this.state.pureList}
+          side={this.props.side}
           />
         }
       </View>
@@ -236,8 +233,6 @@ const styles = StyleSheet.create({
 });
 
 SongPicker.propTypes = {
-  onSongSelected: PropTypes.func.isRequired,
-  onSongQueued: PropTypes.func,
   onClose: PropTypes.func,
   onSearchTermsChange: PropTypes.func
 };

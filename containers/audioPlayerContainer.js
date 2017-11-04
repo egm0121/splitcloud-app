@@ -21,24 +21,23 @@ import {
 } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
+import UploaderProfileContainer from './uploaderProfileContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import SearchIcon from '../components/searchIcon';
 import Button from '../components/button';
 import Config from '../helpers/config';
 import {
-  addPlaylistItem,
   incrementCurrentPlayIndex,
-  decrementCurrentPlayIndex,
-  changeCurrentPlayIndex
+  decrementCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
-import {
-  pushNotification
-} from '../redux/actions/notificationActions';
+import{
+  updateLastUploaderProfile
+} from '../redux/actions/uploaderProfileActions';
 import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
-import {formatDuration} from '../helpers/formatters';
+import {formatDurationExtended} from '../helpers/formatters';
 import FileDownloadManager from '../modules/FileDownloadManager';
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -55,7 +54,6 @@ class AudioPlayerContainer extends Component {
     super(props);
     this._onPlayTogglePress = this._onPlayTogglePress.bind(this);
     this._onPickerToggle = this._onPickerToggle.bind(this);
-    this._onSongSelected = this._onSongSelected.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
     this._onSeekToTime = this._onSeekToTime.bind(this);
     this._onSeekToTimeStart = this._onSeekToTimeStart.bind(this);
@@ -68,6 +66,7 @@ class AudioPlayerContainer extends Component {
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.renderInFullscreen = this.renderInFullscreen.bind(this);
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
+    this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
     this.playerAObj = new ReactNativeStreamingPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
@@ -169,26 +168,11 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _onSongSelected(nextTrackResult){
-    this.props.onSongQueued(nextTrackResult);
-    this._goToTrack(nextTrackResult);
-  }
-  _onSongQueued(nextTrackResult){
-    this.props.pushNotification({
-      type : 'success',
-      message : 'Added Track!'
-    });
-    this.props.onSongQueued(nextTrackResult);
-  }
   _goToNextTrack(){
     this.props.goToNextTrack();
   }
   _goToPrevTrack(){
     this.props.goToPrevTrack();
-  }
-  _goToTrack(track){
-    console.log('goToTrack', track)
-    this.props.goToTrack(track);
   }
   _prepareCurrentTrack(shouldAutoPlay){
 
@@ -232,6 +216,26 @@ class AudioPlayerContainer extends Component {
       this._updateComponentPlayerState();
     });
   }
+  _onUploaderProfileOpen(){
+    this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
+    let prevPickerRoute = this.findRouteByName(
+      'UploaderProfileContainer.' + this.props.side
+    );
+    if(prevPickerRoute){
+      return this.props.navigator.jumpTo(prevPickerRoute);
+    }
+    this.props.navigator.pushToBottom({
+      title : 'UploaderProfileContainer - ' + this.props.side,
+      name : 'UploaderProfileContainer.' + this.props.side,
+      component: UploaderProfileContainer,
+      passProps : {
+        side : this.props.side,
+        onClose: () => this.props.navigator.jumpTo(
+            this.findRouteByName(this.props.routeName)
+        )
+      }
+    });
+  }
   _onPickerToggle(){
     let prevPickerRoute =
       this.findRouteByName('SongPickerContainer.' + this.props.side);
@@ -248,12 +252,6 @@ class AudioPlayerContainer extends Component {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
           );
-        },
-        onSongSelected : (nextTrack) => {
-          this._onSongSelected(nextTrack);
-        },
-        onSongQueued : (nextTrack) => {
-          this._onSongQueued(nextTrack);
         }
       }
     });
@@ -275,9 +273,6 @@ class AudioPlayerContainer extends Component {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
           );
-        },
-        onTrackSelected : (nextTrack) => {
-          this._goToTrack(nextTrack);
         }
       }
     });
@@ -476,7 +471,12 @@ class AudioPlayerContainer extends Component {
     }
     let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
+    let smallTimeText = undefined;
 
+    if(formatDurationExtended(this.state.duration).length > 5){
+      smallTimeText = styles.playbackTimeSmall;
+      progressTrackLength -= 20;
+    }
     let isPlaylistVisible = this.props.queue.length > 1;
     if( this._getCurrentTrackTitle() ){
       trackLabelPlaceholder = this._getCurrentTrackTitle();
@@ -515,7 +515,7 @@ class AudioPlayerContainer extends Component {
                           { trackLabelPlaceholder }
                          </Text>
                        </TouchableOpacity>
-                       <TouchableOpacity onPress={this._openScUploaderLink} style={styles.trackRowContainer}>
+                       <TouchableOpacity onPress={this._onUploaderProfileOpen} style={styles.trackRowContainer}>
                          <Text style={tracknameTextDescription}>
                            { trackDescription }
                          </Text>
@@ -531,7 +531,7 @@ class AudioPlayerContainer extends Component {
                        { trackLabelPlaceholder }
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this._openScUploaderLink} >
+                    <TouchableOpacity onPress={this._onUploaderProfileOpen} >
                       <Text style={tracknameTextDescription}>
                         { trackDescription }
                       </Text>
@@ -539,7 +539,9 @@ class AudioPlayerContainer extends Component {
                   </View>)}
                 {this.renderInFullscreen(this.renderForegroundArtCover())}
                 <View style={[styles.horizontalContainer]} >
-                  <Text style={[styles.playbackTime,styles.playbackTimeInitial]}>{formatDuration(this.state.elapsed)}</Text>
+                  <Text style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
+                      formatDurationExtended(this.state.elapsed)
+                  }</Text>
                   <View style={styles.playbackTrackContainer}>
                     <MultiSlider
                       values={this.state.sliderOneValue}
@@ -554,7 +556,9 @@ class AudioPlayerContainer extends Component {
                       unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                       markerStyle={markerStyle} />
                   </View>
-                  <Text style={[styles.playbackTime]}>{formatDuration(this.state.duration)}</Text>
+                  <Text style={[styles.playbackTime,smallTimeText]}>{
+                      formatDurationExtended(this.state.duration)
+                    }</Text>
                 </View>
                 <View style={styles.horizontalContainer}>
                   <Button style={[styles.container,styles.playlistButton]}
@@ -634,11 +638,9 @@ const mapStateToProps = (state, props) => {
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    onSongQueued : (trackItem) => dispatch(addPlaylistItem(props.side,trackItem)),
     goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
     goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
-    goToTrack: (trackItem) => dispatch(changeCurrentPlayIndex(props.side,trackItem)),
-    pushNotification: (notification) => dispatch(pushNotification(notification))
+    onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url))
   };
 };
 let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
@@ -705,6 +707,10 @@ const styles = StyleSheet.create({
     height:30,
     lineHeight: 22,
     width:50
+  },
+  playbackTimeSmall:{
+    fontSize:12,
+    width:60
   },
   playbackTimeInitial:{
     marginLeft:10

@@ -15,11 +15,10 @@ export function CacheDecorator() {
   let rewrapPromise = function(prom){
     if( isPromiseLike(prom) ){
       return new Promise((res,rej) => {
-        prom.then((resp) => {
-          let originalPayload = resp.data;
+        prom.then((value) => {
+          let originalPayload = value;
           let cloned = copy(originalPayload);
-          resp.data = cloned;
-          res(resp);
+          res(cloned);
         }).catch((err) => {
           rej(err);
         });

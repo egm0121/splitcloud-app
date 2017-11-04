@@ -29,7 +29,7 @@ const SC_RESULT_LIMIT = 100;
 class SongPickerContainer extends Component {
   constructor(props){
     super(props);
-    console.log('SongPicekrContainer mounted with picker props',this.props.picker);
+    console.log('SongPickerContainer mounted with picker props',this.props.picker);
     this.onRequestFail = this.onRequestFail.bind(this);
   }
   onRequestFail(err,type){
@@ -51,7 +51,6 @@ class SongPickerContainer extends Component {
             onSearchTermsChange={this.props.onSearchTermsChange}
             onLoadingStateChange={this.props.onLoadingStateChange}
             onRequestFail={this.onRequestFail}
-            currentPlayingTrack={this.props.currentTrack}
             searchTerms={this.props.picker.searchTerms}
             isLoading={this.props.picker.isLoading}
             {...this.props}
@@ -62,8 +61,6 @@ class SongPickerContainer extends Component {
 }
 SongPickerContainer.propTypes = {
   side : PropTypes.string.isRequired,
-  onSongSelected: PropTypes.func.isRequired,
-  onSongQueued: PropTypes.func,
   onClose: PropTypes.func
 }
 const styles = StyleSheet.create({
