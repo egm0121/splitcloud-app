@@ -107,7 +107,7 @@ class MainSceneContainer extends Component {
     }
   }
   renderPlaybackModeTabBar(){
-    return <View style={styles.panToggleContainer}>
+    return <View>
       <View style={styles.horizontalContainer}>
         {this.state.modeButtons.map((e,i) => {
           const isSelected = e.mode === this.props.mode;
@@ -136,9 +136,7 @@ class MainSceneContainer extends Component {
     </View>;
   }
   render() {
-    let playerLStyle = [],
-      playerRStyle = [],
-      headerStyles = [styles.header];
+    let playerLStyle = [], playerRStyle = [], headerStyles = [styles.header];
     if(this.props.mode != 'S'){
       playerLStyle = this.props.mode == 'L' ?
           styles.expandedPlayer : styles.minimizedPlayer;
@@ -153,11 +151,6 @@ class MainSceneContainer extends Component {
             <TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
-          {__DEV__ && false ?
-          <TouchableHighlight style={{position:'absolute',top:5,zIndex:10}} onPress={this.purgeStore}>
-            <Text style={{color:'gray'}}>Purge store</Text>
-          </TouchableHighlight> :null
-          }
         </View>
         <View style={[styles.player,playerLStyle]}>
           {this.renderPlayer(this.props.players[0])}
@@ -201,8 +194,6 @@ const styles = StyleSheet.create({
   separator:{
     height:1,
     backgroundColor: THEME.contentBorderColor
-  },
-  panToggleContainer:{
   },
   horizontalContainer:{
     flexDirection:'row'

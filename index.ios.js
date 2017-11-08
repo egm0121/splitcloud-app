@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import { Provider } from 'react-redux';
 import MainSceneContainer from './containers/mainSceneContainer';
+import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
+import OfflineModeBanner from './components/offlineModeBanner';
 import AnalyticsService from './modules/analyticsService';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
@@ -47,7 +49,7 @@ class SplitCloudApp extends Component {
   }
   configureScene(route, routeStack){
     return {
-      ...Navigator.SceneConfigs.PushFromRight,
+      ...Navigator.SceneConfigs.VerticalUpSwipeJump,
       gestures: {}, // or null
     };
   }
@@ -55,16 +57,19 @@ class SplitCloudApp extends Component {
     return (
         <Provider store={store} >
             <Navigator
-                initialRoute={
-                  { title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }
-                }
+                initialRoute={{ title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }}
                 renderScene={(route, navigator) => {
                   AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;
-                  return <View style={{flex: 1}}>
-                          <Component title={route.title} routeName={route.name} navigator={navigator} {...route.passProps}/>
-                          <NotificationContainer />
-                        </View>
+                  return <NetworkAvailability>{
+                        (isOnline,networkType) => {
+                          return <View style={{flex: 1}}>
+                            <Component title={route.title} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
+                            <NotificationContainer />
+                            {!isOnline && <OfflineModeBanner/>}
+                          </View>
+                        }
+                  }</NetworkAvailability>
                 }}
                 configureScene={ this.configureScene }
               />
