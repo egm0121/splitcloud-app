@@ -10,7 +10,8 @@ const styles = {
   tabBarBorderColor : '#383838',
   textOverlayBgColor : 'rgba(18, 19, 20,0.7)',
   notifyBgColor : 'rgba(41,41,46,0.9)',
-  listBorderColor : '#39393a'
+  listBorderColor : '#39393a',
+  viewportBorderRadius : 3
 };
 
 export default styles;

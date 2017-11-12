@@ -7,7 +7,7 @@ import THEME from '../styles/variables';
 function OfflineModeBanner(props){
   return <View style={{flexDirection:'row'}}>
     <View style={styles.barContainer}>
-      <Text>You are currently offline</Text>
+      <Text style={styles.barText}>Offline Mode Enabled</Text>
     </View>
   </View>;
 }
@@ -18,10 +18,13 @@ let styles = StyleSheet.create({
     height: 30,
     backgroundColor: THEME.mainActiveColor,
     borderColor : THEME.contentBorderColor,
-    borderTopWidth :2
+    borderTopWidth :1,
+    borderBottomLeftRadius: THEME.viewportBorderRadius,
+    borderBottomRightRadius: THEME.viewportBorderRadius
   },
   barText : {
-    color: THEME.mainActiveColor,
+    color: THEME.mainBgColor,
+    lineHeight:20,
     fontSize: 12,
     fontWeight:'600'
   }

@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Navigator,
+  StyleSheet,
   View
 } from 'react-native';
 import { Provider } from 'react-redux';
@@ -49,7 +50,7 @@ class SplitCloudApp extends Component {
   }
   configureScene(route, routeStack){
     return {
-      ...Navigator.SceneConfigs.VerticalUpSwipeJump,
+      ...Navigator.SceneConfigs.PushFromRight,
       gestures: {}, // or null
     };
   }
@@ -62,8 +63,8 @@ class SplitCloudApp extends Component {
                   AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;
                   return <NetworkAvailability>{
-                        (isOnline,networkType) => {
-                          return <View style={{flex: 1}}>
+                        (isOnline,networkType) => {                        
+                          return <View style={styles.rootContainerView}>
                             <Component title={route.title} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
                             <NotificationContainer />
                             {!isOnline && <OfflineModeBanner/>}
@@ -77,5 +78,10 @@ class SplitCloudApp extends Component {
     );
   }
 }
-
+const styles = StyleSheet.create({
+  rootContainerView:{
+    flex: 1,
+    backgroundColor:'black'
+  }
+})
 AppRegistry.registerComponent('SplitCloudApp', () => SplitCloudApp);
