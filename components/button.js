@@ -19,8 +19,11 @@ function Button(props){
   if(props.size && sizes.includes(props.size)) {
     buttonIconStyle.push(styles['buttonSize'+ucFirst(props.size)]);
   }
-  if(props.disabled) buttonContainerStyle.push(styles.disabledButton);
-  return <TouchableOpacity style={buttonContainerStyle} onPress={!props.disabled ? props.onPressed : ()=>{}}>
+  if(props.disabled){
+    buttonIconStyle.push(styles.disabledButton);
+  }
+  return <TouchableOpacity style={buttonContainerStyle}
+          onPress={!props.disabled ? props.onPressed : ()=>{}}>
           <Image style={buttonIconStyle} source={props.image} resizeMode={'cover'}/>
       </TouchableOpacity>;
 }
@@ -36,7 +39,7 @@ const styles = StyleSheet.create({
   buttonContainer :{
   },
   disabledButton:{
-    opacity:0.5
+    opacity:0.4
   },
   buttonIcon:{
     width:30,

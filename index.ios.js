@@ -63,9 +63,9 @@ class SplitCloudApp extends Component {
                   AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;
                   return <NetworkAvailability>{
-                        (isOnline,networkType) => {                        
+                        (isOnline,networkType) => {
                           return <View style={styles.rootContainerView}>
-                            <Component title={route.title} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
+                            <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
                             <NotificationContainer />
                             {!isOnline && <OfflineModeBanner/>}
                           </View>

@@ -217,6 +217,7 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onUploaderProfileOpen(){
+    if(!this.props.isOnline) return false;
     this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
     let prevPickerRoute = this.findRouteByName(
       'UploaderProfileContainer.' + this.props.side
@@ -237,6 +238,7 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onPickerToggle(){
+    if(!this.props.isOnline) return false;
     let prevPickerRoute =
       this.findRouteByName('SongPickerContainer.' + this.props.side);
     if(prevPickerRoute){
@@ -516,7 +518,7 @@ class AudioPlayerContainer extends Component {
                          </Text>
                        </TouchableOpacity>
                        <TouchableOpacity onPress={this._onUploaderProfileOpen} style={styles.trackRowContainer}>
-                         <Text style={tracknameTextDescription}>
+                         <Text style={tracknameTextDescription} numberOfLines={1} ellipsizeMode={'tail'} >
                            { trackDescription }
                          </Text>
                        </TouchableOpacity>
@@ -531,7 +533,7 @@ class AudioPlayerContainer extends Component {
                        { trackLabelPlaceholder }
                       </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this._onUploaderProfileOpen} >
+                    <TouchableOpacity onPress={this._onUploaderProfileOpen} numberOfLines={1} ellipsizeMode={'tail'} >
                       <Text style={tracknameTextDescription}>
                         { trackDescription }
                       </Text>
@@ -579,6 +581,7 @@ class AudioPlayerContainer extends Component {
                   <Button style={[styles.container,styles.searchButton]}
                           image={require('../assets/flat_search.png')}
                           onPressed={this._onPickerToggle}
+                          disabled={!this.props.isOnline}
                           size={'small'}/>
                 </View>
                 <View style={styles.horizontalContainer}>
