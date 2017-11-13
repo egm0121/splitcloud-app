@@ -64,10 +64,11 @@ class SplitCloudApp extends Component {
                   let Component = route.component;
                   return <NetworkAvailability>{
                         (isOnline,networkType) => {
+                          
                           return <View style={styles.rootContainerView}>
                             <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
                             <NotificationContainer />
-                            {!isOnline && <OfflineModeBanner/>}
+                            <OfflineModeBanner isOnline={isOnline} />
                           </View>
                         }
                   }</NetworkAvailability>
