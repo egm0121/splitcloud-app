@@ -55,7 +55,7 @@ class TopList extends Component {
     },
     {
       name:'PLS',
-      label:'PointLineShape Mix',
+      label:'Explore',
       enabled:false
     }];
     this.state = {

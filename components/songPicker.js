@@ -95,6 +95,15 @@ class SongPicker extends Component {
       });
     }
   }
+  updateResultList(resp,appendResults){
+    // in case of empty results or no search terms
+    if(!resp && !appendResults){
+      return this.setState({ pureList : [] });
+    }
+    this.setState({
+      pureList : appendResults ? this.state.pureList.concat(resp) : resp
+    });
+  }
   isSearchEmpty(){
     return this.state.searchInput.length === 0;
   }
@@ -122,16 +131,6 @@ class SongPicker extends Component {
     });
     return requestPromise;
   }
-  updateResultList(resp,appendResults){
-    console.log('search resp',resp)
-    // in case of empty results or no search terms
-    if(!resp && !appendResults){
-      return this.setState({ pureList : [] });
-    }
-    this.setState({
-      pureList : appendResults ? this.state.pureList.concat(resp) : resp
-    });
-  }
   render() {
     let clearButtonOpacity = this.isSearchEmpty() ? 0 : 1;
     let spinnerPosition = this.isSearchEmpty() ? styles.pushRightSpinner : {};
@@ -158,7 +157,7 @@ class SongPicker extends Component {
           /> :
         <TrackListContainer {...this.props}
           onEndReached={this.loadMoreResults}
-          onEndThreshold={250}
+          onEndThreshold={400}
           onHeaderRender={() => {
             return <View style={{flexDirection:'row'}}>
                 <View style={{flexDirection:'column',flex:1}}>

@@ -186,6 +186,9 @@ class SoundCloudApi {
       trackCount: user.track_count
     };
   }
+  resolveStreamUrlFromTrackId(id){
+    return `https://api.soundcloud.com/tracks/${id}/stream`;
+  }
   resolvePlayableTrackItem(trackObj){
     //this strip of https is needed as the ATS excaption for tls version on
     //the info.plist wont work on twice for same request and 302 redirect
