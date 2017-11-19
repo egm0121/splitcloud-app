@@ -205,28 +205,31 @@ const mapStateToProps = (state,props) => {
     playlistStore
   };
 }
-const mapDispatchToProps = (dispatch,props) => ({
-  setGlobalSetting(key,value){
-    dispatch(setGlobalSetting(key,value));
-  },
-  onFilterChange(value){
-    dispatch(filterPlaylist(props.side,value,'default_'+props.side));
-  },
-  onRemoveTrack(track){
-    dispatch(removeQueuedTrack(props.side,track,'default_'+props.side));
-    dispatch(pushNotification({message:'Removed Track!',type:'success'}));
-  },
-  onPlayTrack(track){
-    dispatch(changeCurrentPlayIndex(props.side,track,'default_'+props.side));
-  },
-  onClearPlaylist(){
-    dispatch(setPlaylist(props.side,[]));
-    dispatch(pushNotification({message:'Cleared Playlist!',type:'success'}));
-  },
-  pushNotification(notification){
-    dispatch(pushNotification(notification));
-  }
-});
+const mapDispatchToProps = (dispatch,props) => {
+  const defaultPlaylist = 'default_'+props.side;
+  return {
+    setGlobalSetting(key,value){
+      dispatch(setGlobalSetting(key,value));
+    },
+    onFilterChange(value){
+      dispatch(filterPlaylist(props.side,value,defaultPlaylist));
+    },
+    onRemoveTrack(track){
+      dispatch(removeQueuedTrack(props.side,track,defaultPlaylist));
+      dispatch(pushNotification({message:'Removed Track!',type:'success'}));
+    },
+    onPlayTrack(track){
+      dispatch(changeCurrentPlayIndex(props.side,track,defaultPlaylist));
+    },
+    onClearPlaylist(){
+      dispatch(setPlaylist(props.side,[],defaultPlaylist));
+      dispatch(pushNotification({message:'Cleared Playlist!',type:'success'}));
+    },
+    pushNotification(notification){
+      dispatch(pushNotification(notification));
+    }
+  };
+};
 const ConnectedCurrentPlaylistContainer = connect(mapStateToProps,mapDispatchToProps)(CurrentPlaylistContainer);
 
 AppRegistry.registerComponent('CurrentPlaylistContainer', () => ConnectedCurrentPlaylistContainer);

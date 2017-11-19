@@ -92,7 +92,7 @@ class TrackListContainer extends Component {
 }
 TrackListContainer.defaultProps ={
   resetToTop:false,
-  onTrackActionRender(rowData){return rowData.isCurrentTrack ? null : '+'},
+  onTrackActionRender(rowData){return '+'},
   highlightProp: 'isCurrentTrack'
 }
 TrackListContainer.propTypes = {

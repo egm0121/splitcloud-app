@@ -13,7 +13,7 @@ import {VERSION_REDUCER_KEY} from '../../helpers/constants';
 const createStoreWithDebug = withLog => {
   let middlewareList = [
     analyticsMiddleware,
-  //  tracksLocalCache
+    tracksLocalCache
   ];
   if(__DEV__ && withLog){
     middlewareList.push(devLogger);
