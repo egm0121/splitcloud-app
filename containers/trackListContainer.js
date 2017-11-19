@@ -23,6 +23,7 @@ import {
   pushNotification
 } from '../redux/actions/notificationActions';
 import {
+  setPlaylist,
   addPlaylistItem,
   changeCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
@@ -112,12 +113,13 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = (state,props) => {
-  const playlistState =
-    state.playlist.filter((playlist) => playlist.side == props.side).pop();
-  const queue = playlistState.playbackQueue;
+  let playlist = state.playlist.find((playlist) => playlist.side === props.side);
+  let playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == playlist.currentPlaylistId);
+  const queue = playlistStore.tracks;
   return {
-    playlist : playlistState,
-    currentPlayingTrack : queue[playlistState.currentTrackIndex] || {}
+    playlist,
+    playlistStore,
+    currentPlayingTrack : queue[playlistStore.currentTrackIndex] || {}
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
@@ -127,12 +129,12 @@ const mapDispatchToProps = (dispatch,props) =>({
       type : 'success',
       message : 'Added Track!'
     }));
-    dispatch(addPlaylistItem(props.side,track))
+    dispatch(addPlaylistItem(props.side,track,'default_'+props.side))
   },
-  onTrackSelected : (track) => {
+  onTrackSelected : (track,trackList) => {
     console.log('tracklist connect onTrackSelected');
-    dispatch(addPlaylistItem(props.side,track));
-    dispatch(changeCurrentPlayIndex(props.side,track));
+    dispatch(setPlaylist(props.side,trackList,'playbackQueue_'+props.side));
+    dispatch(changeCurrentPlayIndex(props.side,track,'playbackQueue_'+props.side));
   }
 });
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {

@@ -169,10 +169,10 @@ class AudioPlayerContainer extends Component {
     }
   }
   _goToNextTrack(){
-    this.props.goToNextTrack();
+    this.props.goToNextTrack(this.props.currentPlaylistId);
   }
   _goToPrevTrack(){
-    this.props.goToPrevTrack();
+    this.props.goToPrevTrack(this.props.currentPlaylistId);
   }
   _prepareCurrentTrack(shouldAutoPlay){
 
@@ -316,6 +316,7 @@ class AudioPlayerContainer extends Component {
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
   }
   componentWillReceiveProps(newProps){
+    console.log('new props',newProps.currentPlaylistId,newProps.playlistStore)
     if(newProps.pan != this.props.pan || newProps.muted != this.props.muted){
       this.setState({
         pan:newProps.pan,
@@ -325,11 +326,11 @@ class AudioPlayerContainer extends Component {
         this.setNowPlayingDescription({isSplit:true});
       }
     }
-    if(newProps.playlist.currentTrackIndex != this.props.playlist.currentTrackIndex){
-      this.setState({playbackIndex : newProps.playlist.currentTrackIndex})
+    if(newProps.currentTrackIndex != this.props.currentTrackIndex){
+      this.setState({playbackIndex : newProps.currentTrackIndex})
     }
     if(newProps.queue !== this.props.queue){
-      console.log('(props Update) playlist updated:',newProps.playlist);
+      console.log('(props Update) playlist updated:',newProps.queue);
     }
   }
   componentDidUpdate(prevProps, prevState){
@@ -352,7 +353,7 @@ class AudioPlayerContainer extends Component {
            'from',
            prevState.playbackIndex
         );
-        let shouldAutoPlay = this.props.playlist.autoplay;
+        let shouldAutoPlay = this.props.playlistStore.autoplay;
         this._prepareCurrentTrack(shouldAutoPlay);
       }
     }
@@ -624,9 +625,11 @@ AudioPlayerContainer.propTypes = {
 //TODO: specify propTypes
 };
 const mapStateToProps = (state, props) => {
-  let player = state.players.filter((player) => player.side === props.side).pop();
-  let playlist = state.playlist.filter((playlist) => playlist.side === props.side).pop();
-  let queue = playlist.playbackQueue;
+  let player = state.players.find((player) => player.side === props.side);
+  let playlist = state.playlist.find((playlist) => playlist.side === props.side);
+  let playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == playlist.currentPlaylistId);
+  let queue = playlistStore.tracks;
+  let currentPlaylistId = playlist.currentPlaylistId;
   let isFullscreen = state.mode === props.side;
   let isSplitMode = state.mode === playbackModeTypes.SPLIT;
   return {
@@ -636,13 +639,18 @@ const mapStateToProps = (state, props) => {
     isFullscreen,
     playlist,
     queue,
-    isSplitMode
+    currentTrackIndex:playlistStore.currentTrackIndex,
+    isSplitMode,
+    currentPlaylistId,
+    playlistStore
   }
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    goToNextTrack: () => dispatch(incrementCurrentPlayIndex(props.side)),
-    goToPrevTrack: () => dispatch(decrementCurrentPlayIndex(props.side)),
+    goToNextTrack: (playlistId) => {
+      dispatch(incrementCurrentPlayIndex(props.side,playlistId))
+    },
+    goToPrevTrack: (playlistId) => dispatch(decrementCurrentPlayIndex(props.side,playlistId)),
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url))
   };
 };

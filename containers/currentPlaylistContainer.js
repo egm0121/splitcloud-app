@@ -26,7 +26,12 @@ import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
 import {globalSettings,animationPresets} from '../helpers/constants';
-import {removeQueuedTrack, setPlaylist, filterPlaylist} from '../redux/actions/currentPlaylistActions';
+import {
+   removeQueuedTrack,
+   setPlaylist,
+   filterPlaylist,
+   changeCurrentPlayIndex
+} from '../redux/actions/currentPlaylistActions';
 import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
@@ -123,6 +128,7 @@ class CurrentPlaylistContainer extends Component {
             trackList={playlistFilteredList}
             onTrackActionRender={(rowData) => '×'}
             onTrackAction={this.props.onRemoveTrack}
+            onTrackSelected={this.props.onPlayTrack}
             side={this.props.side}
             trackActionStyles={[{fontSize:45}]}
             />
@@ -187,14 +193,16 @@ const styles = StyleSheet.create({
 });
 const mapStateToProps = (state,props) => {
   const pickerState =
-    state.songPickers.filter((playlist) => playlist.side == props.side).pop();
-  const playlistState = state.playlist.filter((playlist) => playlist.side === props.side).pop();
-  const queue = playlistState.playbackQueue;
+    state.songPickers.find((playlist) => playlist.side == props.side);
+  const playlistState = state.playlist.find((playlist) => playlist.side === props.side);
+  const playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == 'default_'+props.side);
+  const queue = playlistStore.tracks;
   return {
     picker : pickerState,
     playlist : playlistState,
     settings : state.settings,
-    queue
+    queue,
+    playlistStore
   };
 }
 const mapDispatchToProps = (dispatch,props) => ({
@@ -202,11 +210,14 @@ const mapDispatchToProps = (dispatch,props) => ({
     dispatch(setGlobalSetting(key,value));
   },
   onFilterChange(value){
-    dispatch(filterPlaylist(props.side,value));
+    dispatch(filterPlaylist(props.side,value,'default_'+props.side));
   },
   onRemoveTrack(track){
-    dispatch(removeQueuedTrack(props.side,track));
+    dispatch(removeQueuedTrack(props.side,track,'default_'+props.side));
     dispatch(pushNotification({message:'Removed Track!',type:'success'}));
+  },
+  onPlayTrack(track){
+    dispatch(changeCurrentPlayIndex(props.side,track,'default_'+props.side));
   },
   onClearPlaylist(){
     dispatch(setPlaylist(props.side,[]));

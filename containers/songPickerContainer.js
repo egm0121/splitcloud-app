@@ -79,13 +79,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state,props) => {
   const pickerState =
     state.songPickers.filter((picker) => picker.side == props.side).pop();
-  const playlistState =
-    state.playlist.filter((picker) => picker.side == props.side).pop();
-  const queue = playlistState.playbackQueue;
   return {
-    picker : pickerState,
-    playlist : playlistState,
-    currentTrack : queue[playlistState.currentTrackIndex]
+    picker : pickerState
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({

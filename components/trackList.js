@@ -56,12 +56,12 @@ class TrackList extends Component {
   }
   _onSongSelected(rowData){
     if(!rowData.isEmpty){
-      this.props.onTrackSelected(rowData);
+      this.props.onTrackSelected(rowData,this.state.pureList);
     }
   }
   _onSongAction(rowData,){
     if(!rowData.isEmpty){
-      this.props.onTrackAction(rowData);
+      this.props.onTrackAction(rowData,this.state.pureList);
     }
   }
   isTrack(rowData){
