@@ -103,6 +103,7 @@ class CurrentPlaylistContainer extends Component {
   }
   render() {
     const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
+    console.log('currentPlaylistContainer unfiltered track',this.props.queue )
     const playlistFilteredList = this.props.queue
       .filter((track) => 'isVisible' in track ? track.isVisible : true);
     return (

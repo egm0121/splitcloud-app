@@ -5,8 +5,9 @@ import { REHYDRATE } from 'redux-persist/constants';
 function findTrackById(searchId){
   return track => track.id == searchId;
 }
-function applyFilterVisibility(value){
+function applyFilterVisibility(value,playlistId){
   return (track) => {
+    if(playlistId.indexOf('default') != 0) return {...track,isVisible:true};
     if(!value || value == '') return {...track,isVisible:true};
     let matchString = track.label.toLowerCase() + '' + track.username.toLowerCase();
     let isVisible = matchString.indexOf(value.toLowerCase()) != -1;
@@ -54,13 +55,13 @@ function currentPlaylistReducer(state , currAction){
       ...state,
       filterTracks: currAction.value,
       //TODO: change visibility flag
-      tracks: state.tracks.map(applyFilterVisibility(currAction.value))
+      tracks: state.tracks.map(applyFilterVisibility(currAction.value,state.id))
     };
   case actionTypes.ADD_PLAYLIST_ITEM:
     if((state.tracks).some(findTrackById(currAction.track.id))){
       return state;
     }
-    let currTrack = applyFilterVisibility(state.filterTracks)(currAction.track);
+    let currTrack = applyFilterVisibility(state.filterTracks,state.id)(currAction.track);
     return {
       ...state,
       tracks : [currTrack, ...state.tracks],
@@ -70,7 +71,7 @@ function currentPlaylistReducer(state , currAction){
   case actionTypes.SET_PLAYLIST:
     return {
       ...state,
-      tracks : [...currAction.tracks].map(applyFilterVisibility(state.filterTracks)),
+      tracks : [...currAction.tracks].map(applyFilterVisibility(state.filterTracks,state.id)),
       currentTrackIndex:0,
       autoplay : true
     };
