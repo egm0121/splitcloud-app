@@ -40,6 +40,9 @@ class TrackList extends Component {
     if(this.props.tracksData != newProps.tracksData){
       this.updateResultList(newProps.tracksData);
     }
+    if(this.props.currentPlayingTrack != newProps.tracksData){
+      this.updateResultList([...newProps.tracksData]);
+    }
   }
   updateResultList(tracks){
     // in case of empty results or no search terms
@@ -82,10 +85,11 @@ class TrackList extends Component {
         trackAuthor = rowData.username;
       }
       artworkImage = {url:this.getSmallArtworkUrl(rowData.artwork)};
+      if(rowData.id == this.props.currentTrack.id){
+        rowTextStyle.push(styles.hightlightText);
+      }
     }
-    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
-      rowTextStyle.push(styles.hightlightText);
-    }
+
     if(rowData.isEmpty){
       return (
       <View style={[styles.rowContainerPlaceholder]}>
@@ -157,7 +161,7 @@ TrackList.propTypes = {
   onTrackActionRender: PropTypes.func,
   renderArtwork: PropTypes.bool,
   onHeaderRender: PropTypes.func,
-  highlightProp : PropTypes.string,
+  currentTrackId: PropTypes.number,
   isLoading: PropTypes.bool
 };
 

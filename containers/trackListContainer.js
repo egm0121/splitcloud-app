@@ -39,7 +39,6 @@ class TrackListContainer extends Component {
     console.log(
       'TrackListContainer mounted with props',this.props.side
     );
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.trackListRef = null;
     console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
@@ -49,16 +48,6 @@ class TrackListContainer extends Component {
       console.log('scroll to top');
       this.trackListRef.scrollTo({x:0, y:0, animated:true});
     }
-  }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
-    }
-    return item;
   }
   onTrackDescRender(rowData){
     let
@@ -70,16 +59,15 @@ class TrackListContainer extends Component {
     return [duration,playCount,username].filter(e =>e.length).join(' • ') ;
   }
   render() {
-    let trackData = this.props.trackList.map(this._markAsCurrentTrack);
     return (
       <View style={styles.container}>
         <TrackList
           onHeaderRender={this.props.onHeaderRender}
           listRef={(ref) => this.trackListRef = ref}
-          tracksData={trackData}
+          tracksData={this.props.trackList}
           onTrackDescRender={this.onTrackDescRender}
           onTrackActionRender={this.props.onTrackActionRender}
-          highlightProp={this.props.highlightProp}
+          currentTrack={this.props.currentPlayingTrack}
           onTrackAction={this.props.onTrackAction}
           onTrackSelected={this.props.onTrackSelected}
           isLoading={this.props.isLoading}
@@ -92,8 +80,7 @@ class TrackListContainer extends Component {
 }
 TrackListContainer.defaultProps ={
   resetToTop:false,
-  onTrackActionRender(rowData){return '+'},
-  highlightProp: 'isCurrentTrack'
+  onTrackActionRender(rowData){return '+'}
 }
 TrackListContainer.propTypes = {
   side : PropTypes.string.isRequired,
