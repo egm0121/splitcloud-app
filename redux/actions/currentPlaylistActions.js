@@ -1,6 +1,6 @@
 import { actionTypes } from '../constants/actions';
 
-export function removeQueuedTrack(side,track,playlistId){
+export function removePlaylistItem(side,track,playlistId){
   return {
     type : actionTypes.REMOVE_PLAYLIST_ITEM,
     track,

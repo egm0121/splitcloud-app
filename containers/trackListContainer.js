@@ -25,6 +25,7 @@ import {
 import {
   setPlaylist,
   addPlaylistItem,
+  removePlaylistItem,
   changeCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
 import {
@@ -40,6 +41,8 @@ class TrackListContainer extends Component {
       'TrackListContainer mounted with props',this.props.side
     );
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
+    this.onTrackActionRender = this.onTrackActionRender.bind(this);
+    this.onTrackAction = this.onTrackAction.bind(this);
     this.trackListRef = null;
     console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
   }
@@ -47,6 +50,19 @@ class TrackListContainer extends Component {
     if(this.props.resetToTop && (this.props.trackList !== newProps.trackList)){
       console.log('scroll to top');
       this.trackListRef.scrollTo({x:0, y:0, animated:true});
+    }
+  }
+  hasFavoriteTrack(track){
+    return this.props.favoritePlaylist.tracks.find(t => t.id == track.id);
+  }
+  onTrackAction(track,trackList){
+    if(typeof this.props.onTrackActionRender == 'function'){
+      return this.props.onTrackAction(track, trackList, this.hasFavoriteTrack(track));
+    }
+  }
+  onTrackActionRender(track){
+    if(typeof this.props.onTrackActionRender == 'function'){
+      return this.props.onTrackActionRender(track, this.hasFavoriteTrack(track));
     }
   }
   onTrackDescRender(rowData){
@@ -66,9 +82,9 @@ class TrackListContainer extends Component {
           listRef={(ref) => this.trackListRef = ref}
           tracksData={this.props.trackList}
           onTrackDescRender={this.onTrackDescRender}
-          onTrackActionRender={this.props.onTrackActionRender}
+          onTrackActionRender={this.onTrackActionRender}
           currentTrack={this.props.currentPlayingTrack}
-          onTrackAction={this.props.onTrackAction}
+          onTrackAction={this.onTrackAction}
           onTrackSelected={this.props.onTrackSelected}
           isLoading={this.props.isLoading}
           onEndReached={this.props.onEndReached}
@@ -80,7 +96,9 @@ class TrackListContainer extends Component {
 }
 TrackListContainer.defaultProps ={
   resetToTop:false,
-  onTrackActionRender(rowData){return '+'}
+  onTrackActionRender(track,isFavoriteTrack){
+    return isFavoriteTrack ? '×':'+';
+  }
 }
 TrackListContainer.propTypes = {
   side : PropTypes.string.isRequired,
@@ -101,22 +119,30 @@ const styles = StyleSheet.create({
 });
 const mapStateToProps = (state,props) => {
   let playlist = state.playlist.find((playlist) => playlist.side === props.side);
-  let playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == playlist.currentPlaylistId);
+  let playlistStore = state.playlistStore.find(
+    playlistStore => playlistStore.id == playlist.currentPlaylistId);
+  let favoritePlaylist = state.playlistStore.find(
+    playlistStore => playlistStore.id == 'default_' + props.side);
   const queue = playlistStore.tracks;
   return {
     playlist,
+    favoritePlaylist,
     playlistStore,
     currentPlayingTrack : queue[playlistStore.currentTrackIndex] || {}
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onTrackAction : (track) => {
-    dispatch(pushNotification({
-      type : 'success',
-      message : 'Added Track!'
-    }));
-    dispatch(addPlaylistItem(props.side,track,'default_'+props.side))
+  onTrackAction : (track,trackList,isTrackFavorite) => {
+    let actionMessage = '';
+    if(isTrackFavorite){
+      actionMessage = 'Deleted';
+      dispatch(removePlaylistItem(props.side,track,'default_'+props.side));
+    } else {
+      actionMessage = 'Added';
+      dispatch(addPlaylistItem(props.side,track,'default_'+props.side))
+    }
+    dispatch(pushNotification({type : 'success',message : `Track ${actionMessage}!`}));
   },
   onTrackSelected : (track,trackList) => {
     console.log('tracklist connect onTrackSelected');

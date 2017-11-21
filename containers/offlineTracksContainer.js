@@ -30,73 +30,21 @@ const SECTIONS = {
 class OfflineTracksContainer extends Component {
   constructor(props){
     super(props);
-    console.log(
-      'uploaderProfileContainer mounted with props',
-      this.props.scUploaderLink,
-      'side',this.props.side
-    );
-    this.state = {
-      trackList : [],
-      trackListLoading: false,
-      section : SECTIONS.UPLOADS,
-      profileDetails:false
-    };
-    this.sectionDataResolver = {
-      [SECTIONS.UPLOADS]:'getScUserProfileTracks',
-      [SECTIONS.FAVORITES]:'getScUserProfileFavorites'
-    }
-    this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
+
     this.onRequestFail = this.onRequestFail.bind(this);
     this.onSectionChange = this.onSectionChange.bind(this);
   }
-  updateTracks(url){
-    this.setState({trackList:[],trackListLoading:true});
-    let activeResolver = this.sectionDataResolver[this.state.section];
-    this.fetchTrackList(activeResolver,url).then((tracks) =>{
-      this.setState({trackList:tracks,trackListLoading:false});
-    });
-  }
-  updateProfileDetails(url){
-    this.setState({profileDetails:false});
-    this.scApi.getScUserProfile(url).then((details) => {
-      this.setState({profileDetails:details});
-    });
-  }
   componentWillMount(){
-    this.updateProfileDetails(this.props.scUploaderLink);
-    this.updateTracks(this.props.scUploaderLink);
+
   }
   componentWillUnmount(){
-    this.prevQueryCancelToken.cancel();
+
   }
   componentWillReceiveProps(newProps){
-    console.log('uploaderProfileContainer newProps',newProps.scUploaderLink);
-    if(this.props.scUploaderLink != newProps.scUploaderLink){
-      this.updateProfileDetails(newProps.scUploaderLink);
-      this.updateTracks(newProps.scUploaderLink);
-    }
+
   }
   componentDidUpdate(prevProps,prevState){
-    if(prevState.section != this.state.section){
-      console.log(prevState.section,this.state.section);
-      this.updateTracks(this.props.scUploaderLink);
-    }
-  }
-  generateRequestInvalidationToken(){
-    this.prevQueryCancelToken = axios.CancelToken.source();
-    return this.prevQueryCancelToken;
-  }
-  fetchTrackList(method,url){
-    let requestPromise = this.scApi[method](
-      url,
-      { cancelToken : this.generateRequestInvalidationToken().token}
-    );
-    requestPromise
-    .catch((err) => {
-      this.props.onRequestFail(err);
-      return Promise.resolve(err);
-    });
-    return requestPromise;
+
   }
   onRequestFail(err,type){
     this.props.pushNotification({
@@ -104,18 +52,11 @@ class OfflineTracksContainer extends Component {
       message : 'Data Request Failed'
     });
   }
-  onSectionChange(sectionName){
-    this.setState({section:sectionName});
-  }
   render() {
     return (
       <View style={styles.container}>
-        <HeaderBar title={`${(formatSidePlayerLabel(this.props.side)).toUpperCase()} PLAYER`}>
-          <BackButton style={styles.backButton} onPressed={this.props.onClose} />
-        </HeaderBar>
         <TrackListContainer {...this.props}
           side={this.props.side}
-          isLoading={this.state.trackListLoading}
           trackList={this.state.trackList}
           onHeaderRender={() =>
             <View style={styles.headerContainer}>

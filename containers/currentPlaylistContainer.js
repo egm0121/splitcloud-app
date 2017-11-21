@@ -27,7 +27,6 @@ import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
 import {globalSettings,animationPresets} from '../helpers/constants';
 import {
-   removeQueuedTrack,
    setPlaylist,
    filterPlaylist,
    changeCurrentPlayIndex
@@ -127,8 +126,6 @@ class CurrentPlaylistContainer extends Component {
         <TrackListContainer
             {...this.props}
             trackList={playlistFilteredList}
-            onTrackActionRender={(rowData) => '×'}
-            onTrackAction={this.props.onRemoveTrack}
             onTrackSelected={this.props.onPlayTrack}
             side={this.props.side}
             trackActionStyles={[{fontSize:45}]}
@@ -214,10 +211,6 @@ const mapDispatchToProps = (dispatch,props) => {
     },
     onFilterChange(value){
       dispatch(filterPlaylist(props.side,value,defaultPlaylist));
-    },
-    onRemoveTrack(track){
-      dispatch(removeQueuedTrack(props.side,track,defaultPlaylist));
-      dispatch(pushNotification({message:'Removed Track!',type:'success'}));
     },
     onPlayTrack(track){
       dispatch(changeCurrentPlayIndex(props.side,track,defaultPlaylist));
