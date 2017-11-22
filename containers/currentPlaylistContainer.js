@@ -54,7 +54,7 @@ class CurrentPlaylistContainer extends Component {
   }
   onClearPlaylist(){
     Alert.alert(
-      `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`,
+      `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Favorites?`,
       `This will remove all tracks from your ${formatSidePlayerLabel(this.props.side)} playlist` ,
       [
         { text: 'Clear All',
@@ -90,7 +90,7 @@ class CurrentPlaylistContainer extends Component {
     if(!this.props.settings.offlineMode) return this.toggleOfflineModeSetting();
     Alert.alert(
       'Disable Offline Mode',
-      'This will remove all local music from your device. Are you sure?' ,
+      'This will remove all saved music from your device. Are you sure?' ,
       [
         { text: 'Yes',
           onPress: this.toggleOfflineModeSetting,

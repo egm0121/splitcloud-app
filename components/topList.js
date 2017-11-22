@@ -25,6 +25,7 @@ import SectionItem from '../components/sectionItem';
 import TrackListContainer from '../containers/trackListContainer';
 import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
+import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 
 class TopList extends Component {
@@ -41,25 +42,30 @@ class TopList extends Component {
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
     this.getPickerOverlayDisplay = this.getPickerOverlayDisplay.bind(this);
     this.onSectionChange = this.onSectionChange.bind(this);
-    this.sections = [{
-      name:'TOP',
-      scChartType: SoundCloudApi.chartType.TOP,
-      label:'Top Tracks',
-      enabled:true
-    },
-    {
-      name:'TRENDING',
-      label:'New & Hot',
-      scChartType: SoundCloudApi.chartType.TRENDING,
-      enabled:true
-    },
-    {
-      name:'PLS',
-      label:'Explore',
-      enabled:false
-    }];
     this.state = {
-      section : this.sections[0].name,
+      sectionList:[{
+        name:'LOCAL',
+        label:'Saved',
+        enabled:true
+      },
+      {
+        name:'TOP',
+        scChartType: SoundCloudApi.chartType.TOP,
+        label:'Top Chart',
+        enabled:true
+      },
+      {
+        name:'TRENDING',
+        label:'New & Hot',
+        scChartType: SoundCloudApi.chartType.TRENDING,
+        enabled:true
+      },
+      {
+        name:'PLS',
+        label:'Explore',
+        enabled:false
+      }],
+      section : 'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -71,13 +77,26 @@ class TopList extends Component {
     console.log('genreOptions',this.getOptionsListByType('genre'))
   }
   getCurrSectionObj(){
-    return this.sections.filter(s => s.name === this.state.section ).pop();
+    return this.state.sectionList.filter(s => s.name === this.state.section ).pop();
   }
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
     this.showStreamableOnly = this.props.showStreamableOnly;
     //fetch inial genre list
     this.loadTopSoundCloudTracks().then(this.updateResultList);
+  }
+  componentWillReceiveProps(newProps){
+    console.log('isOnline changed for topList',newProps)
+    if(this.props.isOnline != newProps.isOnline){
+      console.log('isOnline changed for topList')
+      this.setState((state) => {
+        let sectionList = state.sectionList.map(s => {
+          if(s.name !== 'LOCAL') s.enabled = newProps.isOnline;
+          return s;
+        })
+        return {sectionList};
+      });
+    }
   }
   componentDidUpdate(prevProps,prevState){
     if(
@@ -178,12 +197,11 @@ class TopList extends Component {
       <View style={styles.container}>
         <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
           {
-            this.sections
-            .filter(e => e.enabled)
-            .map(({name,label},key) => <SectionItem key={key} name={name} label={label}/>)
+            this.state.sectionList
+            .map(({name,label,enabled},key) => enabled && <SectionItem key={key} name={name} label={label}/>)
           }
         </SectionTabBar>
-        {this.getCurrSectionObj().scChartType ?
+        {this.getCurrSectionObj().scChartType &&
           <View style={{flex:1}}>
             <View style={styles.listDescription}>
               <View style={styles.genreSelectionBtn}>
@@ -208,9 +226,9 @@ class TopList extends Component {
               side={this.props.side}
               resetToTop={true}
               />
-          </View>
-          :<DiscoverProviderContainer {...this.props}/>
-          }
+          </View>}
+          {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
+          {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
           <ModalPicker
             overlayStyle={this.getPickerOverlayDisplay('genre')}
             options={this.state.genreOptions}

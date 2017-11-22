@@ -38,6 +38,9 @@ class SongPickerContainer extends Component {
       message : 'Data Request Failed'
     });
   }
+  componentWillReceiveProps(newProps){
+    console.log('songPickerContainer is oneline',newProps.isOnline)
+  }
   render() {
 
     return (

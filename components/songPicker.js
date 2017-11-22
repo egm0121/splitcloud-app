@@ -152,9 +152,7 @@ class SongPicker extends Component {
             onChangeText={this._onSearchChange} />
         </View>
         {this.isSearchEmpty() ?
-          <TopList
-            {...this.props}
-          /> :
+        <TopList {...this.props} /> :
         <TrackListContainer {...this.props}
           onEndReached={this.loadMoreResults}
           onEndThreshold={400}

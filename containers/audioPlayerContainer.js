@@ -238,7 +238,6 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onPickerToggle(){
-    if(!this.props.isOnline) return false;
     let prevPickerRoute =
       this.findRouteByName('SongPickerContainer.' + this.props.side);
     if(prevPickerRoute){
@@ -249,6 +248,7 @@ class AudioPlayerContainer extends Component {
       name : 'SongPickerContainer.' + this.props.side,
       component: SongPickerContainer,
       passProps : {
+        isOnline : this.props.isOnline, 
         side : this.props.side,
         onClose: () => {
           this.props.navigator.jumpTo(
@@ -270,7 +270,7 @@ class AudioPlayerContainer extends Component {
       component: CurrentPlaylistContainer,
       passProps : {
         side : this.props.side,
-        playlistTitle : `UP NEXT | ${this.props.side == 'L' ? 'LEFT' : 'RIGHT'} PLAYER`,
+        playlistTitle : `FAVORITES | ${this.props.side == 'L' ? 'LEFT' : 'RIGHT'} PLAYER`,
         onClose: () => {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
@@ -582,7 +582,6 @@ class AudioPlayerContainer extends Component {
                   <Button style={[styles.container,styles.searchButton]}
                           image={require('../assets/flat_search.png')}
                           onPressed={this._onPickerToggle}
-                          disabled={!this.props.isOnline}
                           size={'small'}/>
                 </View>
                 <View style={styles.horizontalContainer}>
