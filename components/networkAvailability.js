@@ -13,8 +13,6 @@ class NetworkAvailability extends Component{
       connectionInfo : null
     };
     this.updateNetworkState = this.updateNetworkState.bind(this);
-
-    setTimeout(() => this.updateNetworkState('none'),3000);
   }
   componentWillMount(){
     NetInfo.fetch().then((connectionInfo) => {
