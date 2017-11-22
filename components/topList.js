@@ -46,26 +46,30 @@ class TopList extends Component {
       sectionList:[{
         name:'LOCAL',
         label:'Saved',
-        enabled:true
+        enabled:true,
+        visible:true
       },
       {
         name:'TOP',
         scChartType: SoundCloudApi.chartType.TOP,
         label:'Top Chart',
-        enabled:true
+        enabled:props.isOnline,
+        visible:true
       },
       {
         name:'TRENDING',
         label:'New & Hot',
         scChartType: SoundCloudApi.chartType.TRENDING,
-        enabled:true
+        enabled:props.isOnline,
+        visible:true
       },
       {
         name:'PLS',
         label:'Explore',
-        enabled:false
+        enabled:props.isOnline,
+        visilble:false
       }],
-      section : 'TOP',
+      section : props.isOnline ? 'TOP' : 'LOCAL',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -86,14 +90,14 @@ class TopList extends Component {
     this.loadTopSoundCloudTracks().then(this.updateResultList);
   }
   componentWillReceiveProps(newProps){
-    console.log('isOnline changed for topList',newProps)
+    console.log('props changed for topList',newProps.networkType);
     if(this.props.isOnline != newProps.isOnline){
       console.log('isOnline changed for topList')
       this.setState((state) => {
         let sectionList = state.sectionList.map(s => {
           if(s.name !== 'LOCAL') s.enabled = newProps.isOnline;
           return s;
-        })
+        });
         return {sectionList};
       });
     }
@@ -198,6 +202,7 @@ class TopList extends Component {
         <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
           {
             this.state.sectionList
+            .filter(s => s.visible)
             .map(({name,label,enabled},key) => enabled && <SectionItem key={key} name={name} label={label}/>)
           }
         </SectionTabBar>
@@ -208,7 +213,9 @@ class TopList extends Component {
                 <TouchableHighlight onPress={this.openRegionPicker}>
                   <View>
                     <Text style={styles.listDetailText} >Region</Text>
-                    <Text style={styles.genreSelectionText}>{this.getLabelForRegion(this.state.selectedRegion)}</Text>
+                    <Text style={styles.genreSelectionText}>{
+                      this.getLabelForRegion(this.state.selectedRegion)
+                    }</Text>
                   </View>
                 </TouchableHighlight>
               </View>
@@ -216,7 +223,9 @@ class TopList extends Component {
                   <TouchableHighlight onPress={this.openGenrePicker}>
                     <View>
                       <Text style={styles.listDetailText}>Genre</Text>
-                      <Text style={styles.genreSelectionText}>{this.getLabelForGenre(this.state.selectedGenre)}</Text>
+                      <Text style={styles.genreSelectionText}>{
+                        this.getLabelForGenre(this.state.selectedGenre)
+                      }</Text>
                     </View>
                   </TouchableHighlight>
               </View>

@@ -248,7 +248,6 @@ class AudioPlayerContainer extends Component {
       name : 'SongPickerContainer.' + this.props.side,
       component: SongPickerContainer,
       passProps : {
-        isOnline : this.props.isOnline, 
         side : this.props.side,
         onClose: () => {
           this.props.navigator.jumpTo(
