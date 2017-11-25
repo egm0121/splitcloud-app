@@ -4,15 +4,16 @@
 import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import THEME from '../styles/variables';
+import AppText from './appText';
 function HeaderBar(props){
   return <View style={styles.headerContainer}>
     {props.title && <View style={styles.headerTitleContainer}>
-      <Text
+      <AppText
         numberOfLines={1}
         ellipsizeMode={'tail'}
         style={styles.headerText}>
         {props.title}
-      </Text>
+      </AppText>
     </View>}
     {props.children}
   </View>;

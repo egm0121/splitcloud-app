@@ -11,7 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import THEME from '../styles/variables';
-
+import AppText from './appText';
 class MenuOverlay extends Component {
   constructor(props){
     super(props);
@@ -27,9 +27,9 @@ class MenuOverlay extends Component {
             <TouchableOpacity onPress={ this.props.onClose }
               underlayColor="transparent"
               style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>
+                <AppText style={styles.closeButtonText}>
                 {(this.props.closeLabel || 'Choose')}
-                </Text>
+                </AppText>
             </TouchableOpacity>
           </View>
           {this.props.children}

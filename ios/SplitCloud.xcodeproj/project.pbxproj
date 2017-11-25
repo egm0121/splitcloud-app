@@ -24,8 +24,12 @@
 		15F73173A30C41898A75A1A2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 921F3DC736EC43EAA17B2B08 /* libRNFS.a */; };
 		22D58CA1129F45CC8957AA41 /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D61851379FDF4BC88B1D4D61 /* libRNDeviceInfo.a */; };
 		2B0EBEB3ED964FE983DFCF47 /* libReactNativeAudioStreaming.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0055B779EAA54B1AB4E51952 /* libReactNativeAudioStreaming.a */; };
+		5ECACD3E8D084CF996D15503 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */; };
+		600393DBC17B45BE9AB8EDCC /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2410903D6A76436B927629F1 /* Lato-Regular.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		A460AFB9A7F24EC08E91E6CC /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F0C35BEBCDD4B88B110F9AC /* Lato-Bold.ttf */; };
 		C2F334731D43DDF100D505F4 /* libStreamingKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2F334671D43DDEC00D505F4 /* libStreamingKit.a */; };
+		D97D5A32F76048378A552A09 /* Lato-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C2F0039EF8C841CB9820B32E /* Lato-Medium.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +110,20 @@
 			remoteGlobalIDString = DA5891D81BA9A9FC002B4DB2;
 			remoteInfo = RNDeviceInfo;
 		};
+		78B3FF121FC9933A00E07D2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 13B07F961A680F5B00A75B9A;
+			remoteInfo = Slider;
+		};
+		78B3FF141FC9933A00E07D2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00E356EE1AD99517003FC87E;
+			remoteInfo = SliderTests;
+		};
 		78BD772D1E9A534100F10066 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 78BD77291E9A534100F10066 /* RCTLinking.xcodeproj */;
@@ -170,13 +188,18 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Example/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Example/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		2410903D6A76436B927629F1 /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
+		2F0C35BEBCDD4B88B110F9AC /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
+		53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTActionSheet.a; sourceTree = "<group>"; };
 		70E59A0E6B4B4854A49B721E /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		78BD77291E9A534100F10066 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		921F3DC736EC43EAA17B2B08 /* libRNFS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFS.a; sourceTree = "<group>"; };
 		BBF7D9320DF04D5086F14733 /* RNDeviceInfo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNDeviceInfo.xcodeproj; path = "../node_modules/react-native-device-info/RNDeviceInfo.xcodeproj"; sourceTree = "<group>"; };
+		C2F0039EF8C841CB9820B32E /* Lato-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Medium.ttf"; path = "../assets/fonts/Lato-Medium.ttf"; sourceTree = "<group>"; };
 		C2F3345F1D43DDEB00D505F4 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/Pods/Pods.xcodeproj"; sourceTree = "<group>"; };
+		CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = Slider.xcodeproj; path = "../node_modules/react-native-multi-slider/iOS/Slider.xcodeproj"; sourceTree = "<group>"; };
 		D61851379FDF4BC88B1D4D61 /* libRNDeviceInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNDeviceInfo.a; sourceTree = "<group>"; };
 		D860C55F11CC49E2A0AE844B /* ReactNativeAudioStreaming.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeAudioStreaming.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -208,6 +231,7 @@
 				2B0EBEB3ED964FE983DFCF47 /* libReactNativeAudioStreaming.a in Frameworks */,
 				22D58CA1129F45CC8957AA41 /* libRNDeviceInfo.a in Frameworks */,
 				15F73173A30C41898A75A1A2 /* libRNFS.a in Frameworks */,
+				5ECACD3E8D084CF996D15503 /* libRCTActionSheet.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,6 +340,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		7847E62324D1486A9893F49B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C2F0039EF8C841CB9820B32E /* Lato-Medium.ttf */,
+				2410903D6A76436B927629F1 /* Lato-Regular.ttf */,
+				2F0C35BEBCDD4B88B110F9AC /* Lato-Bold.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		786EC7891EEECF1E0067842D /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -330,8 +364,18 @@
 				0055B779EAA54B1AB4E51952 /* libReactNativeAudioStreaming.a */,
 				D61851379FDF4BC88B1D4D61 /* libRNDeviceInfo.a */,
 				921F3DC736EC43EAA17B2B08 /* libRNFS.a */,
+				53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */,
 			);
 			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		78B3FF0E1FC9933A00E07D2C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				78B3FF131FC9933A00E07D2C /* Slider.app */,
+				78B3FF151FC9933A00E07D2C /* SliderTests.xctest */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		78BD772A1E9A534100F10066 /* Products */ = {
@@ -368,6 +412,7 @@
 				D860C55F11CC49E2A0AE844B /* ReactNativeAudioStreaming.xcodeproj */,
 				BBF7D9320DF04D5086F14733 /* RNDeviceInfo.xcodeproj */,
 				70E59A0E6B4B4854A49B721E /* RNFS.xcodeproj */,
+				CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -388,6 +433,7 @@
 				00E356EF1AD99517003FC87E /* ExampleTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				788C632E1F9355440043AA46 /* Recovered References */,
+				7847E62324D1486A9893F49B /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -549,6 +595,10 @@
 					ProductGroup = 78176B991F6014A8004630F7 /* Products */;
 					ProjectRef = 70E59A0E6B4B4854A49B721E /* RNFS.xcodeproj */;
 				},
+				{
+					ProductGroup = 78B3FF0E1FC9933A00E07D2C /* Products */;
+					ProjectRef = CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -629,6 +679,20 @@
 			remoteRef = 786EC79A1EEECF1E0067842D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		78B3FF131FC9933A00E07D2C /* Slider.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Slider.app;
+			remoteRef = 78B3FF121FC9933A00E07D2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		78B3FF151FC9933A00E07D2C /* SliderTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = SliderTests.xctest;
+			remoteRef = 78B3FF141FC9933A00E07D2C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		78BD772E1E9A534100F10066 /* libRCTLinking.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -686,6 +750,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				D97D5A32F76048378A552A09 /* Lato-Medium.ttf in Resources */,
+				600393DBC17B45BE9AB8EDCC /* Lato-Regular.ttf in Resources */,
+				A460AFB9A7F24EC08E91E6CC /* Lato-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -754,6 +821,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -772,6 +840,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -796,6 +865,7 @@
 					"$(SRCROOT)/../node_modules/react-native-audio-streaming/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-device-info/RNDeviceInfo",
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
+					"$(SRCROOT)/../node_modules/react-native-multi-slider/iOS/Slider",
 				);
 				INFOPLIST_FILE = Example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -823,6 +893,7 @@
 					"$(SRCROOT)/../node_modules/react-native-audio-streaming/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-device-info/RNDeviceInfo",
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
+					"$(SRCROOT)/../node_modules/react-native-multi-slider/iOS/Slider",
 				);
 				INFOPLIST_FILE = Example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -884,6 +955,7 @@
 					"$(SRCROOT)/../node_modules/react-native/Libraries/**",
 					"$(SRCROOT)/../node_modules/react-native-device-info/RNDeviceInfo",
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
+					"$(SRCROOT)/../node_modules/react-native-multi-slider/iOS/Slider",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -932,6 +1004,7 @@
 					"$(SRCROOT)/../node_modules/react-native/Libraries/**",
 					"$(SRCROOT)/../node_modules/react-native-device-info/RNDeviceInfo",
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
+					"$(SRCROOT)/../node_modules/react-native-multi-slider/iOS/Slider",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

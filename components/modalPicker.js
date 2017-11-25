@@ -14,6 +14,7 @@ import {
 import THEME from '../styles/variables';
 import MenuOverlay from './menuOverlay';
 const PickerItemIOS = PickerIOS.Item;
+import AppText from './appText';
 class ModalPicker extends Component {
   constructor(props){
     super(props);

@@ -15,6 +15,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import THEME from '../styles/variables';
+import AppText from './appText';
 
 class TrackList extends Component {
   constructor(props){
@@ -110,15 +111,15 @@ class TrackList extends Component {
           </View>
           }
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
+              <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
                 {trackTitle}
-              </Text>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
+              </AppText>
+              <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
                 {trackAuthor}
-              </Text>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
+              </AppText>
+              <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
                 {this.props.onTrackDescRender(rowData)}
-              </Text>
+              </AppText>
           </TouchableOpacity>
           {!rowData.isEmpty ?
             <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
@@ -184,12 +185,12 @@ const styles = StyleSheet.create({
     paddingRight: 0
   },
   rowArtworkImage:{
-    width:40,
-    height:40,
+    width:50,
+    height:50,
     backgroundColor: THEME.listBorderColor
   },
   rowArtworkContainer:{
-    width:55,
+    width:60,
     paddingTop:5
   },
   rowLabel : {
@@ -219,19 +220,16 @@ const styles = StyleSheet.create({
   rowTitleText:{
     color: THEME.mainHighlightColor,
     lineHeight:20,
-    fontSize: 15,
-    fontWeight:'500'
+    fontSize: 15
   },
   rowAuthorText:{
     color: THEME.mainHighlightColor,
-    lineHeight:20,
-    fontSize: 13,
-    fontWeight:'500'
+    lineHeight:18,
+    fontSize: 13
   },
   rowDescText :{
     color: THEME.mainColor,
     fontSize: 13,
-    fontWeight:'500',
     lineHeight:20
   },
   hightlightText : {

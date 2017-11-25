@@ -11,7 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import THEME from '../styles/variables';
-
+import AppText from './appText';
 class NotificationOverlay extends Component {
   constructor(props){
     super(props);
@@ -27,8 +27,8 @@ class NotificationOverlay extends Component {
     const typeIcon = NotificationOverlay.renderForType[this.props.type].icon;
     return (
         <View style={styles.notificationContainer} >
-          <Text style={styles.iconText}>{typeIcon}</Text>
-          <Text style={styles.messageText}>{this.props.message}</Text>
+          <AppText style={styles.iconText}>{typeIcon}</AppText>
+          <AppText style={styles.messageText}>{this.props.message}</AppText>
           {this.props.children}
         </View>
     );

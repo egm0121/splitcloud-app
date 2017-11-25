@@ -23,6 +23,9 @@
     "redux-persist": "^4.8.0",
     "redux-persist-migrate": "^5.0.0"
   },
+  "rnpm": {
+    "assets": ["./assets/fonts/"]
+  },
   "devDependencies": {
     "eslint": "^3.19.0",
     "eslint-plugin-react": "^7.0.0"

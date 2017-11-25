@@ -21,6 +21,7 @@ import TrackListContainer from '../containers/trackListContainer';
 import UserFinderContainer from '../containers/userFinderContainer';
 import TopList from '../components/topList';
 import {formatDuration} from '../helpers/formatters';
+
 class SongPicker extends Component {
   constructor(props){
     super(props);

@@ -7,7 +7,8 @@ import {
   AppRegistry,
   Navigator,
   StyleSheet,
-  View
+  View,
+  Text
 } from 'react-native';
 import { Provider } from 'react-redux';
 import MainSceneContainer from './containers/mainSceneContainer';
@@ -47,6 +48,10 @@ class SplitCloudApp extends Component {
   constructor(props){
     super(props);
     this.configureScene = this.configureScene.bind(this);
+    this.setStylesGlobalOvverides();
+  }
+  setStylesGlobalOvverides(){
+    Text.defaultProps.allowFontScaling = false;
   }
   configureScene(route, routeStack){
     return {

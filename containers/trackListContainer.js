@@ -87,13 +87,12 @@ class TrackListContainer extends Component {
     });
   }
   onTrackDescRender(rowData){
-    let
-      duration = rowData.duration ?
+    let duration = rowData.duration ?
         formatDurationExtended(rowData.duration,{milli:true}) : '',
       playCount = rowData.playbackCount ?
-        '▶ '+formatNumberPrefix(rowData.playbackCount) : '',
+        formatNumberPrefix(rowData.playbackCount) : '',
       username = 'by '+rowData.username;
-    return [duration,playCount,username].filter(e =>e.length).join(' • ') ;
+    return [duration,playCount,username].filter(e =>e.length).join(' • ');
   }
   render() {
     return (

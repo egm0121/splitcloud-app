@@ -11,7 +11,9 @@ const styles = {
   textOverlayBgColor : 'rgba(18, 19, 20,0.7)',
   notifyBgColor : 'rgba(41,41,46,0.9)',
   listBorderColor : '#39393a',
-  viewportBorderRadius : 3
+  viewportBorderRadius : 3,
+  appContentFontFamily: 'Lato-Regular',
+  appContentBoldFontFamily: 'Lato-Bold'
 };
 
 export default styles;

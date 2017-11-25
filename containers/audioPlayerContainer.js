@@ -25,6 +25,7 @@ import UploaderProfileContainer from './uploaderProfileContainer';
 import CurrentPlaylistContainer from './currentPlaylistContainer';
 import SearchIcon from '../components/searchIcon';
 import Button from '../components/button';
+import AppText from '../components/appText';
 import Config from '../helpers/config';
 import {
   incrementCurrentPlayIndex,
@@ -39,6 +40,7 @@ import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
 import {formatDurationExtended} from '../helpers/formatters';
 import FileDownloadManager from '../modules/FileDownloadManager';
+
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
 const PLAYBACK_ENABLED_STATES = {
@@ -513,14 +515,14 @@ class AudioPlayerContainer extends Component {
                      </View>
                      <View style={styles.trackInfoContainer}>
                        <TouchableOpacity  onPress={this._onPickerToggle} style={styles.trackRowContainer}>
-                         <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                         <AppText style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                           { trackLabelPlaceholder }
-                         </Text>
+                         </AppText>
                        </TouchableOpacity>
                        <TouchableOpacity onPress={this._onUploaderProfileOpen} style={styles.trackRowContainer}>
-                         <Text style={tracknameTextDescription} numberOfLines={1} ellipsizeMode={'tail'} >
+                         <AppText style={tracknameTextDescription} numberOfLines={1} ellipsizeMode={'tail'} >
                            { trackDescription }
-                         </Text>
+                         </AppText>
                        </TouchableOpacity>
                      </View>
                     </View>
@@ -529,21 +531,21 @@ class AudioPlayerContainer extends Component {
                 {this.renderInFullscreen(
                   <View style={tracknameStyles}>
                     <TouchableOpacity  onPress={this._onPickerToggle}>
-                      <Text style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                      <AppText style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                        { trackLabelPlaceholder }
-                      </Text>
+                      </AppText>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={this._onUploaderProfileOpen} numberOfLines={1} ellipsizeMode={'tail'} >
-                      <Text style={tracknameTextDescription}>
+                      <AppText style={tracknameTextDescription}>
                         { trackDescription }
-                      </Text>
+                      </AppText>
                     </TouchableOpacity>
                   </View>)}
                 {this.renderInFullscreen(this.renderForegroundArtCover())}
                 <View style={[styles.horizontalContainer]} >
-                  <Text style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
+                  <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
                       formatDurationExtended(this.state.elapsed)
-                  }</Text>
+                  }</AppText>
                   <View style={styles.playbackTrackContainer}>
                     <MultiSlider
                       values={this.state.sliderOneValue}
@@ -558,9 +560,9 @@ class AudioPlayerContainer extends Component {
                       unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                       markerStyle={markerStyle} />
                   </View>
-                  <Text style={[styles.playbackTime,smallTimeText]}>{
+                  <AppText style={[styles.playbackTime,smallTimeText]}>{
                       formatDurationExtended(this.state.duration)
-                    }</Text>
+                    }</AppText>
                 </View>
                 <View style={styles.horizontalContainer}>
                   <Button style={[styles.container,styles.playlistButton]}
@@ -781,7 +783,7 @@ const styles = StyleSheet.create({
   },
   trackname : {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '400',
     color: mainFgColor,
     backgroundColor: 'transparent',
     paddingRight:20

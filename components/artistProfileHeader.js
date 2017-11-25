@@ -5,6 +5,7 @@ import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View, Text,Image } from 'react-native';
 import {formatNumberPrefix} from '../helpers/formatters';
 import THEME from '../styles/variables';
+import AppText from './appText';
 function ArtistProfileHeader(props){
   if(!props.user) return null;
   let details = props.user;
@@ -12,23 +13,23 @@ function ArtistProfileHeader(props){
           <View style={styles.horizontalHeaderBox}>
               <Image style={styles.profileImage} source={{url:details.avatarUrl}} resizeMode={'cover'}/>
               <View>
-                <Text
+                <AppText
                 numberOfLines={1}
                 ellipsizeMode={'tail'}
                 style={styles.headerText}>
                   {details.username}
-                </Text>
-                <Text style={styles.followerCount}>
+                </AppText>
+                <AppText style={styles.followerCount}>
                 {formatNumberPrefix(details.followersCount)} Followers
-                </Text>
+                </AppText>
               </View>
           </View>
-        <Text
+        <AppText
           numberOfLines={3}
           ellipsizeMode={'tail'}
           style={styles.descText}>
           {details.description}
-        </Text>
+        </AppText>
       </View>;
 }
 let styles = StyleSheet.create({

@@ -10,7 +10,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import THEME from '../styles/variables';
-
+import AppText from './appText';
 class UserList extends Component {
   constructor(props){
     super(props);
@@ -23,7 +23,7 @@ class UserList extends Component {
           onPress={this.props.onUserSelected.bind(this,user)} key={i} >
           <View style={styles.itemContainer}>
             <Image style={styles.profileImage} source={{url:user.avatarUrl}} resizeMode={'cover'}/>
-            <Text style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</Text>
+            <AppText style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</AppText>
           </View>
         </TouchableOpacity>;
     })}

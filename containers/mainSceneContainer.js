@@ -25,6 +25,7 @@ import { playbackModeTypes } from '../helpers/constants';
 import { connect } from 'react-redux';
 import { changePlaybackMode, invertPlayerSideMapping } from '../redux/actions/playbackModeActions';
 import { persistor } from '../redux/store/configure';
+import AppText from '../components/appText';
 const {
   SC_CLIENT_ID,
   SC_CLIENT_SECRET,
@@ -128,7 +129,7 @@ class MainSceneContainer extends Component {
           return <TouchableHighlight style={styles.panButtoncontainer} key={i}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
-                    <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
+                    <AppText style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</AppText>
                   </View>
             </TouchableHighlight>;
         })}
