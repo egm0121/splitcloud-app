@@ -12,7 +12,7 @@ import AppText from './appText';
 export default function(props){
   return <View style={[styles.itemContainer,props.containerStyle]}>
     <TouchableOpacity onPress={props.onPress}>
-      <AppText style={[styles.itemText,props.textStyle]}>{props.children}</AppText>
+      <AppText bold={true} style={[styles.itemText,props.textStyle]}>{props.children}</AppText>
     </TouchableOpacity>
   </View>;
 }
@@ -25,7 +25,6 @@ let styles =  StyleSheet.create({
   },
   itemText:{
     fontSize:17,
-    fontWeight:'600',
     color:THEME.mainHighlightColor
   }
 });

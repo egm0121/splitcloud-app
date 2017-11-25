@@ -20,6 +20,8 @@ import THEME from '../styles/variables';
 import TrackListContainer from '../containers/trackListContainer';
 import UserFinderContainer from '../containers/userFinderContainer';
 import TopList from '../components/topList';
+import FilterInput from '../components/filterInput';
+import BackButton from '../components/backButton';
 import {formatDuration} from '../helpers/formatters';
 
 class SongPicker extends Component {
@@ -137,20 +139,16 @@ class SongPicker extends Component {
     let spinnerPosition = this.isSearchEmpty() ? styles.pushRightSpinner : {};
     return (
       <View style={styles.container}>
-        {this.isSearchEmpty() ? null :
-        <View style={[styles.clearSearchAction]}>
-          <TouchableOpacity onPress={this._onClearSearch} style={styles.clearSearchTouchable}>
-            <Text style={styles.clearSearchActionText}>✕</Text>
-          </TouchableOpacity>
-        </View>}
         <ActivityIndicator animating={this.props.isLoading} style={[styles.loaderStyle,spinnerPosition]} />
         <View style={styles.searchInputView}>
-          <TextInput
-            style={styles.searchInput}
+          <BackButton style={styles.backButton} onPressed={this.props.onClose} />
+          <FilterInput
+            inputViewStyle={styles.searchInput}
             placeholder="Search song or artist "
             value={this.state.searchInput}
             placeholderTextColor={THEME.mainColor}
-            onChangeText={this._onSearchChange} />
+            onChangeText={this._onSearchChange}
+            onClearFilter={this._onClearSearch}/>
         </View>
         {this.isSearchEmpty() ?
         <TopList {...this.props} /> :
@@ -177,29 +175,19 @@ const styles = StyleSheet.create({
     flex: 1
   },
   searchInput : {
-    paddingTop: 12,
-    height: 40,
+    flex:1,
+    height: 30,
     color: THEME.mainHighlightColor,
-    paddingLeft: 40,
     paddingRight: 70,
     lineHeight:20
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
-    borderBottomWidth :2,
+    borderBottomWidth :1,
     paddingTop: 10,
     backgroundColor: THEME.mainBgColor,
-    height: 60
-  },
-  clearSearchAction:{
-    position:'absolute',
-    borderRadius:15,
-    right:15,
-    top:22,
-    zIndex:10,
-    height:30,
-    width:30,
-    backgroundColor:THEME.contentBorderColor
+    height: 60,
+    flexDirection:'row'
   },
   pushRightSpinner:{
     right:20,
@@ -210,11 +198,11 @@ const styles = StyleSheet.create({
     top:27,
     zIndex:10
   },
-  clearSearchActionText:{
-    color: THEME.mainHighlightColor,
-    fontSize:20,
-    lineHeight:28,
-    textAlign:'center'
+  backButton:{
+    width:40,
+    paddingTop: 10,
+    paddingLeft:10,
+    zIndex:20
   },
   listDescription : {
     backgroundColor: THEME.contentBgColor,

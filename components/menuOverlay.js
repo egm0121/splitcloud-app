@@ -27,7 +27,7 @@ class MenuOverlay extends Component {
             <TouchableOpacity onPress={ this.props.onClose }
               underlayColor="transparent"
               style={styles.closeButton}>
-                <AppText style={styles.closeButtonText}>
+                <AppText bold={true} style={styles.closeButtonText}>
                 {(this.props.closeLabel || 'Choose')}
                 </AppText>
             </TouchableOpacity>
@@ -68,8 +68,7 @@ const styles = StyleSheet.create({
   closeButtonText:{
     color:THEME.mainHighlightColor,
     textAlign:'right',
-    lineHeight:25,
-    fontWeight:'600'
+    lineHeight:25
   }
 });
 

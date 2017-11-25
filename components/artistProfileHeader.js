@@ -14,6 +14,7 @@ function ArtistProfileHeader(props){
               <Image style={styles.profileImage} source={{url:details.avatarUrl}} resizeMode={'cover'}/>
               <View>
                 <AppText
+                bold={true}
                 numberOfLines={1}
                 ellipsizeMode={'tail'}
                 style={styles.headerText}>
@@ -65,8 +66,7 @@ let styles = StyleSheet.create({
   headerText : {
     color: THEME.mainHighlightColor,
     fontSize: 18,
-    lineHeight: 30,
-    fontWeight:'600'
+    lineHeight: 30
   }
 });
 export default ArtistProfileHeader;

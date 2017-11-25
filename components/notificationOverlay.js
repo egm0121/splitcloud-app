@@ -28,7 +28,7 @@ class NotificationOverlay extends Component {
     return (
         <View style={styles.notificationContainer} >
           <AppText style={styles.iconText}>{typeIcon}</AppText>
-          <AppText style={styles.messageText}>{this.props.message}</AppText>
+          <AppText bold={true} style={styles.messageText}>{this.props.message}</AppText>
           {this.props.children}
         </View>
     );

@@ -515,12 +515,12 @@ class AudioPlayerContainer extends Component {
                      </View>
                      <View style={styles.trackInfoContainer}>
                        <TouchableOpacity  onPress={this._onPickerToggle} style={styles.trackRowContainer}>
-                         <AppText style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                         <AppText bold={true} style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                           { trackLabelPlaceholder }
                          </AppText>
                        </TouchableOpacity>
                        <TouchableOpacity onPress={this._onUploaderProfileOpen} style={styles.trackRowContainer}>
-                         <AppText style={tracknameTextDescription} numberOfLines={1} ellipsizeMode={'tail'} >
+                         <AppText bold={true} style={tracknameTextDescription} numberOfLines={1} ellipsizeMode={'tail'} >
                            { trackDescription }
                          </AppText>
                        </TouchableOpacity>
@@ -531,12 +531,12 @@ class AudioPlayerContainer extends Component {
                 {this.renderInFullscreen(
                   <View style={tracknameStyles}>
                     <TouchableOpacity  onPress={this._onPickerToggle}>
-                      <AppText style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
+                      <AppText bold={true} style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                        { trackLabelPlaceholder }
                       </AppText>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={this._onUploaderProfileOpen} numberOfLines={1} ellipsizeMode={'tail'} >
-                      <AppText style={tracknameTextDescription}>
+                      <AppText bold={true} style={tracknameTextDescription}>
                         { trackDescription }
                       </AppText>
                     </TouchableOpacity>
@@ -783,14 +783,12 @@ const styles = StyleSheet.create({
   },
   trackname : {
     fontSize: 16,
-    fontWeight: '400',
     color: mainFgColor,
     backgroundColor: 'transparent',
     paddingRight:20
   },
   trackDescription:{
     fontSize: 14,
-    fontWeight: '600',
     color: THEME.scAuthorColor
   },
   tracknameTextFullscreen:{

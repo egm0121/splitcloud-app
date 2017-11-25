@@ -10,7 +10,7 @@ export default function SectionItem(props){
       props.onSelected(props.name)
     }
   }>
-    <AppText style={[styles.itemText,isActiveStyle]}>{props.label}</AppText>
+    <AppText bold={true} style={[styles.itemText,isActiveStyle]}>{props.label}</AppText>
   </TouchableOpacity> ;
 }
 

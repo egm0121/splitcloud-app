@@ -9,6 +9,7 @@ function HeaderBar(props){
   return <View style={styles.headerContainer}>
     {props.title && <View style={styles.headerTitleContainer}>
       <AppText
+        bold={true}
         numberOfLines={1}
         ellipsizeMode={'tail'}
         style={styles.headerText}>
@@ -32,8 +33,7 @@ let styles = StyleSheet.create({
   },
   headerText : {
     color: THEME.mainHighlightColor,
-    fontSize: 16,
-    fontWeight:'600'
+    fontSize: 16
   }
 });
 export default HeaderBar;
