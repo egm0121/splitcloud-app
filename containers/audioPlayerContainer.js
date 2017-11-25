@@ -797,7 +797,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingLeft:20,
     paddingRight:20,
-    height: 30
+    height: 35
   },
   trackDescriptionTextFullscreen:{
     fontSize: 16,

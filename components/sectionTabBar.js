@@ -20,8 +20,9 @@ const styles = StyleSheet.create({
   tabBarContainer:{
     flexDirection:'row',
     paddingHorizontal:20,
-    paddingVertical:10,
+    paddingVertical:20,
     borderBottomWidth:1,
+    //backgroundColor:THEME.contentBorderColor,
     borderColor: THEME.contentBorderColor
   }
 });

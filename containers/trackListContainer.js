@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import TrackList from '../components/trackList';
+import PlaylistContainer from './playlistContainer';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
@@ -43,6 +44,7 @@ class TrackListContainer extends Component {
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onTrackActionRender = this.onTrackActionRender.bind(this);
     this.onTrackAction = this.onTrackAction.bind(this);
+    this.onTrackSelected = this.onTrackSelected.bind(this);
     this.trackListRef = null;
     console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
   }
@@ -65,6 +67,25 @@ class TrackListContainer extends Component {
       return this.props.onTrackActionRender(track, this.hasFavoriteTrack(track));
     }
   }
+  onTrackSelected(...args){
+    if(args[0].type == 'playlist'){
+      this.onPlaylistSelected(...args);
+    } else {
+      this.props.onTrackSelected(...args);
+    }
+  }
+  onPlaylistSelected(playlist){
+    this.props.navigator.push({
+      title : 'PlaylistContainer - playlist.name - ' + this.props.side,
+      name : 'PlaylistContainer' + this.props.side,
+      component: PlaylistContainer,
+      passProps : {
+        playlist: playlist,
+        side : this.props.side,
+        onClose: () => this.props.navigator.pop()
+      }
+    });
+  }
   onTrackDescRender(rowData){
     let
       duration = rowData.duration ?
@@ -85,7 +106,7 @@ class TrackListContainer extends Component {
           onTrackActionRender={this.onTrackActionRender}
           currentTrack={this.props.currentPlayingTrack}
           onTrackAction={this.onTrackAction}
-          onTrackSelected={this.props.onTrackSelected}
+          onTrackSelected={this.onTrackSelected}
           isLoading={this.props.isLoading}
           onEndReached={this.props.onEndReached}
           onEndThreshold={this.props.onEndThreshold}
@@ -97,6 +118,7 @@ class TrackListContainer extends Component {
 TrackListContainer.defaultProps ={
   resetToTop:false,
   onTrackActionRender(track,isFavoriteTrack){
+    if(track.type == 'playlist') return null;
     return isFavoriteTrack ? '×':'+';
   }
 }
@@ -108,6 +130,7 @@ TrackListContainer.propTypes = {
   onTrackActionRender: PropTypes.func,
   onTrackAction: PropTypes.func.isRequired,
   onTrackSelected: PropTypes.func.isRequired,
+  onPlaylistSelected: PropTypes.func,
   onHeaderRender: PropTypes.func,
   isLoading: PropTypes.bool
 }

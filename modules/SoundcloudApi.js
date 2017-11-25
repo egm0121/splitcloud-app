@@ -11,6 +11,7 @@ class SoundCloudApi {
     this.clientId = clientId;
     this.timeout = 2*1e3;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
+    this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
@@ -147,6 +148,16 @@ class SoundCloudApi {
         .map(this.transformTrackPayload);
     });
   }
+  getScUserPlaylists(scIdOrUrl){
+    return this.resolveResourceId(scIdOrUrl).then((resp) => {
+      return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/playlists`)
+    }).then(resp => {
+      let playlistData = resp.data;
+
+      return playlistData.filter( p => p.streamable)
+      .map(this.transformPlaylistPayload);
+    });
+  }
   getClientId(){
     return this.clientId;
   }
@@ -155,10 +166,21 @@ class SoundCloudApi {
     trackObj.stream_url = trackObj.uri + '/stream'
     return trackObj;
   }
+  transformPlaylistPayload(t){
+    return {
+      type: 'playlist',
+      id: t.id,
+      label : t.title,
+      username: t.user.username,
+      artwork : t.artwork_url,
+      tracks: t.tracks.map(this.normalizeStreamUrlProperty).map(this.transformTrackPayload)
+    };
+  }
   transformTrackPayload(t){
     return this.resolvePlayableTrackItem(
       {
         id: t.id,
+        type: 'track',
         label : t.title,
         username: t.user.username,
         streamUrl : t.stream_url,
@@ -172,6 +194,7 @@ class SoundCloudApi {
     return {
       scUploaderLink:user.permalink_url,
       id:user.id,
+      type:'user',
       username: user.username,
       firstName : user.first_name,
       lastName: user.last_name,

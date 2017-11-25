@@ -34,7 +34,8 @@ import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 const {SC_CLIENT_ID} = config;
 const SECTIONS = {
   UPLOADS:'uploads',
-  FAVORITES:'favorites'
+  FAVORITES:'favorites',
+  PLAYLISTS:'playlists'
 };
 class uploaderProfileContainer extends Component {
   constructor(props){
@@ -52,7 +53,8 @@ class uploaderProfileContainer extends Component {
     };
     this.sectionDataResolver = {
       [SECTIONS.UPLOADS]:'getScUserProfileTracks',
-      [SECTIONS.FAVORITES]:'getScUserProfileFavorites'
+      [SECTIONS.FAVORITES]:'getScUserProfileFavorites',
+      [SECTIONS.PLAYLISTS]:'getScUserPlaylists'
     }
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
@@ -136,7 +138,8 @@ class uploaderProfileContainer extends Component {
                 <View>
                   <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
                     <SectionItem name={SECTIONS.UPLOADS} label={'Tracks'} />
-                    <SectionItem name={SECTIONS.FAVORITES} label={'Favorites'}  />
+                    <SectionItem name={SECTIONS.FAVORITES} label={'Favorites'} />
+                    <SectionItem name={SECTIONS.PLAYLISTS} label={'Playlists'} />
                   </SectionTabBar>
                 </View>
               </View>
