@@ -1,6 +1,7 @@
 const styles = {
   activeBorderColor: '#2395CB',
   mainBgColor: '#1C1C1F',
+  playerControlsBgColor:'rgb(20,20,20)',
   mainHighlightColor : '#eeeeee',
   mainActiveColor: '#ff8648',
   mainColor : '#a0a0a2',

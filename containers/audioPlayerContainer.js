@@ -467,11 +467,13 @@ class AudioPlayerContainer extends Component {
     let tracknameStyles = [styles.tracknameContainer];
     let tracknameTextStyles = [styles.trackname];
     let tracknameTextDescription = [styles.trackDescription];
+    let playbackControlsContainer = [styles.horizontalContainer];
     let playerBgImage = [styles.artworkImage];
     if(this.props.isFullscreen){
       tracknameStyles.push(styles.tracknameFullscreen)
       tracknameTextStyles.push(styles.tracknameTextFullscreen)
       tracknameTextDescription.push(styles.trackDescriptionTextFullscreen)
+      playbackControlsContainer.push(styles.controlsBackground);
     }
     let trackDescription = '';
     let trackLabelPlaceholder = 'Tap to load ' + sideLabel[this.props.side] + ' track...';
@@ -541,34 +543,31 @@ class AudioPlayerContainer extends Component {
                       </AppText>
                     </TouchableOpacity>
                   </View>)}
-                {this.renderInFullscreen(this.renderForegroundArtCover())}
-                <View style={[styles.horizontalContainer]} >
-                  <Image style={[styles.controlsFadeImage]}
-                    source={require('../assets/fade_to_black.png')}
-                    resizeMode={'cover'}
-                  />
-                  <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
-                      formatDurationExtended(this.state.elapsed)
-                  }</AppText>
-                  <View style={styles.playbackTrackContainer}>
-                    <MultiSlider
-                      values={this.state.sliderOneValue}
-                      min={0}
-                      max={100}
-                      onValuesChange={this._onMultiSliderValuesChange}
-                      onValuesChangeFinish={this._onSeekToTime}
-                      onValuesChangeStart={this._onSeekToTimeStart}
-                      sliderLength={progressTrackLength}
-                      trackStyle={{ borderRadius: 12, height: 3 }}
-                      selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
-                      unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
-                      markerStyle={markerStyle} />
-                  </View>
-                  <AppText style={[styles.playbackTime,smallTimeText]}>{
-                      formatDurationExtended(this.state.duration)
+                  {this.renderInFullscreen(this.renderForegroundArtCover())}
+                  <View style={playbackControlsContainer} >
+                    <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
+                        formatDurationExtended(this.state.elapsed)
                     }</AppText>
-                </View>
-                <View style={styles.horizontalContainer}>
+                    <View style={styles.playbackTrackContainer}>
+                      <MultiSlider
+                        values={this.state.sliderOneValue}
+                        min={0}
+                        max={100}
+                        onValuesChange={this._onMultiSliderValuesChange}
+                        onValuesChangeFinish={this._onSeekToTime}
+                        onValuesChangeStart={this._onSeekToTimeStart}
+                        sliderLength={progressTrackLength}
+                        trackStyle={{ borderRadius: 12, height: 3 }}
+                        selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
+                        unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
+                        markerStyle={markerStyle} />
+                    </View>
+                    <AppText style={[styles.playbackTime,smallTimeText]}>{
+                        formatDurationExtended(this.state.duration)
+                      }</AppText>
+                  </View>
+
+                <View style={playbackControlsContainer}>
                   <Button style={[styles.container,styles.playlistButton]}
                       image={require('../assets/flat_select.png')}
                       onPressed={this._toggleCurrentPlaylist} />
@@ -589,7 +588,7 @@ class AudioPlayerContainer extends Component {
                           onPressed={this._onPickerToggle}
                           size={'small'}/>
                 </View>
-                <View style={styles.horizontalContainer}>
+                <View style={playbackControlsContainer}>
                   <View style={styles.volumeSlider}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
@@ -605,6 +604,7 @@ class AudioPlayerContainer extends Component {
                   source={require('../assets/powered_by_large_white.png')}
                   resizeMode={'contain'} />
                 </TouchableOpacity>
+
               </View>
             </Image>
          </View>
@@ -613,15 +613,19 @@ class AudioPlayerContainer extends Component {
   }
 
   renderForegroundArtCover() {
-    return <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
-      <Image style={[styles.fgArtCoverImage]}
-       source={ this._getCurrentTrackArtwork() ?
-        {uri:this._getCurrentTrackArtwork()} :
-        require('../assets/empty_album.png')
-       }
-       resizeMode={'contain'}
-      />
-    </View>
+    return <Image style={[styles.controlsFadeImage]}
+        source={require('../assets/fade_to_black.png')}
+        resizeMode={'stretch'} >
+      <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
+        <Image style={[styles.fgArtCoverImage]}
+         source={ this._getCurrentTrackArtwork() ?
+          {uri:this._getCurrentTrackArtwork()} :
+          require('../assets/empty_album.png')
+         }
+         resizeMode={'contain'}
+        />
+      </View>
+    </Image>
   }
 }
 
@@ -820,9 +824,13 @@ const styles = StyleSheet.create({
     backgroundColor:'#121314'
   },
   controlsFadeImage:{
-    flex:1,
+    backgroundColor:'transparent',
+    flex:5,
     width:null,
-    height:null,
+    height:null
+  },
+  controlsBackground:{
+    backgroundColor: THEME.playerControlsBgColor
   },
   fgArtCoverImage :{
     flex:1,
