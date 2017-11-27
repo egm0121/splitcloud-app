@@ -148,7 +148,7 @@ class SongPicker extends Component {
             value={this.state.searchInput}
             placeholderTextColor={THEME.mainColor}
             onChangeText={this._onSearchChange}
-            onClearFilter={this._onClearSearch}/>
+            onClearFilter={this._onClearSearch} />
         </View>
         {this.isSearchEmpty() ?
         <TopList {...this.props} /> :
@@ -177,9 +177,7 @@ const styles = StyleSheet.create({
   searchInput : {
     flex:1,
     height: 30,
-    color: THEME.mainHighlightColor,
-    paddingRight: 70,
-    lineHeight:20
+    paddingRight: 70
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,

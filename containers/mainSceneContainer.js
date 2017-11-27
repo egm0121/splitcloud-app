@@ -129,7 +129,7 @@ class MainSceneContainer extends Component {
           return <TouchableHighlight style={styles.panButtoncontainer} key={i}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
-                    <AppText style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</AppText>
+                    <AppText bold={true} style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</AppText>
                   </View>
             </TouchableHighlight>;
         })}
@@ -209,7 +209,6 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontSize:15,
     lineHeight:20,
-    fontWeight:'600',
     color : THEME.mainColor
   },
   invertSwitchStyle:{

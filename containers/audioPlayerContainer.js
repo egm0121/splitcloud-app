@@ -543,6 +543,10 @@ class AudioPlayerContainer extends Component {
                   </View>)}
                 {this.renderInFullscreen(this.renderForegroundArtCover())}
                 <View style={[styles.horizontalContainer]} >
+                  <Image style={[styles.controlsFadeImage]}
+                    source={require('../assets/fade_to_black.png')}
+                    resizeMode={'cover'}
+                  />
                   <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
                       formatDurationExtended(this.state.elapsed)
                   }</AppText>
@@ -814,6 +818,11 @@ const styles = StyleSheet.create({
     width:null,
     height:null,
     backgroundColor:'#121314'
+  },
+  controlsFadeImage:{
+    flex:1,
+    width:null,
+    height:null,
   },
   fgArtCoverImage :{
     flex:1,

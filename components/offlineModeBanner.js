@@ -13,7 +13,7 @@ function OfflineModeBanner(props){
 
   return <View style={{flexDirection:'row'}}>
     <View style={[styles.barContainer].concat(props.isOnline ? [styles.hide]:[])}>
-      <AppText style={styles.barText}>Offline Mode Enabled</AppText>
+      <AppText bold={true} style={styles.barText}>Offline Mode Enabled</AppText>
     </View>
   </View>;
 }
@@ -33,7 +33,6 @@ let styles = StyleSheet.create({
     color: THEME.mainBgColor,
     lineHeight:24,
     fontSize: 15,
-    fontWeight:'600'
   }
 });
 export default OfflineModeBanner;

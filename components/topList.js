@@ -69,7 +69,7 @@ class TopList extends Component {
         enabled:props.isOnline,
         visilble:false
       }],
-      section : props.isOnline ? 'TOP' : 'LOCAL',
+      section :'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -98,7 +98,10 @@ class TopList extends Component {
           if(s.name !== 'LOCAL') s.enabled = newProps.isOnline;
           return s;
         });
-        return {sectionList};
+        return {
+          sectionList,
+          section: newProps.isOnline ? 'TOP' : 'LOCAL'
+        };
       });
     }
   }

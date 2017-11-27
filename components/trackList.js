@@ -97,7 +97,7 @@ class TrackList extends Component {
         <View style={styles.rowPlaceholder}>
           {this.props.isLoading ?
             <ActivityIndicator animating={true} style={styles.loadingIndicator}/> :
-            <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+            <AppText bold={true} style={styles.placeholderRowText}>{rowData.label}</AppText>
           }
         </View>
       </View>
