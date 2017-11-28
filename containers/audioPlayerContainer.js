@@ -626,6 +626,7 @@ class AudioPlayerContainer extends Component {
         />
       </View>
     </Image>
+
   }
 }
 
@@ -824,8 +825,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#121314'
   },
   controlsFadeImage:{
-    backgroundColor:'transparent',
-    flex:5,
+    flex:4.9,
     width:null,
     height:null
   },
@@ -838,7 +838,6 @@ const styles = StyleSheet.create({
     height:null,
   },
   fgArtCoverContainer:{
-    flex:5,
     borderColor:THEME.contentBorderColor,
     paddingBottom: 20
   },

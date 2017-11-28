@@ -147,7 +147,7 @@ class TrackList extends Component {
 }
 
 TrackList.defaultProps = {
-  emptyLabel : 'Empty Tracklist',
+  emptyLabel : 'No items :(',
   onTrackActionRender : () => '+',
   renderArtwork: true,
   isLoading: false,

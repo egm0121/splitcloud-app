@@ -144,7 +144,7 @@ class SongPicker extends Component {
           <BackButton style={styles.backButton} onPressed={this.props.onClose} />
           <FilterInput
             inputViewStyle={styles.searchInput}
-            placeholder="Search song or artist "
+            placeholder="Search on SoundCloudⓒ"
             value={this.state.searchInput}
             placeholderTextColor={THEME.mainColor}
             onChangeText={this._onSearchChange}
@@ -177,22 +177,23 @@ const styles = StyleSheet.create({
   searchInput : {
     flex:1,
     height: 30,
+    marginRight:40,
     paddingRight: 70
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :1,
-    paddingTop: 10,
+    paddingTop: 12,
     backgroundColor: THEME.mainBgColor,
     height: 60,
     flexDirection:'row'
   },
   pushRightSpinner:{
-    right:20,
+    right:60,
   },
   loaderStyle:{
     position:'absolute',
-    right:55,
+    right:70,
     top:27,
     zIndex:10
   },
