@@ -415,6 +415,11 @@ class AudioPlayerContainer extends Component {
       this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
     return scArtwork || false;
   }
+  _getFallbackTrackArtwork(){
+    return this.props.side == playbackModeTypes.LEFT ?
+      require('../assets/empty_album.png'):
+      require('../assets/empty_album_alt.png');
+  }
   _getCurrentTrackUploaderLink(){
     return  this._getCurrentTrackObj().scUploaderLink;
   }
@@ -464,6 +469,9 @@ class AudioPlayerContainer extends Component {
     let progressTrackLength = width - 140;
     let trackIndex = this._getCurrentTrackIndex();
     let showBgArtCover = this._getCurrentTrackArtwork();
+    let artworkSource = showBgArtCover ?
+      {uri:this._getCurrentTrackArtwork()} :
+      this._getFallbackTrackArtwork();
     let tracknameStyles = [styles.tracknameContainer];
     let tracknameTextStyles = [styles.trackname];
     let tracknameTextDescription = [styles.trackDescription];
@@ -497,21 +505,15 @@ class AudioPlayerContainer extends Component {
             <Image
               style={playerBgImage}
               blurRadius={20}
-              source={ showBgArtCover ?
-                {uri:this._getCurrentTrackArtwork()} :
-                require('../assets/alt_artwork.png')
-               }
-              resizeMode={showBgArtCover ? 'cover' : 'stretch'}>
+              source={artworkSource}
+              resizeMode={'cover'}>
               <View style={styles.backgroundOverlay}>
                   {this.renderInSplitMode(
                   <View style={[tracknameStyles]}>
                     <View style={[styles.horizontalContainer]}>
                       <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
                        <Image style={[styles.fgArtCoverImage]}
-                        source={ this._getCurrentTrackArtwork() ?
-                         {uri:this._getCurrentTrackArtwork()} :
-                         require('../assets/empty_album.png')
-                        }
+                        source={artworkSource}
                         resizeMode={'contain'}
                        />
                      </View>
@@ -543,7 +545,7 @@ class AudioPlayerContainer extends Component {
                       </AppText>
                     </TouchableOpacity>
                   </View>)}
-                  {this.renderInFullscreen(this.renderForegroundArtCover())}
+                  {this.renderInFullscreen(this.renderForegroundArtCover(artworkSource))}
                   <View style={playbackControlsContainer} >
                     <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
                         formatDurationExtended(this.state.elapsed)
@@ -612,18 +614,13 @@ class AudioPlayerContainer extends Component {
     );
   }
 
-  renderForegroundArtCover() {
+  renderForegroundArtCover(artworkSource) {
+
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
       <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
-        <Image style={[styles.fgArtCoverImage]}
-         source={ this._getCurrentTrackArtwork() ?
-          {uri:this._getCurrentTrackArtwork()} :
-          require('../assets/empty_album.png')
-         }
-         resizeMode={'contain'}
-        />
+        <Image style={[styles.fgArtCoverImage]} source={artworkSource} resizeMode={'contain'} />
       </View>
     </Image>
 
@@ -825,9 +822,10 @@ const styles = StyleSheet.create({
     backgroundColor:'#121314'
   },
   controlsFadeImage:{
-    flex:4.9,
+    flex:5,
     width:null,
-    height:null
+    height:null,
+    marginBottom:-1
   },
   controlsBackground:{
     backgroundColor: THEME.playerControlsBgColor
