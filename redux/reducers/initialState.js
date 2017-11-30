@@ -2,6 +2,10 @@ import { playbackModeTypes } from '../constants/actions';
 
 const initialState = {
   mode : playbackModeTypes.SPLIT,
+  reviewState:{
+    actionCounter : 0,
+    done: false
+  },
   settings : {
     offlineMode : true
   },

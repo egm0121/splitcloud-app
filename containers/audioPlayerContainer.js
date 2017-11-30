@@ -613,9 +613,7 @@ class AudioPlayerContainer extends Component {
       </View>
     );
   }
-
   renderForegroundArtCover(artworkSource) {
-
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >

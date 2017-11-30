@@ -60,5 +60,8 @@ export default {
       delete playlist.currentTrackIndex;
     });
     return toState;
+  },
+  13: (state) => {
+    return {...state, reviewState: initialState.reviewState};
   }
 }
