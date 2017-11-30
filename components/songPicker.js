@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     flex:1,
     height: 30,
     marginRight:40,
-    paddingRight: 70
+    paddingRight: 10
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
