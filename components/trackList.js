@@ -106,9 +106,11 @@ class TrackList extends Component {
     return (
       <View style={styles.row}>
         {this.props.renderArtwork &&
-          <View style={styles.rowArtworkContainer}>
-            <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
-          </View>
+          <TouchableOpacity onPress={this._onSongSelected.bind(this,rowData)}>
+            <View style={styles.rowArtworkContainer}>
+              <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
+            </View>
+          </TouchableOpacity>
           }
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
               <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
@@ -187,7 +189,8 @@ const styles = StyleSheet.create({
   rowArtworkImage:{
     width:50,
     height:50,
-    backgroundColor: THEME.listBorderColor
+    backgroundColor: THEME.listBorderColor,
+    borderRadius:4
   },
   rowArtworkContainer:{
     width:60,
