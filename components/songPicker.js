@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   loaderStyle:{
     position:'absolute',
     right:70,
-    top:27,
+    top:16,
     zIndex:10
   },
   backButton:{

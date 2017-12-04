@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   horizontalContainer:{
     flexDirection:'row',
-    paddingBottom: isIphoneX() ? 30 : 0
+    paddingBottom: isIphoneX() ? 20 : 0
   },
   panButtoncontainer:{
     flex:1,
