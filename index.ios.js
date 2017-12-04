@@ -41,7 +41,9 @@ AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID,'SplitcloudApp');
 
 if(!__DEV__){
   /* avoid any logging to prevent performance drops in prod mode */
-  console.log = () => {};
+  console.log = () => false;
+  console.info = () => false;
+  console.warn = () => false;
 }
 
 class SplitCloudApp extends Component {
@@ -70,10 +72,11 @@ class SplitCloudApp extends Component {
                   return <NetworkAvailability>{
                         (isOnline,networkType) => {
                           return <View style={styles.rootContainerView}>
-                            <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
-                            <NotificationContainer />
-                            <OfflineModeBanner isOnline={isOnline} />
-                          </View>
+                              <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
+                              <NotificationContainer />
+                              <OfflineModeBanner isOnline={isOnline} />
+                            </View>
+
                         }
                   }</NetworkAvailability>
                 }}
