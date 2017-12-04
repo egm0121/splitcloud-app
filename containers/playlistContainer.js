@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     left:0,
     paddingLeft:10,
-    top:20
+    top:10
   }
 });
 

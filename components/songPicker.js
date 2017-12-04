@@ -187,9 +187,8 @@ const styles = StyleSheet.create({
   searchInputView :{
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :1,
-    paddingTop: 12,
     backgroundColor: THEME.mainBgColor,
-    height: 60,
+    height: 50,
     flexDirection:'row'
   },
   pushRightSpinner:{
@@ -203,7 +202,7 @@ const styles = StyleSheet.create({
   },
   backButton:{
     width:40,
-    paddingTop: 10,
+    paddingTop:10,
     paddingLeft:10,
     zIndex:20
   },

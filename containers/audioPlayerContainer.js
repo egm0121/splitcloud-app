@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     flex:5,
     width:null,
     height:null,
-    marginBottom:-1
+    marginBottom:0
   },
   controlsBackground:{
     backgroundColor: THEME.playerControlsBgColor
@@ -835,12 +835,14 @@ const styles = StyleSheet.create({
   },
   fgArtCoverContainer:{
     borderColor:THEME.contentBorderColor,
-    paddingBottom: 20
+    paddingBottom: 20,
+    paddingLeft:30,
+    paddingRight:30
   },
   miniFgArtworkContainer:{
     flex:1,
-    paddingBottom:0,
-    paddingLeft:5
+    paddingLeft:5,
+    paddingRight:5
   }
 });
 const sliderTrackStyles = {

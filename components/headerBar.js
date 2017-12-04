@@ -22,8 +22,8 @@ function HeaderBar(props){
 let styles = StyleSheet.create({
   headerContainer :{
     alignItems: 'center',
-    height: 60,
-    paddingTop: 27,
+    height: 50,
+    paddingTop: 14,
     backgroundColor: THEME.mainBgColor,
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :2

@@ -17,6 +17,7 @@ import {
   Image
 } from 'react-native';
 import config from '../helpers/config';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 import NotificationOverlay from '../components/notificationOverlay';
@@ -137,22 +138,21 @@ class MainSceneContainer extends Component {
     </View>;
   }
   render() {
-    let playerLStyle = [], playerRStyle = [], headerStyles = [styles.header];
+    let playerLStyle = [], playerRStyle = [];
     if(this.props.mode != 'S'){
       playerLStyle = this.props.mode == 'L' ?
           styles.expandedPlayer : styles.minimizedPlayer;
       playerRStyle = this.props.mode == 'R' ?
           styles.expandedPlayer : styles.minimizedPlayer;
-      headerStyles.push(styles.collapseHeight);
     }
     return (
       <View style={styles.container}>
-        <View style={[headerStyles]}>
+        
           {/*
             <TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
-        </View>
+       
         <View style={[styles.player,playerLStyle]}>
           {this.renderPlayer(this.props.players[0])}
         </View>
@@ -171,12 +171,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: THEME.mainBgColor
-  },
-  collapseHeight:{
-    height:0
-  },
-  header :{
-    height: 22
   },
   headerText: {
     textAlign: 'center',
@@ -197,11 +191,13 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.contentBorderColor
   },
   horizontalContainer:{
-    flexDirection:'row'
+    flexDirection:'row',
+    paddingBottom: isIphoneX() ? 30 : 0
   },
   panButtoncontainer:{
     flex:1,
     height:35,
+
     alignItems:'center',
     justifyContent:'center'
   },
