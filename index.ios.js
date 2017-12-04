@@ -73,7 +73,8 @@ class SplitCloudApp extends Component {
                   let Component = route.component;
                   return <NetworkAvailability>{
                         (isOnline,networkType) => {
-                          return <View style={styles.rootContainerView}>
+                          const fullScreenPlayerScene = route.name == 'MainSceneContainer' ? [styles.fullScreenPlayer] :null;
+                          return <View style={[styles.rootContainerView,fullScreenPlayerScene]}>
                               <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
                               <NotificationContainer />
                               <OfflineModeBanner isOnline={isOnline} />
@@ -93,6 +94,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor:THEME.mainBgColor,
     paddingTop: isIphoneX() ? 40 : 20
+  },
+  fullScreenPlayer: {
+    paddingTop: 0
   }
 })
 AppRegistry.registerComponent('SplitCloudApp', () => SplitCloudApp);

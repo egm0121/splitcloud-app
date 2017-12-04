@@ -19,6 +19,7 @@ import {
   messages,
   NOW_PLAYING_ASSET_NAME
 } from '../helpers/constants';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import SongPickerContainer from './songPickerContainer';
 import UploaderProfileContainer from './uploaderProfileContainer';
@@ -710,7 +711,10 @@ const styles = StyleSheet.create({
   },
   tracknameFullscreen:{
     flex:0,
-    paddingTop:35,
+    ...ifIphoneX(
+      {paddingTop:75},
+      {paddingTop:35}
+    ),
     height:100
   },
   progressSlider : {
@@ -823,7 +827,7 @@ const styles = StyleSheet.create({
     flex:5,
     width:null,
     height:null,
-    marginBottom:0
+    marginBottom:-1
   },
   controlsBackground:{
     backgroundColor: THEME.playerControlsBgColor

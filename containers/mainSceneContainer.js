@@ -17,7 +17,7 @@ import {
   Image
 } from 'react-native';
 import config from '../helpers/config';
-import { isIphoneX } from 'react-native-iphone-x-helper';
+import { isIphoneX,ifIphoneX } from 'react-native-iphone-x-helper';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 import NotificationOverlay from '../components/notificationOverlay';
@@ -138,15 +138,16 @@ class MainSceneContainer extends Component {
     </View>;
   }
   render() {
-    let playerLStyle = [], playerRStyle = [];
+    let playerLStyle = [], playerRStyle = [], fullScreenContainerStyle;
     if(this.props.mode != 'S'){
       playerLStyle = this.props.mode == 'L' ?
           styles.expandedPlayer : styles.minimizedPlayer;
       playerRStyle = this.props.mode == 'R' ?
           styles.expandedPlayer : styles.minimizedPlayer;
+      fullScreenContainerStyle = {paddingTop:0}; 
     }
     return (
-      <View style={styles.container}>
+      <View style={[styles.container,fullScreenContainerStyle]}>
         
           {/*
             <TouchableHighlight onPress={this.onLoginStart} >
@@ -170,7 +171,8 @@ class MainSceneContainer extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.mainBgColor
+    backgroundColor: THEME.mainBgColor,
+    ...ifIphoneX({paddingTop:35},{paddingTop:20})
   },
   headerText: {
     textAlign: 'center',
