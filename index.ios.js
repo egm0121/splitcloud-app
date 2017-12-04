@@ -16,7 +16,7 @@ import MainSceneContainer from './containers/mainSceneContainer';
 import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
 import OfflineModeBanner from './components/offlineModeBanner';
-import AnalyticsService from './modules/analyticsService';
+import AnalyticsService from './modules/AnalyticsService';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
 import THEME from './styles/variables';

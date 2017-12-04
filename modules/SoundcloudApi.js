@@ -31,6 +31,11 @@ class SoundCloudApi {
       'getScUserProfileTracks',
       600*1e3
     );
+    this.getScUserPlaylists = CacheDecorator.withCache(
+      this.getScUserPlaylists.bind(this),
+      'getScUserPlaylists',
+      600*1e3
+    );
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);
@@ -155,7 +160,8 @@ class SoundCloudApi {
       let playlistData = resp.data;
 
       return playlistData.filter( p => p.streamable)
-      .map(this.transformPlaylistPayload);
+        .map(this.transformPlaylistPayload)
+        .filter( p => p.tracks.length);
     });
   }
   getClientId(){

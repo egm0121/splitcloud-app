@@ -119,7 +119,6 @@ class MainSceneContainer extends Component {
             let invertImage = this.props.isInverted ?
                 require('../assets/invert_fill_active.png') :
                 require('../assets/invert_fill.png');
-
             return <Button style={styles.invertSwitchStyle}
                image={invertImage}
                size={'small'}
@@ -148,12 +147,10 @@ class MainSceneContainer extends Component {
     }
     return (
       <View style={[styles.container,fullScreenContainerStyle]}>
-        
           {/*
             <TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
-       
         <View style={[styles.player,playerLStyle]}>
           {this.renderPlayer(this.props.players[0])}
         </View>
