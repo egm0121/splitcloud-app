@@ -10,6 +10,7 @@ const styles = {
   contentBorderColor : 'rgba(71, 71, 72, 0.3)',
   tabBarBorderColor : '#383838',
   textOverlayBgColor : 'rgba(18, 19, 20,0.5)',
+  imageTextOverlayBgColor : 'rgba(18, 19, 20,0.7)',
   notifyBgColor : 'rgba(41,41,46,0.9)',
   listBorderColor : '#39393a',
   viewportBorderRadius : 3,

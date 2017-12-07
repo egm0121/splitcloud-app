@@ -28,6 +28,7 @@ import SearchIcon from '../components/searchIcon';
 import Button from '../components/button';
 import AppText from '../components/appText';
 import Config from '../helpers/config';
+import ToggleFavoriteTrackContainer from './toggleFavoriteTrackContainer';
 import {
   incrementCurrentPlayIndex,
   decrementCurrentPlayIndex
@@ -39,7 +40,7 @@ import { connect } from 'react-redux';
 import MultiSlider from 'react-native-multi-slider';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
-import {formatDurationExtended} from '../helpers/formatters';
+import { formatDurationExtended } from '../helpers/formatters';
 import FileDownloadManager from '../modules/FileDownloadManager';
 
 const PROGRESS_TICK_INTERVAL = 1000;
@@ -535,7 +536,7 @@ class AudioPlayerContainer extends Component {
                   )}
                 {this.renderInFullscreen(
                   <View style={tracknameStyles}>
-                    <TouchableOpacity  onPress={this._onPickerToggle}>
+                    <TouchableOpacity onPress={this._onPickerToggle}>
                       <AppText bold={true} style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                        { trackLabelPlaceholder }
                       </AppText>
@@ -618,11 +619,17 @@ class AudioPlayerContainer extends Component {
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
-      <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
-        <Image style={[styles.fgArtCoverImage]} source={artworkSource} resizeMode={'contain'} />
-      </View>
-    </Image>
-
+        
+        <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
+          <Image style={[styles.fgArtCoverImage]} source={artworkSource} resizeMode={'contain'} >
+            <ToggleFavoriteTrackContainer 
+              side={this.props.side} 
+              track={this._getCurrentTrackObj()} 
+              style={[styles.favoriteTogglePosition]}  
+            />
+          </Image>
+        </View>
+      </Image>
   }
 }
 
@@ -847,6 +854,12 @@ const styles = StyleSheet.create({
     flex:1,
     paddingLeft:5,
     paddingRight:5
+  },
+  favoriteTogglePosition:{
+    position:'absolute',
+    right:20,
+    bottom:20,
+    zIndex :10
   }
 });
 const sliderTrackStyles = {
