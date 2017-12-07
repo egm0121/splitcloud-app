@@ -516,8 +516,13 @@ class AudioPlayerContainer extends Component {
                       <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
                        <Image style={[styles.fgArtCoverImage]}
                         source={artworkSource}
-                        resizeMode={'contain'}
-                       />
+                        resizeMode={'contain'}>
+                       <ToggleFavoriteTrackContainer 
+                          side={this.props.side} 
+                          track={this._getCurrentTrackObj()} 
+                          style={[styles.favoriteToggleCenteredPosition]}  
+                        />
+                      </Image>
                      </View>
                      <View style={styles.trackInfoContainer}>
                        <TouchableOpacity  onPress={this._onPickerToggle} style={styles.trackRowContainer}>
@@ -843,6 +848,8 @@ const styles = StyleSheet.create({
     flex:1,
     width:null,
     height:null,
+    justifyContent:'center',
+    alignItems:'center'
   },
   fgArtCoverContainer:{
     borderColor:THEME.contentBorderColor,
@@ -853,8 +860,10 @@ const styles = StyleSheet.create({
   miniFgArtworkContainer:{
     flex:1,
     paddingLeft:5,
-    paddingRight:5
+    paddingRight:5,
+    
   },
+  favoriteToggleCenteredPosition:{},
   favoriteTogglePosition:{
     position:'absolute',
     right:20,
