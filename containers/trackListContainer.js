@@ -164,7 +164,7 @@ const mapDispatchToProps = (dispatch,props) =>({
       actionMessage = 'Added';
       dispatch(addPlaylistItem(props.side,track,'default_'+props.side))
     }
-    dispatch(pushNotification({type : 'success',message : `Track ${actionMessage}!`}));
+    dispatch(pushNotification({type : 'success',message : `Favorite ${actionMessage}!`}));
   },
   onTrackSelected : (track,trackList) => {
     console.log('tracklist connect onTrackSelected');

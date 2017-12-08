@@ -64,8 +64,8 @@ NotificationOverlay.propTypes = {
 
 const styles = StyleSheet.create({
   notificationContainer:{
-    width:160,
-    height:160,
+    width:180,
+    height:180,
     borderRadius:10,
     paddingHorizontal:10,
     marginVertical:20,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   messageText : {
     color: THEME.mainHighlightColor,
     textAlign:'center',
-    fontSize: 20
+    fontSize: 18
   }
 });
 

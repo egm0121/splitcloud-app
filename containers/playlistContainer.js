@@ -27,7 +27,6 @@ import HeaderBar from '../components/headerBar';
 
 
 import {setGlobalSetting} from '../redux/actions/settingsActions';
-import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 

@@ -520,7 +520,8 @@ class AudioPlayerContainer extends Component {
                        <ToggleFavoriteTrackContainer 
                           side={this.props.side} 
                           track={this._getCurrentTrackObj()} 
-                          style={[styles.favoriteToggleCenteredPosition]}  
+                          style={[styles.favoriteToggleCenteredPosition]}
+                          size={'small'}
                         />
                       </Image>
                      </View>
@@ -613,7 +614,6 @@ class AudioPlayerContainer extends Component {
                   source={require('../assets/powered_by_large_white.png')}
                   resizeMode={'contain'} />
                 </TouchableOpacity>
-
               </View>
             </Image>
          </View>
@@ -845,11 +845,15 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.playerControlsBgColor
   },
   fgArtCoverImage :{
+    padding:0,
     flex:1,
     width:null,
     height:null,
-    justifyContent:'center',
-    alignItems:'center'
+    alignItems:'center',
+    justifyContent:'flex-end'
+  },
+  favoriteToggleCenteredPosition:{
+    alignSelf:'auto'
   },
   fgArtCoverContainer:{
     borderColor:THEME.contentBorderColor,
@@ -860,15 +864,7 @@ const styles = StyleSheet.create({
   miniFgArtworkContainer:{
     flex:1,
     paddingLeft:5,
-    paddingRight:5,
-    
-  },
-  favoriteToggleCenteredPosition:{},
-  favoriteTogglePosition:{
-    position:'absolute',
-    right:20,
-    bottom:20,
-    zIndex :10
+    paddingRight:5
   }
 });
 const sliderTrackStyles = {

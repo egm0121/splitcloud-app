@@ -6,16 +6,25 @@ import React, { PropTypes, Component } from 'react';
 import { AppRegistry } from 'react-native';
 import { connect } from 'react-redux';
 import ToggleFavoriteButton from '../components/toggleFavoriteButton';
-import { removePlaylistItem, addPlaylistItem } from '../redux/actions/currentPlaylistActions';
+import {
+  pushNotification
+} from '../redux/actions/notificationActions';
+import { 
+  removePlaylistItem,
+  addPlaylistItem 
+} from '../redux/actions/currentPlaylistActions';
 
 class ToggleFavoriteTrackContainer extends Component {
   constructor(props){
     super(props);
-    console.log('ToggleFavoriteTrackContainer for track',this.props.track,this.props.side,this.props.isFavorite);
   }
   render() {
     return (
-      <ToggleFavoriteButton isFavorite={this.props.isFavorite} onPressed={this.props.onToggleFavorite} style={this.props.style}/>
+      <ToggleFavoriteButton 
+        isFavorite={this.props.isFavorite} 
+        onPressed={this.props.onToggleFavorite} 
+        disabled={!this.props.track.id}
+        {...this.props} />
     );
   }
 }
@@ -34,10 +43,11 @@ const mapStateToProps = (state,props) => {
 };
 const mapDispatchToProps = (dispatch,props) => ({
   onToggleFavorite(isFavorite){
-    console.log('onToggleFavorite',isFavorite);
+    const actionMessage = isFavorite ? 'Removed' : 'Added';
     const action = isFavorite ? 
       removePlaylistItem(props.side,props.track,'default_'+props.side) :
       addPlaylistItem(props.side,props.track,'default_'+props.side);
+    dispatch(pushNotification({type:'success',message:'Favorite '+actionMessage}));
     return dispatch(action);
   }
 });
