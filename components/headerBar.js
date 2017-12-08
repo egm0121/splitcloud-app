@@ -4,15 +4,17 @@
 import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import THEME from '../styles/variables';
+import AppText from './appText';
 function HeaderBar(props){
   return <View style={styles.headerContainer}>
     {props.title && <View style={styles.headerTitleContainer}>
-      <Text
+      <AppText
+        bold={true}
         numberOfLines={1}
         ellipsizeMode={'tail'}
         style={styles.headerText}>
         {props.title}
-      </Text>
+      </AppText>
     </View>}
     {props.children}
   </View>;
@@ -20,8 +22,8 @@ function HeaderBar(props){
 let styles = StyleSheet.create({
   headerContainer :{
     alignItems: 'center',
-    height: 60,
-    paddingTop: 27,
+    height: 50,
+    paddingTop: 14,
     backgroundColor: THEME.mainBgColor,
     borderColor : THEME.contentBorderColor,
     borderBottomWidth :2
@@ -31,8 +33,7 @@ let styles = StyleSheet.create({
   },
   headerText : {
     color: THEME.mainHighlightColor,
-    fontSize: 16,
-    fontWeight:'600'
+    fontSize: 16
   }
 });
 export default HeaderBar;

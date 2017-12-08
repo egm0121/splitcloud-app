@@ -22,6 +22,7 @@ export function formatSidePlayerLabel(side){
   return side.toUpperCase() == playbackModeTypes.RIGHT ? 'right' : 'left';
 }
 export function ucFirst(str){
+  if(!str) return '';
   return str[0].toUpperCase() + str.substring(1).toLowerCase();
 }
 export function formatGenreLabel(key){

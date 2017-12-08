@@ -1,6 +1,8 @@
 import initialState from '../reducers/initialState';
 export default {
-  1: (state) => ({...state}),
+  1: (state) => {
+    return {...state};
+  },
   2: (state) => {
     if(!state || !state.players) return state;
     let toState =  {...state};
@@ -44,7 +46,7 @@ export default {
     };
   },
   12: (state) => {
-    if(!state) return state;
+    if(!state || !state.playlist) return state;
     let toState = {...state};
     toState.playlistStore = [...initialState.playlistStore];
     toState.playlist.forEach(playlist => {
@@ -58,5 +60,8 @@ export default {
       delete playlist.currentTrackIndex;
     });
     return toState;
+  },
+  13: (state) => {
+    return {...state, reviewState: initialState.reviewState};
   }
 }

@@ -7,13 +7,15 @@ import rootReducer from '../reducers/rootReducer';
 import devLogger from '../middleware/logger';
 import analyticsMiddleware from '../middleware/analyticsEvents';
 import tracksLocalCache from '../middleware/tracksLocalCache';
+import storeReviewRequestorMiddleware from '../middleware/storeReviewRequestor';
 import migrations from './migrations';
 import {VERSION_REDUCER_KEY} from '../../helpers/constants';
 
 const createStoreWithDebug = withLog => {
   let middlewareList = [
     analyticsMiddleware,
-    tracksLocalCache
+    tracksLocalCache,
+    storeReviewRequestorMiddleware
   ];
   if(__DEV__ && withLog){
     middlewareList.push(devLogger);

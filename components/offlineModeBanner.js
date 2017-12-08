@@ -4,6 +4,7 @@
 import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View, Text, LayoutAnimation } from 'react-native';
 import THEME from '../styles/variables';
+import AppText from './appText';
 function OfflineModeBanner(props){
   LayoutAnimation.configureNext({
     ...LayoutAnimation.Presets.easeInEaseOut,
@@ -12,7 +13,7 @@ function OfflineModeBanner(props){
 
   return <View style={{flexDirection:'row'}}>
     <View style={[styles.barContainer].concat(props.isOnline ? [styles.hide]:[])}>
-      <Text style={styles.barText}>Offline Mode Enabled</Text>
+      <AppText bold={true} style={styles.barText}>Offline Mode Enabled</AppText>
     </View>
   </View>;
 }
@@ -32,7 +33,6 @@ let styles = StyleSheet.create({
     color: THEME.mainBgColor,
     lineHeight:24,
     fontSize: 15,
-    fontWeight:'600'
   }
 });
 export default OfflineModeBanner;

@@ -17,6 +17,7 @@ import {
   Image
 } from 'react-native';
 import config from '../helpers/config';
+import { isIphoneX,ifIphoneX } from 'react-native-iphone-x-helper';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 import NotificationOverlay from '../components/notificationOverlay';
@@ -25,6 +26,7 @@ import { playbackModeTypes } from '../helpers/constants';
 import { connect } from 'react-redux';
 import { changePlaybackMode, invertPlayerSideMapping } from '../redux/actions/playbackModeActions';
 import { persistor } from '../redux/store/configure';
+import AppText from '../components/appText';
 const {
   SC_CLIENT_ID,
   SC_CLIENT_SECRET,
@@ -117,7 +119,6 @@ class MainSceneContainer extends Component {
             let invertImage = this.props.isInverted ?
                 require('../assets/invert_fill_active.png') :
                 require('../assets/invert_fill.png');
-
             return <Button style={styles.invertSwitchStyle}
                image={invertImage}
                size={'small'}
@@ -128,7 +129,7 @@ class MainSceneContainer extends Component {
           return <TouchableHighlight style={styles.panButtoncontainer} key={i}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
-                    <Text style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</Text>
+                    <AppText bold={true} style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</AppText>
                   </View>
             </TouchableHighlight>;
         })}
@@ -136,22 +137,20 @@ class MainSceneContainer extends Component {
     </View>;
   }
   render() {
-    let playerLStyle = [], playerRStyle = [], headerStyles = [styles.header];
+    let playerLStyle = [], playerRStyle = [], fullScreenContainerStyle;
     if(this.props.mode != 'S'){
       playerLStyle = this.props.mode == 'L' ?
           styles.expandedPlayer : styles.minimizedPlayer;
       playerRStyle = this.props.mode == 'R' ?
           styles.expandedPlayer : styles.minimizedPlayer;
-      headerStyles.push(styles.collapseHeight);
+      fullScreenContainerStyle = {paddingTop:0}; 
     }
     return (
-      <View style={styles.container}>
-        <View style={[headerStyles]}>
+      <View style={[styles.container,fullScreenContainerStyle]}>
           {/*
             <TouchableHighlight onPress={this.onLoginStart} >
             <Text style={{color:'gray'}}>Login</Text>
           </TouchableHighlight>*/}
-        </View>
         <View style={[styles.player,playerLStyle]}>
           {this.renderPlayer(this.props.players[0])}
         </View>
@@ -169,13 +168,8 @@ class MainSceneContainer extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: THEME.mainBgColor
-  },
-  collapseHeight:{
-    height:0
-  },
-  header :{
-    height: 22
+    backgroundColor: THEME.mainBgColor,
+    ...ifIphoneX({paddingTop:35},{paddingTop:20})
   },
   headerText: {
     textAlign: 'center',
@@ -196,11 +190,13 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.contentBorderColor
   },
   horizontalContainer:{
-    flexDirection:'row'
+    flexDirection:'row',
+    paddingBottom: isIphoneX() ? 20 : 0
   },
   panButtoncontainer:{
     flex:1,
     height:35,
+
     alignItems:'center',
     justifyContent:'center'
   },
@@ -208,7 +204,6 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontSize:15,
     lineHeight:20,
-    fontWeight:'600',
     color : THEME.mainColor
   },
   invertSwitchStyle:{

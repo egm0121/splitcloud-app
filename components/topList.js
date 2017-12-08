@@ -27,7 +27,7 @@ import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
-
+import AppText from './appText';
 class TopList extends Component {
 
   constructor(props){
@@ -69,7 +69,7 @@ class TopList extends Component {
         enabled:props.isOnline,
         visilble:false
       }],
-      section : props.isOnline ? 'TOP' : 'LOCAL',
+      section :'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -98,7 +98,10 @@ class TopList extends Component {
           if(s.name !== 'LOCAL') s.enabled = newProps.isOnline;
           return s;
         });
-        return {sectionList};
+        return {
+          sectionList,
+          section: newProps.isOnline ? 'TOP' : 'LOCAL'
+        };
       });
     }
   }
@@ -212,20 +215,20 @@ class TopList extends Component {
               <View style={styles.genreSelectionBtn}>
                 <TouchableHighlight onPress={this.openRegionPicker}>
                   <View>
-                    <Text style={styles.listDetailText} >Region</Text>
-                    <Text style={styles.genreSelectionText}>{
+                    <AppText style={styles.listDetailText} >Region</AppText>
+                    <AppText style={styles.genreSelectionText}>{
                       this.getLabelForRegion(this.state.selectedRegion)
-                    }</Text>
+                    }</AppText>
                   </View>
                 </TouchableHighlight>
               </View>
               <View style={styles.genreSelectionBtn}>
                   <TouchableHighlight onPress={this.openGenrePicker}>
                     <View>
-                      <Text style={styles.listDetailText}>Genre</Text>
-                      <Text style={styles.genreSelectionText}>{
+                      <AppText style={styles.listDetailText}>Genre</AppText>
+                      <AppText style={styles.genreSelectionText}>{
                         this.getLabelForGenre(this.state.selectedGenre)
-                      }</Text>
+                      }</AppText>
                     </View>
                   </TouchableHighlight>
               </View>

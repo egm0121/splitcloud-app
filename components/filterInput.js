@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
   },
   clearAction:{
     position:'absolute',
-    borderRadius:15,
     right:5,
     top:0,
     zIndex:10,
