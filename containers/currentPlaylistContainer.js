@@ -26,7 +26,11 @@ import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
 import {globalSettings,animationPresets} from '../helpers/constants';
-import {removeQueuedTrack, setPlaylist, filterPlaylist} from '../redux/actions/currentPlaylistActions';
+import {
+   setPlaylist,
+   filterPlaylist,
+   changeCurrentPlayIndex
+} from '../redux/actions/currentPlaylistActions';
 import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
@@ -50,7 +54,7 @@ class CurrentPlaylistContainer extends Component {
   }
   onClearPlaylist(){
     Alert.alert(
-      `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Playlist`,
+      `Clear ${ucFirst(formatSidePlayerLabel(this.props.side))} Favorites?`,
       `This will remove all tracks from your ${formatSidePlayerLabel(this.props.side)} playlist` ,
       [
         { text: 'Clear All',
@@ -86,7 +90,7 @@ class CurrentPlaylistContainer extends Component {
     if(!this.props.settings.offlineMode) return this.toggleOfflineModeSetting();
     Alert.alert(
       'Disable Offline Mode',
-      'This will remove all local music from your device. Are you sure?' ,
+      'This will remove all saved music from your device. Are you sure?' ,
       [
         { text: 'Yes',
           onPress: this.toggleOfflineModeSetting,
@@ -98,6 +102,7 @@ class CurrentPlaylistContainer extends Component {
   }
   render() {
     const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
+    console.log('currentPlaylistContainer unfiltered track',this.props.queue )
     const playlistFilteredList = this.props.queue
       .filter((track) => 'isVisible' in track ? track.isVisible : true);
     return (
@@ -121,8 +126,7 @@ class CurrentPlaylistContainer extends Component {
         <TrackListContainer
             {...this.props}
             trackList={playlistFilteredList}
-            onTrackActionRender={(rowData) => '×'}
-            onTrackAction={this.props.onRemoveTrack}
+            onTrackSelected={this.props.onPlayTrack}
             side={this.props.side}
             trackActionStyles={[{fontSize:45}]}
             />
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
   playlistMenuButton: {
     position:'absolute',
     right:0,
-    top:24,
+    top:14,
     zIndex:10,
     height:30,
     paddingHorizontal:10
@@ -172,7 +176,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     left:0,
     paddingLeft:10,
-    top:20
+    top:10
   },
   filterContainerView :{
     height: 50,
@@ -187,35 +191,39 @@ const styles = StyleSheet.create({
 });
 const mapStateToProps = (state,props) => {
   const pickerState =
-    state.songPickers.filter((playlist) => playlist.side == props.side).pop();
-  const playlistState = state.playlist.filter((playlist) => playlist.side === props.side).pop();
-  const queue = playlistState.playbackQueue;
+    state.songPickers.find((playlist) => playlist.side == props.side);
+  const playlistState = state.playlist.find((playlist) => playlist.side === props.side);
+  const playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == 'default_'+props.side);
+  const queue = playlistStore.tracks;
   return {
     picker : pickerState,
     playlist : playlistState,
     settings : state.settings,
-    queue
+    queue,
+    playlistStore
   };
 }
-const mapDispatchToProps = (dispatch,props) => ({
-  setGlobalSetting(key,value){
-    dispatch(setGlobalSetting(key,value));
-  },
-  onFilterChange(value){
-    dispatch(filterPlaylist(props.side,value));
-  },
-  onRemoveTrack(track){
-    dispatch(removeQueuedTrack(props.side,track));
-    dispatch(pushNotification({message:'Removed Track!',type:'success'}));
-  },
-  onClearPlaylist(){
-    dispatch(setPlaylist(props.side,[]));
-    dispatch(pushNotification({message:'Cleared Playlist!',type:'success'}));
-  },
-  pushNotification(notification){
-    dispatch(pushNotification(notification));
-  }
-});
+const mapDispatchToProps = (dispatch,props) => {
+  const defaultPlaylist = 'default_'+props.side;
+  return {
+    setGlobalSetting(key,value){
+      dispatch(setGlobalSetting(key,value));
+    },
+    onFilterChange(value){
+      dispatch(filterPlaylist(props.side,value,defaultPlaylist));
+    },
+    onPlayTrack(track){
+      dispatch(changeCurrentPlayIndex(props.side,track,defaultPlaylist));
+    },
+    onClearPlaylist(){
+      dispatch(setPlaylist(props.side,[],defaultPlaylist));
+      dispatch(pushNotification({message:'Cleared Playlist!',type:'success'}));
+    },
+    pushNotification(notification){
+      dispatch(pushNotification(notification));
+    }
+  };
+};
 const ConnectedCurrentPlaylistContainer = connect(mapStateToProps,mapDispatchToProps)(CurrentPlaylistContainer);
 
 AppRegistry.registerComponent('CurrentPlaylistContainer', () => ConnectedCurrentPlaylistContainer);

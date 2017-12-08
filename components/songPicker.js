@@ -20,7 +20,10 @@ import THEME from '../styles/variables';
 import TrackListContainer from '../containers/trackListContainer';
 import UserFinderContainer from '../containers/userFinderContainer';
 import TopList from '../components/topList';
+import FilterInput from '../components/filterInput';
+import BackButton from '../components/backButton';
 import {formatDuration} from '../helpers/formatters';
+
 class SongPicker extends Component {
   constructor(props){
     super(props);
@@ -95,6 +98,15 @@ class SongPicker extends Component {
       });
     }
   }
+  updateResultList(resp,appendResults){
+    // in case of empty results or no search terms
+    if(!resp && !appendResults){
+      return this.setState({ pureList : [] });
+    }
+    this.setState({
+      pureList : appendResults ? this.state.pureList.concat(resp) : resp
+    });
+  }
   isSearchEmpty(){
     return this.state.searchInput.length === 0;
   }
@@ -122,43 +134,28 @@ class SongPicker extends Component {
     });
     return requestPromise;
   }
-  updateResultList(resp,appendResults){
-    console.log('search resp',resp)
-    // in case of empty results or no search terms
-    if(!resp && !appendResults){
-      return this.setState({ pureList : [] });
-    }
-    this.setState({
-      pureList : appendResults ? this.state.pureList.concat(resp) : resp
-    });
-  }
   render() {
     let clearButtonOpacity = this.isSearchEmpty() ? 0 : 1;
     let spinnerPosition = this.isSearchEmpty() ? styles.pushRightSpinner : {};
     return (
       <View style={styles.container}>
-        {this.isSearchEmpty() ? null :
-        <View style={[styles.clearSearchAction]}>
-          <TouchableOpacity onPress={this._onClearSearch} style={styles.clearSearchTouchable}>
-            <Text style={styles.clearSearchActionText}>✕</Text>
-          </TouchableOpacity>
-        </View>}
         <ActivityIndicator animating={this.props.isLoading} style={[styles.loaderStyle,spinnerPosition]} />
         <View style={styles.searchInputView}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search song or artist "
+          <BackButton style={styles.backButton} onPressed={this.props.onClose} />
+          <FilterInput
+            inputViewStyle={styles.searchInput}
+            inputStyle={styles.searchInputText}
+            placeholder="Search on SoundCloudⓒ"
             value={this.state.searchInput}
             placeholderTextColor={THEME.mainColor}
-            onChangeText={this._onSearchChange} />
+            onChangeText={this._onSearchChange}
+            onClearFilter={this._onClearSearch} />
         </View>
         {this.isSearchEmpty() ?
-          <TopList
-            {...this.props}
-          /> :
+        <TopList {...this.props} /> :
         <TrackListContainer {...this.props}
           onEndReached={this.loadMoreResults}
-          onEndThreshold={250}
+          onEndThreshold={400}
           onHeaderRender={() => {
             return <View style={{flexDirection:'row'}}>
                 <View style={{flexDirection:'column',flex:1}}>
@@ -179,44 +176,35 @@ const styles = StyleSheet.create({
     flex: 1
   },
   searchInput : {
-    paddingTop: 12,
-    height: 40,
-    color: THEME.mainHighlightColor,
-    paddingLeft: 40,
-    paddingRight: 70,
-    lineHeight:20
+    flex:1,
+    height: 30,
+    marginRight:40,
+    paddingRight: 10
+  },
+  searchInputText:{
+    fontSize: 17
   },
   searchInputView :{
     borderColor : THEME.contentBorderColor,
-    borderBottomWidth :2,
-    paddingTop: 10,
+    borderBottomWidth :1,
     backgroundColor: THEME.mainBgColor,
-    height: 60
-  },
-  clearSearchAction:{
-    position:'absolute',
-    borderRadius:15,
-    right:15,
-    top:22,
-    zIndex:10,
-    height:30,
-    width:30,
-    backgroundColor:THEME.contentBorderColor
+    height: 50,
+    flexDirection:'row'
   },
   pushRightSpinner:{
-    right:20,
+    right:60,
   },
   loaderStyle:{
     position:'absolute',
-    right:55,
-    top:27,
+    right:70,
+    top:16,
     zIndex:10
   },
-  clearSearchActionText:{
-    color: THEME.mainHighlightColor,
-    fontSize:20,
-    lineHeight:28,
-    textAlign:'center'
+  backButton:{
+    width:40,
+    paddingTop:10,
+    paddingLeft:10,
+    zIndex:20
   },
   listDescription : {
     backgroundColor: THEME.contentBgColor,

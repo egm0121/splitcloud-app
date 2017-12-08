@@ -19,11 +19,14 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import TrackList from '../components/trackList';
+import PlaylistContainer from './playlistContainer';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
 import {
+  setPlaylist,
   addPlaylistItem,
+  removePlaylistItem,
   changeCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
 import {
@@ -38,8 +41,10 @@ class TrackListContainer extends Component {
     console.log(
       'TrackListContainer mounted with props',this.props.side
     );
-    this._markAsCurrentTrack = this._markAsCurrentTrack.bind(this);
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
+    this.onTrackActionRender = this.onTrackActionRender.bind(this);
+    this.onTrackAction = this.onTrackAction.bind(this);
+    this.onTrackSelected = this.onTrackSelected.bind(this);
     this.trackListRef = null;
     console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
   }
@@ -49,38 +54,58 @@ class TrackListContainer extends Component {
       this.trackListRef.scrollTo({x:0, y:0, animated:true});
     }
   }
-  _markAsCurrentTrack(item){
-    const currTrack = this.props.currentPlayingTrack || {};
-    if(item.id == currTrack.id){
-      return {
-        ...item,
-        isCurrentTrack : true
-      }
+  hasFavoriteTrack(track){
+    return this.props.favoritePlaylist.tracks.find(t => t.id == track.id);
+  }
+  onTrackAction(track,trackList){
+    if(typeof this.props.onTrackActionRender == 'function'){
+      return this.props.onTrackAction(track, trackList, this.hasFavoriteTrack(track));
     }
-    return item;
+  }
+  onTrackActionRender(track){
+    if(typeof this.props.onTrackActionRender == 'function'){
+      return this.props.onTrackActionRender(track, this.hasFavoriteTrack(track));
+    }
+  }
+  onTrackSelected(...args){
+    if(args[0].type == 'playlist'){
+      this.onPlaylistSelected(...args);
+    } else {
+      this.props.onTrackSelected(...args);
+    }
+  }
+  onPlaylistSelected(playlist){
+    this.props.navigator.push({
+      title : 'PlaylistContainer - playlist.name - ' + this.props.side,
+      name : 'PlaylistContainer' + this.props.side,
+      component: PlaylistContainer,
+      passProps : {
+        playlist: playlist,
+        side : this.props.side,
+        onClose: () => this.props.navigator.pop()
+      }
+    });
   }
   onTrackDescRender(rowData){
-    let
-      duration = rowData.duration ?
+    let duration = rowData.duration ?
         formatDurationExtended(rowData.duration,{milli:true}) : '',
       playCount = rowData.playbackCount ?
-        '▶ '+formatNumberPrefix(rowData.playbackCount) : '',
+        formatNumberPrefix(rowData.playbackCount) : '',
       username = 'by '+rowData.username;
-    return [duration,playCount,username].filter(e =>e.length).join(' • ') ;
+    return [duration,playCount,username].filter(e =>e.length).join(' • ');
   }
   render() {
-    let trackData = this.props.trackList.map(this._markAsCurrentTrack);
     return (
       <View style={styles.container}>
         <TrackList
           onHeaderRender={this.props.onHeaderRender}
           listRef={(ref) => this.trackListRef = ref}
-          tracksData={trackData}
+          tracksData={this.props.trackList}
           onTrackDescRender={this.onTrackDescRender}
-          onTrackActionRender={this.props.onTrackActionRender}
-          highlightProp={this.props.highlightProp}
-          onTrackAction={this.props.onTrackAction}
-          onTrackSelected={this.props.onTrackSelected}
+          onTrackActionRender={this.onTrackActionRender}
+          currentTrack={this.props.currentPlayingTrack}
+          onTrackAction={this.onTrackAction}
+          onTrackSelected={this.onTrackSelected}
           isLoading={this.props.isLoading}
           onEndReached={this.props.onEndReached}
           onEndThreshold={this.props.onEndThreshold}
@@ -91,8 +116,10 @@ class TrackListContainer extends Component {
 }
 TrackListContainer.defaultProps ={
   resetToTop:false,
-  onTrackActionRender(rowData){return rowData.isCurrentTrack ? null : '+'},
-  highlightProp: 'isCurrentTrack'
+  onTrackActionRender(track,isFavoriteTrack){
+    if(track.type == 'playlist') return null;
+    return isFavoriteTrack ? '×':'+';
+  }
 }
 TrackListContainer.propTypes = {
   side : PropTypes.string.isRequired,
@@ -102,6 +129,7 @@ TrackListContainer.propTypes = {
   onTrackActionRender: PropTypes.func,
   onTrackAction: PropTypes.func.isRequired,
   onTrackSelected: PropTypes.func.isRequired,
+  onPlaylistSelected: PropTypes.func,
   onHeaderRender: PropTypes.func,
   isLoading: PropTypes.bool
 }
@@ -112,27 +140,36 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = (state,props) => {
-  const playlistState =
-    state.playlist.filter((playlist) => playlist.side == props.side).pop();
-  const queue = playlistState.playbackQueue;
+  let playlist = state.playlist.find((playlist) => playlist.side === props.side);
+  let playlistStore = state.playlistStore.find(
+    playlistStore => playlistStore.id == playlist.currentPlaylistId);
+  let favoritePlaylist = state.playlistStore.find(
+    playlistStore => playlistStore.id == 'default_' + props.side);
+  const queue = playlistStore.tracks;
   return {
-    playlist : playlistState,
-    currentPlayingTrack : queue[playlistState.currentTrackIndex] || {}
+    playlist,
+    favoritePlaylist,
+    playlistStore,
+    currentPlayingTrack : queue[playlistStore.currentTrackIndex] || {}
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onTrackAction : (track) => {
-    dispatch(pushNotification({
-      type : 'success',
-      message : 'Added Track!'
-    }));
-    dispatch(addPlaylistItem(props.side,track))
+  onTrackAction : (track,trackList,isTrackFavorite) => {
+    let actionMessage = '';
+    if(isTrackFavorite){
+      actionMessage = 'Deleted';
+      dispatch(removePlaylistItem(props.side,track,'default_'+props.side));
+    } else {
+      actionMessage = 'Added';
+      dispatch(addPlaylistItem(props.side,track,'default_'+props.side))
+    }
+    dispatch(pushNotification({type : 'success',message : `Favorite ${actionMessage}!`}));
   },
-  onTrackSelected : (track) => {
+  onTrackSelected : (track,trackList) => {
     console.log('tracklist connect onTrackSelected');
-    dispatch(addPlaylistItem(props.side,track));
-    dispatch(changeCurrentPlayIndex(props.side,track));
+    dispatch(setPlaylist(props.side,trackList,'playbackQueue_'+props.side));
+    dispatch(changeCurrentPlayIndex(props.side,track,'playbackQueue_'+props.side));
   }
 });
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {

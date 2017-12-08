@@ -72,11 +72,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Example/AppDelegate.m"
-            timestampString = "513430180.209073"
+            timestampString = "534380013.192502"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "13"
-            endingLineNumber = "13">
+            endingLineNumber = "13"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -86,7 +88,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Example/AppDelegate.m"
-            timestampString = "526498026.447772"
+            timestampString = "534380013.192971"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "22"

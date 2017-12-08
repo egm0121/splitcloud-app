@@ -15,6 +15,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import THEME from '../styles/variables';
+import AppText from './appText';
 
 class TrackList extends Component {
   constructor(props){
@@ -40,6 +41,9 @@ class TrackList extends Component {
     if(this.props.tracksData != newProps.tracksData){
       this.updateResultList(newProps.tracksData);
     }
+    if(this.props.currentPlayingTrack != newProps.tracksData){
+      this.updateResultList([...newProps.tracksData]);
+    }
   }
   updateResultList(tracks){
     // in case of empty results or no search terms
@@ -56,12 +60,12 @@ class TrackList extends Component {
   }
   _onSongSelected(rowData){
     if(!rowData.isEmpty){
-      this.props.onTrackSelected(rowData);
+      this.props.onTrackSelected(rowData,this.state.pureList);
     }
   }
   _onSongAction(rowData,){
     if(!rowData.isEmpty){
-      this.props.onTrackAction(rowData);
+      this.props.onTrackAction(rowData,this.state.pureList);
     }
   }
   isTrack(rowData){
@@ -82,17 +86,18 @@ class TrackList extends Component {
         trackAuthor = rowData.username;
       }
       artworkImage = {url:this.getSmallArtworkUrl(rowData.artwork)};
+      if(rowData.id == this.props.currentTrack.id){
+        rowTextStyle.push(styles.hightlightText);
+      }
     }
-    if( this.props.highlightProp && rowData[this.props.highlightProp] ){
-      rowTextStyle.push(styles.hightlightText);
-    }
+
     if(rowData.isEmpty){
       return (
       <View style={[styles.rowContainerPlaceholder]}>
         <View style={styles.rowPlaceholder}>
           {this.props.isLoading ?
             <ActivityIndicator animating={true} style={styles.loadingIndicator}/> :
-            <Text style={styles.placeholderRowText}>{rowData.label}</Text>
+            <AppText bold={true} style={styles.placeholderRowText}>{rowData.label}</AppText>
           }
         </View>
       </View>
@@ -101,20 +106,22 @@ class TrackList extends Component {
     return (
       <View style={styles.row}>
         {this.props.renderArtwork &&
-          <View style={styles.rowArtworkContainer}>
-            <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
-          </View>
+          <TouchableOpacity onPress={this._onSongSelected.bind(this,rowData)}>
+            <View style={styles.rowArtworkContainer}>
+              <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
+            </View>
+          </TouchableOpacity>
           }
           <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
+              <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
                 {trackTitle}
-              </Text>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
+              </AppText>
+              <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
                 {trackAuthor}
-              </Text>
-              <Text numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
+              </AppText>
+              <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
                 {this.props.onTrackDescRender(rowData)}
-              </Text>
+              </AppText>
           </TouchableOpacity>
           {!rowData.isEmpty ?
             <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
@@ -142,7 +149,7 @@ class TrackList extends Component {
 }
 
 TrackList.defaultProps = {
-  emptyLabel : 'Empty Tracklist',
+  emptyLabel : 'No items :(',
   onTrackActionRender : () => '+',
   renderArtwork: true,
   isLoading: false,
@@ -157,7 +164,7 @@ TrackList.propTypes = {
   onTrackActionRender: PropTypes.func,
   renderArtwork: PropTypes.bool,
   onHeaderRender: PropTypes.func,
-  highlightProp : PropTypes.string,
+  currentTrackId: PropTypes.number,
   isLoading: PropTypes.bool
 };
 
@@ -180,12 +187,13 @@ const styles = StyleSheet.create({
     paddingRight: 0
   },
   rowArtworkImage:{
-    width:40,
-    height:40,
-    backgroundColor: THEME.listBorderColor
+    width:50,
+    height:50,
+    backgroundColor: THEME.listBorderColor,
+    borderRadius:4
   },
   rowArtworkContainer:{
-    width:55,
+    width:60,
     paddingTop:5
   },
   rowLabel : {
@@ -215,19 +223,16 @@ const styles = StyleSheet.create({
   rowTitleText:{
     color: THEME.mainHighlightColor,
     lineHeight:20,
-    fontSize: 15,
-    fontWeight:'500'
+    fontSize: 15
   },
   rowAuthorText:{
     color: THEME.mainHighlightColor,
-    lineHeight:20,
-    fontSize: 13,
-    fontWeight:'500'
+    lineHeight:18,
+    fontSize: 13
   },
   rowDescText :{
     color: THEME.mainColor,
     fontSize: 13,
-    fontWeight:'500',
     lineHeight:20
   },
   hightlightText : {

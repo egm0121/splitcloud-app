@@ -2,6 +2,10 @@ import { playbackModeTypes } from '../constants/actions';
 
 const initialState = {
   mode : playbackModeTypes.SPLIT,
+  reviewState:{
+    actionCounter : 0,
+    done: false
+  },
   settings : {
     offlineMode : true
   },
@@ -40,18 +44,36 @@ const initialState = {
     inverted : false
   }],
   playlist : [{
-    tracks:[],
-    playbackQueue:[],
-    filterTracks:'',
-    currentTrackIndex: 0,
+    filterTracks:'',//deprecated
+    currentPlaylistId: 'default_' + playbackModeTypes.LEFT,
     side : playbackModeTypes.LEFT
   },
   {
-    tracks:[],
-    playbackQueue:[],
-    filterTracks:'',
-    currentTrackIndex: 0,
+    filterTracks:'',//deprecated
+    currentPlaylistId: 'default_' + playbackModeTypes.RIGHT,
     side : playbackModeTypes.RIGHT
-  }]
+  }],
+  playlistStore:[
+    {
+      id : 'default_' + playbackModeTypes.LEFT,
+      currentTrackIndex: 0,
+      tracks :[]
+    },
+    {
+      id : 'default_' + playbackModeTypes.RIGHT,
+      currentTrackIndex: 0,
+      tracks :[]
+    },
+    {
+      id : 'playbackQueue_' + playbackModeTypes.LEFT,
+      currentTrackIndex: 0,
+      tracks :[]
+    },
+    {
+      id : 'playbackQueue_' + playbackModeTypes.RIGHT,
+      currentTrackIndex: 0,
+      tracks :[]
+    }
+  ]
 };
 export default initialState;

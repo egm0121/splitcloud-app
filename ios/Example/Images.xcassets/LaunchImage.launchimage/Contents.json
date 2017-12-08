@@ -65,6 +65,24 @@
       "minimum-system-version" : "7.0",
       "orientation" : "portrait",
       "scale" : "2x"
+    },
+    {
+     "orientation" : "portrait",
+     "idiom" : "iphone",
+     "extent" : "full-screen",
+     "minimum-system-version" : "11.0",
+     "filename" : "Default-1125@3x~iphoneX-portrait.png",
+     "subtype" : "2436h",
+     "scale" : "3x"
+    },
+    {
+     "orientation" : "landscape",
+     "idiom" : "iphone",
+     "extent" : "full-screen",
+     "minimum-system-version" : "11.0",
+     "filename" : "Default-2436@3x~iphoneX-landscape.png",
+     "subtype" : "2436h",
+     "scale" : "3x"
     }
   ],
   "info" : {

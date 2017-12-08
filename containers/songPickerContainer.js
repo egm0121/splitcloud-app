@@ -15,7 +15,6 @@ import {
 import config from '../helpers/config';
 import { connect } from 'react-redux';
 import SongPicker from '../components/songPicker';
-import BackButton from '../components/backButton';
 import {
   updateSearchTerms,
   setLoading
@@ -42,7 +41,6 @@ class SongPickerContainer extends Component {
 
     return (
       <View style={styles.container}>
-        <BackButton style={styles.backButton} onPressed={this.props.onClose} />
         <SongPicker
             scClientId={SC_CLIENT_ID}
             scResultLimit={SC_RESULT_LIMIT}
@@ -67,25 +65,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F50'
-  },
-  backButton:{
-    position:'absolute',
-    left:0,
-    paddingLeft:10,
-    top:20,
-    zIndex:20
   }
 });
 const mapStateToProps = (state,props) => {
   const pickerState =
     state.songPickers.filter((picker) => picker.side == props.side).pop();
-  const playlistState =
-    state.playlist.filter((picker) => picker.side == props.side).pop();
-  const queue = playlistState.playbackQueue;
   return {
-    picker : pickerState,
-    playlist : playlistState,
-    currentTrack : queue[playlistState.currentTrackIndex]
+    picker : pickerState
   };
 }
 const mapDispatchToProps = (dispatch,props) =>({

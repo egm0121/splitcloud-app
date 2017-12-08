@@ -6,14 +6,20 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   Navigator,
-  View
+  StyleSheet,
+  View,
+  Text
 } from 'react-native';
 import { Provider } from 'react-redux';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 import MainSceneContainer from './containers/mainSceneContainer';
+import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
-import AnalyticsService from './modules/analyticsService';
+import OfflineModeBanner from './components/offlineModeBanner';
+import AnalyticsService from './modules/AnalyticsService';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
+import THEME from './styles/variables';
 //decorate navigator to add a method to push at the bottom of the routeStack
 Navigator.prototype.pushToBottom = function (route) {
   var activeStack = this.state.routeStack;
@@ -37,13 +43,19 @@ AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID,'SplitcloudApp');
 
 if(!__DEV__){
   /* avoid any logging to prevent performance drops in prod mode */
-  console.log = () => {};
+  console.log = () => false;
+  console.info = () => false;
+  console.warn = () => false;
 }
 
 class SplitCloudApp extends Component {
   constructor(props){
     super(props);
     this.configureScene = this.configureScene.bind(this);
+    this.setStylesGlobalOvverides();
+  }
+  setStylesGlobalOvverides(){
+    Text.defaultProps.allowFontScaling = false;
   }
   configureScene(route, routeStack){
     return {
@@ -55,16 +67,21 @@ class SplitCloudApp extends Component {
     return (
         <Provider store={store} >
             <Navigator
-                initialRoute={
-                  { title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }
-                }
+                initialRoute={{ title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }}
                 renderScene={(route, navigator) => {
                   AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;
-                  return <View style={{flex: 1}}>
-                          <Component title={route.title} routeName={route.name} navigator={navigator} {...route.passProps}/>
-                          <NotificationContainer />
-                        </View>
+                  return <NetworkAvailability>{
+                        (isOnline,networkType) => {
+                          const fullScreenPlayerScene = route.name == 'MainSceneContainer' ? [styles.fullScreenPlayer] :null;
+                          return <View style={[styles.rootContainerView,fullScreenPlayerScene]}>
+                              <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
+                              <NotificationContainer />
+                              <OfflineModeBanner isOnline={isOnline} />
+                            </View>
+
+                        }
+                  }</NetworkAvailability>
                 }}
                 configureScene={ this.configureScene }
               />
@@ -72,5 +89,14 @@ class SplitCloudApp extends Component {
     );
   }
 }
-
+const styles = StyleSheet.create({
+  rootContainerView:{
+    flex: 1,
+    backgroundColor:THEME.mainBgColor,
+    paddingTop: isIphoneX() ? 40 : 20
+  },
+  fullScreenPlayer: {
+    paddingTop: 0
+  }
+})
 AppRegistry.registerComponent('SplitCloudApp', () => SplitCloudApp);

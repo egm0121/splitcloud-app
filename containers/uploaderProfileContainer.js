@@ -34,7 +34,8 @@ import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 const {SC_CLIENT_ID} = config;
 const SECTIONS = {
   UPLOADS:'uploads',
-  FAVORITES:'favorites'
+  FAVORITES:'favorites',
+  PLAYLISTS:'playlists'
 };
 class uploaderProfileContainer extends Component {
   constructor(props){
@@ -52,7 +53,8 @@ class uploaderProfileContainer extends Component {
     };
     this.sectionDataResolver = {
       [SECTIONS.UPLOADS]:'getScUserProfileTracks',
-      [SECTIONS.FAVORITES]:'getScUserProfileFavorites'
+      [SECTIONS.FAVORITES]:'getScUserProfileFavorites',
+      [SECTIONS.PLAYLISTS]:'getScUserPlaylists'
     }
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onRequestFail = this.onRequestFail.bind(this);
@@ -136,7 +138,8 @@ class uploaderProfileContainer extends Component {
                 <View>
                   <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
                     <SectionItem name={SECTIONS.UPLOADS} label={'Tracks'} />
-                    <SectionItem name={SECTIONS.FAVORITES} label={'Favorites'}  />
+                    <SectionItem name={SECTIONS.FAVORITES} label={'Favorites'} />
+                    <SectionItem name={SECTIONS.PLAYLISTS} label={'Playlists'} />
                   </SectionTabBar>
                 </View>
               </View>
@@ -173,20 +176,14 @@ const styles = StyleSheet.create({
     position:'absolute',
     left:0,
     paddingLeft:10,
-    top:20,
+    top:10,
     zIndex:20
   }
 });
 const mapStateToProps = (state,props) => {
-  const playlistState =
-    state.playlist.filter((picker) => picker.side == props.side).pop();
   const uploaderProfile =
     state.uploaderProfile.filter((profile) => profile.side == props.side).pop();
-  const queue = playlistState.playbackQueue;
-  const currentTrack =  queue[playlistState.currentTrackIndex]
   return {
-    playlist : playlistState,
-    currentTrack,
     scUploaderLink : uploaderProfile ? uploaderProfile.lastUploaderUrl :null
   };
 }

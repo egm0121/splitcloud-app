@@ -17,14 +17,21 @@
     "react-native-device-info": "^0.10.2",
     "react-native-fs": "git+https://git@github.com/egm0121/react-native-fs.git#v2.0.1-patch-ios",
     "react-native-google-analytics": "^1.3.2",
+    "react-native-iphone-x-helper": "^1.0.1",
     "react-native-multi-slider": "^0.3.5",
+    "react-native-store-review": "^0.1.3",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
     "redux-persist": "^4.8.0",
     "redux-persist-migrate": "^5.0.0"
   },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
+  },
   "devDependencies": {
     "eslint": "^3.19.0",
-    "eslint-plugin-react": "^7.0.0"
+    "eslint-plugin-react": "^7.5.1"
   }
 }

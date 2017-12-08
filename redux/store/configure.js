@@ -7,16 +7,21 @@ import rootReducer from '../reducers/rootReducer';
 import devLogger from '../middleware/logger';
 import analyticsMiddleware from '../middleware/analyticsEvents';
 import tracksLocalCache from '../middleware/tracksLocalCache';
+import storeReviewRequestorMiddleware from '../middleware/storeReviewRequestor';
 import migrations from './migrations';
 import {VERSION_REDUCER_KEY} from '../../helpers/constants';
 
 const createStoreWithDebug = withLog => {
-  let middlewareList = [analyticsMiddleware,tracksLocalCache];
+  let middlewareList = [
+    analyticsMiddleware,
+    tracksLocalCache,
+    storeReviewRequestorMiddleware
+  ];
   if(__DEV__ && withLog){
     middlewareList.push(devLogger);
   }
   const migration = createMigration(migrations, VERSION_REDUCER_KEY)
-  let enhancer = compose(autoRehydrate(),migration);
+  let enhancer = compose(migration,autoRehydrate());
   let store = createStore(rootReducer,applyMiddleware(...middlewareList),enhancer);
 
   let persistor = persistStore(store, {
