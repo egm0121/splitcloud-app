@@ -554,7 +554,7 @@ class AudioPlayerContainer extends Component {
                     </TouchableOpacity>
                   </View>)}
                 {this.renderInFullscreen(this.renderForegroundArtCover(artworkSource))}
-                <View style={playbackControlsContainer} >
+                <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])} >
                   <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
                       formatDurationExtended(this.state.elapsed)
                   }</AppText>
@@ -576,7 +576,7 @@ class AudioPlayerContainer extends Component {
                       formatDurationExtended(this.state.duration)
                     }</AppText>
                 </View>
-                <View style={playbackControlsContainer}>
+                <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
                   <Button style={[styles.container,styles.playlistButton]}
                       image={require('../assets/flat_select.png')}
                       onPressed={this._toggleCurrentPlaylist} />
@@ -597,7 +597,7 @@ class AudioPlayerContainer extends Component {
                           onPressed={this._onPickerToggle}
                           size={'small'}/>
                 </View>
-                <View style={playbackControlsContainer}>
+                <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
                   <View style={styles.volumeSlider}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
@@ -714,7 +714,10 @@ const styles = StyleSheet.create({
   },
   horizontalContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'row'
+  },
+  verticalCenterContainer:{
+    alignItems:'center'
   },
   tracknameContainer:{
     flex:2,
@@ -766,22 +769,20 @@ const styles = StyleSheet.create({
   playToggleButtonContainer:{
     borderWidth:1.5,
     borderRadius:50,
-    height:60,
-    width:60,
-    top:-10,
-    borderColor:'rgba(255,255,255,0.5)',
+    height:55,
+    width:55,
+    borderColor:'rgba(255,255,255,0.3)',
     marginHorizontal:10
   },
   playToggleButton:{
-    top:6,
-    left:3
+    top:3,
+    left:4
   },
   pauseToggleButton:{
-    top:5,
+    top:3,
     left:-1
   },
   searchButton:{
-    top:5
   },
   scCopyContainer :{
     position:'absolute',
@@ -794,7 +795,6 @@ const styles = StyleSheet.create({
     height:45
   },
   playlistButton:{
-    top:5
   },
   trackInfoContainer:{
     flex:2,
@@ -839,11 +839,11 @@ const styles = StyleSheet.create({
   },
   controlsFadeImage:{
     flex:5,
+    marginBottom:-2,
     width:null,
     height:null,
     alignItems:'center',
-    justifyContent:'center',
-    marginBottom:-1
+    justifyContent:'center' 
   },
   controlsBackground:{
     backgroundColor: THEME.playerControlsBgColor
@@ -856,12 +856,13 @@ const styles = StyleSheet.create({
     justifyContent:'flex-end'
   },
   miniArtCoverImage:{
+    
     justifyContent:'center'
   },
   miniFgArtworkContainer:{
     flex:1,
-    paddingLeft:5,
-    paddingRight:5
+    paddingLeft:20,
+    paddingRight:20
   }
 });
 const sliderTrackStyles = {

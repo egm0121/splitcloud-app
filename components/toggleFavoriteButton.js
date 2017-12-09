@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   textLabel:{
     marginTop:-12,
-    marginLeft:3,
+    marginLeft:2,
     textAlign:'center',
     fontSize : 50,
     fontWeight: "300",
