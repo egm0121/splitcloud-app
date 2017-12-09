@@ -514,7 +514,7 @@ class AudioPlayerContainer extends Component {
                   <View style={[tracknameStyles]}>
                     <View style={[styles.horizontalContainer]}>
                       <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
-                       <Image style={[styles.fgArtCoverImage]}
+                       <Image style={[styles.fgArtCoverImage,styles.miniArtCoverImage]}
                         source={artworkSource}
                         resizeMode={'contain'}>
                        <ToggleFavoriteTrackContainer 
@@ -553,30 +553,29 @@ class AudioPlayerContainer extends Component {
                       </AppText>
                     </TouchableOpacity>
                   </View>)}
-                  {this.renderInFullscreen(this.renderForegroundArtCover(artworkSource))}
-                  <View style={playbackControlsContainer} >
-                    <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
-                        formatDurationExtended(this.state.elapsed)
-                    }</AppText>
-                    <View style={styles.playbackTrackContainer}>
-                      <MultiSlider
-                        values={this.state.sliderOneValue}
-                        min={0}
-                        max={100}
-                        onValuesChange={this._onMultiSliderValuesChange}
-                        onValuesChangeFinish={this._onSeekToTime}
-                        onValuesChangeStart={this._onSeekToTimeStart}
-                        sliderLength={progressTrackLength}
-                        trackStyle={{ borderRadius: 12, height: 3 }}
-                        selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
-                        unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
-                        markerStyle={markerStyle} />
-                    </View>
-                    <AppText style={[styles.playbackTime,smallTimeText]}>{
-                        formatDurationExtended(this.state.duration)
-                      }</AppText>
+                {this.renderInFullscreen(this.renderForegroundArtCover(artworkSource))}
+                <View style={playbackControlsContainer} >
+                  <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
+                      formatDurationExtended(this.state.elapsed)
+                  }</AppText>
+                  <View style={styles.playbackTrackContainer}>
+                    <MultiSlider
+                      values={this.state.sliderOneValue}
+                      min={0}
+                      max={100}
+                      onValuesChange={this._onMultiSliderValuesChange}
+                      onValuesChangeFinish={this._onSeekToTime}
+                      onValuesChangeStart={this._onSeekToTimeStart}
+                      sliderLength={progressTrackLength}
+                      trackStyle={{ borderRadius: 12, height: 3 }}
+                      selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
+                      unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
+                      markerStyle={markerStyle} />
                   </View>
-
+                  <AppText style={[styles.playbackTime,smallTimeText]}>{
+                      formatDurationExtended(this.state.duration)
+                    }</AppText>
+                </View>
                 <View style={playbackControlsContainer}>
                   <Button style={[styles.container,styles.playlistButton]}
                       image={require('../assets/flat_select.png')}
@@ -621,19 +620,22 @@ class AudioPlayerContainer extends Component {
     );
   }
   renderForegroundArtCover(artworkSource) {
+    let {width} = Dimensions.get('window');
+    const resizeStyle = {
+      flex:0,
+      width: width - 60,
+      height: width - 60
+    };
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
-        
-        <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
-          <Image style={[styles.fgArtCoverImage]} source={artworkSource} resizeMode={'contain'} >
+          <Image style={[styles.fgArtCoverImage,resizeStyle]}
+           source={artworkSource} >
             <ToggleFavoriteTrackContainer 
               side={this.props.side} 
               track={this._getCurrentTrackObj()} 
-              style={[styles.favoriteTogglePosition]}  
             />
           </Image>
-        </View>
       </Image>
   }
 }
@@ -822,7 +824,7 @@ const styles = StyleSheet.create({
   trackDescriptionTextFullscreen:{
     fontSize: 16,
     textAlign: 'center',
-    height: 40,
+    height: 30,
   },
   artwork : {
     justifyContent: 'center',
@@ -839,27 +841,22 @@ const styles = StyleSheet.create({
     flex:5,
     width:null,
     height:null,
+    alignItems:'center',
+    justifyContent:'center',
     marginBottom:-1
   },
   controlsBackground:{
     backgroundColor: THEME.playerControlsBgColor
   },
   fgArtCoverImage :{
-    padding:0,
     flex:1,
     width:null,
     height:null,
     alignItems:'center',
     justifyContent:'flex-end'
   },
-  favoriteToggleCenteredPosition:{
-    alignSelf:'auto'
-  },
-  fgArtCoverContainer:{
-    borderColor:THEME.contentBorderColor,
-    paddingBottom: 20,
-    paddingLeft:30,
-    paddingRight:30
+  miniArtCoverImage:{
+    justifyContent:'center'
   },
   miniFgArtworkContainer:{
     flex:1,

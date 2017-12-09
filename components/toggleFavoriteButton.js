@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
   },
   buttonSmall:{
     borderRadius:15,
-    borderBottomLeftRadius:0,
-    borderBottomRightRadius:0,
+    borderBottomLeftRadius:15,
+    borderBottomRightRadius:15,
     width:30,
     height:30
   }
