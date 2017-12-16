@@ -67,6 +67,7 @@ class AudioPlayerContainer extends Component {
     this._toggleCurrentPlaylist = this._toggleCurrentPlaylist.bind(this);
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
+    this._onAudioSessionInterruption = this._onAudioSessionInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.renderInFullscreen = this.renderInFullscreen.bind(this);
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
@@ -101,6 +102,7 @@ class AudioPlayerContainer extends Component {
     this.playerAObj.on('AudioRouteInterruptionEvent',(evt) => {
       this._onAudioRouteInterruption(evt);
     });
+    this.playerAObj.on('AudioSessionInterruptionEvent',this._onAudioSessionInterruption);
     this.playerAObj.on('RemoteControlEvents',this._onRemoteControlEvent);
   }
   _updateComponentPlayerState(){
@@ -137,11 +139,20 @@ class AudioPlayerContainer extends Component {
     }
   }
   _onAudioRouteInterruption(evt){
-    console.log('onAudioRouteInterruption',evt);
+    console.log('onAudioRouteChange',evt);
     if(evt.reason === 'AVAudioSessionRouteChangeReasonOldDeviceUnavailable'){
       this.playerAObj.isPlaying((err,isPlaying) => {
         if(isPlaying) this.playerAObj.pause();
       });
+    }
+  }
+  _onAudioSessionInterruption(evt){
+    if(evt.reason == 'AVAudioSessionInterruptionTypeBegan'){
+      this.playbackInterrupted = this.state.status in PLAYBACK_ENABLED_STATES;
+      this._onPlayTogglePress();
+    }
+    if(evt.reason == 'AVAudioSessionInterruptionTypeEnded' && this.playbackInterrupted){
+      this._onPlayTogglePress();
     }
   }
   _onRemoteControlEvent(evt){
