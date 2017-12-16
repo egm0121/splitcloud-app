@@ -99,9 +99,7 @@ class AudioPlayerContainer extends Component {
         this[hookName](...[evt]);
       }
     });
-    this.playerAObj.on('AudioRouteInterruptionEvent',(evt) => {
-      this._onAudioRouteInterruption(evt);
-    });
+    this.playerAObj.on('AudioRouteInterruptionEvent',this._onAudioRouteInterruption);
     this.playerAObj.on('AudioSessionInterruptionEvent',this._onAudioSessionInterruption);
     this.playerAObj.on('RemoteControlEvents',this._onRemoteControlEvent);
   }
