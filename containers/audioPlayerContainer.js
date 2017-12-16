@@ -145,12 +145,16 @@ class AudioPlayerContainer extends Component {
     }
   }
   _onAudioSessionInterruption(evt){
+    console.log('AudioSessionInterruption',evt);
     if(evt.reason == 'AVAudioSessionInterruptionTypeBegan'){
       this.playbackInterrupted = this.state.status in PLAYBACK_ENABLED_STATES;
-      this._onPlayTogglePress();
+      if(this.playbackInterrupted){
+        this._onPlayTogglePress(); //update ui state to show the playback state change
+      }
     }
-    if(evt.reason == 'AVAudioSessionInterruptionTypeEnded' && this.playbackInterrupted){
+    if(evt.reason == 'AVAudioSessionInterruptionTypeEnded' && this.playbackInterrupted ){
       this._onPlayTogglePress();
+      this.playbackInterrupted = false;
     }
   }
   _onRemoteControlEvent(evt){
