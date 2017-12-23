@@ -1,6 +1,6 @@
 import * as StoreReview from 'react-native-store-review';
 import { actionTypes } from '../constants/actions';
-import { incrementPositiveAction } from '../actions/storeReviewAction';
+import { incrementPositiveAction,reviewCountDoneAction } from '../actions/storeReviewAction';
 import { MAX_REVIEW_POSITIVE_ACTIONS } from '../../helpers/constants';
 const actionTypeWhitelist = [
   actionTypes.INCREMENT_CURR_PLAY_INDEX,
@@ -19,6 +19,7 @@ const StoreReviewRequestor = store => {
         if ( state.actionCounter == MAX_REVIEW_POSITIVE_ACTIONS ) {
           console.log('trigger appstore review panel!')
           StoreReview.isAvailable && StoreReview.requestReview();
+          store.dispatch(reviewCountDoneAction());
         }
         store.dispatch(incrementPositiveAction());
       }

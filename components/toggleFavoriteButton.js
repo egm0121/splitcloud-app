@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   textLabel:{
     marginTop:-12,
-    marginLeft:3,
+    marginLeft:2,
     textAlign:'center',
     fontSize : 50,
     fontWeight: "300",
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
   },
   buttonSmall:{
     borderRadius:15,
-    borderBottomLeftRadius:0,
-    borderBottomRightRadius:0,
+    borderBottomLeftRadius:15,
+    borderBottomRightRadius:15,
     width:30,
     height:30
   }
