@@ -67,6 +67,7 @@ class AudioPlayerContainer extends Component {
     this._toggleCurrentPlaylist = this._toggleCurrentPlaylist.bind(this);
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
+    this._onAudioSessionInterruption = this._onAudioSessionInterruption.bind(this);
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this.renderInFullscreen = this.renderInFullscreen.bind(this);
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
@@ -98,9 +99,8 @@ class AudioPlayerContainer extends Component {
         this[hookName](...[evt]);
       }
     });
-    this.playerAObj.on('AudioRouteInterruptionEvent',(evt) => {
-      this._onAudioRouteInterruption(evt);
-    });
+    this.playerAObj.on('AudioRouteInterruptionEvent',this._onAudioRouteInterruption);
+    this.playerAObj.on('AudioSessionInterruptionEvent',this._onAudioSessionInterruption);
     this.playerAObj.on('RemoteControlEvents',this._onRemoteControlEvent);
   }
   _updateComponentPlayerState(){
@@ -137,11 +137,24 @@ class AudioPlayerContainer extends Component {
     }
   }
   _onAudioRouteInterruption(evt){
-    console.log('onAudioRouteInterruption',evt);
+    console.log('onAudioRouteChange',evt);
     if(evt.reason === 'AVAudioSessionRouteChangeReasonOldDeviceUnavailable'){
       this.playerAObj.isPlaying((err,isPlaying) => {
         if(isPlaying) this.playerAObj.pause();
       });
+    }
+  }
+  _onAudioSessionInterruption(evt){
+    console.log('AudioSessionInterruption',evt);
+    if(evt.reason == 'AVAudioSessionInterruptionTypeBegan'){
+      this.playbackInterrupted = this.state.status in PLAYBACK_ENABLED_STATES;
+      if(this.playbackInterrupted){
+        this._onPlayTogglePress(); //update ui state to show the playback state change
+      }
+    }
+    if(evt.reason == 'AVAudioSessionInterruptionTypeEnded' && this.playbackInterrupted ){
+      this._onPlayTogglePress();
+      this.playbackInterrupted = false;
     }
   }
   _onRemoteControlEvent(evt){
@@ -514,7 +527,7 @@ class AudioPlayerContainer extends Component {
                   <View style={[tracknameStyles]}>
                     <View style={[styles.horizontalContainer]}>
                       <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
-                       <Image style={[styles.fgArtCoverImage]}
+                       <Image style={[styles.fgArtCoverImage,styles.miniArtCoverImage]}
                         source={artworkSource}
                         resizeMode={'contain'}>
                        <ToggleFavoriteTrackContainer 
@@ -553,31 +566,30 @@ class AudioPlayerContainer extends Component {
                       </AppText>
                     </TouchableOpacity>
                   </View>)}
-                  {this.renderInFullscreen(this.renderForegroundArtCover(artworkSource))}
-                  <View style={playbackControlsContainer} >
-                    <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
-                        formatDurationExtended(this.state.elapsed)
-                    }</AppText>
-                    <View style={styles.playbackTrackContainer}>
-                      <MultiSlider
-                        values={this.state.sliderOneValue}
-                        min={0}
-                        max={100}
-                        onValuesChange={this._onMultiSliderValuesChange}
-                        onValuesChangeFinish={this._onSeekToTime}
-                        onValuesChangeStart={this._onSeekToTimeStart}
-                        sliderLength={progressTrackLength}
-                        trackStyle={{ borderRadius: 12, height: 3 }}
-                        selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
-                        unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
-                        markerStyle={markerStyle} />
-                    </View>
-                    <AppText style={[styles.playbackTime,smallTimeText]}>{
-                        formatDurationExtended(this.state.duration)
-                      }</AppText>
+                {this.renderInFullscreen(this.renderForegroundArtCover(artworkSource))}
+                <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])} >
+                  <AppText style={[styles.playbackTime,styles.playbackTimeInitial,smallTimeText]}>{
+                      formatDurationExtended(this.state.elapsed)
+                  }</AppText>
+                  <View style={styles.playbackTrackContainer}>
+                    <MultiSlider
+                      values={this.state.sliderOneValue}
+                      min={0}
+                      max={100}
+                      onValuesChange={this._onMultiSliderValuesChange}
+                      onValuesChangeFinish={this._onSeekToTime}
+                      onValuesChangeStart={this._onSeekToTimeStart}
+                      sliderLength={progressTrackLength}
+                      trackStyle={{ borderRadius: 12, height: 3 }}
+                      selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
+                      unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
+                      markerStyle={markerStyle} />
                   </View>
-
-                <View style={playbackControlsContainer}>
+                  <AppText style={[styles.playbackTime,smallTimeText]}>{
+                      formatDurationExtended(this.state.duration)
+                    }</AppText>
+                </View>
+                <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
                   <Button style={[styles.container,styles.playlistButton]}
                       image={require('../assets/flat_select.png')}
                       onPressed={this._toggleCurrentPlaylist} />
@@ -598,7 +610,7 @@ class AudioPlayerContainer extends Component {
                           onPressed={this._onPickerToggle}
                           size={'small'}/>
                 </View>
-                <View style={playbackControlsContainer}>
+                <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
                   <View style={styles.volumeSlider}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
@@ -621,19 +633,22 @@ class AudioPlayerContainer extends Component {
     );
   }
   renderForegroundArtCover(artworkSource) {
+    let {width} = Dimensions.get('window');
+    const resizeStyle = {
+      flex:0,
+      width: width - 60,
+      height: width - 60
+    };
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
-        
-        <View style={[styles.horizontalContainer,styles.fgArtCoverContainer]}>
-          <Image style={[styles.fgArtCoverImage]} source={artworkSource} resizeMode={'contain'} >
+          <Image style={[styles.fgArtCoverImage,resizeStyle]}
+           source={artworkSource} >
             <ToggleFavoriteTrackContainer 
               side={this.props.side} 
               track={this._getCurrentTrackObj()} 
-              style={[styles.favoriteTogglePosition]}  
             />
           </Image>
-        </View>
       </Image>
   }
 }
@@ -712,7 +727,10 @@ const styles = StyleSheet.create({
   },
   horizontalContainer: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'row'
+  },
+  verticalCenterContainer:{
+    alignItems:'center'
   },
   tracknameContainer:{
     flex:2,
@@ -764,22 +782,20 @@ const styles = StyleSheet.create({
   playToggleButtonContainer:{
     borderWidth:1.5,
     borderRadius:50,
-    height:60,
-    width:60,
-    top:-10,
-    borderColor:'rgba(255,255,255,0.5)',
+    height:55,
+    width:55,
+    borderColor:'rgba(255,255,255,0.3)',
     marginHorizontal:10
   },
   playToggleButton:{
-    top:6,
-    left:3
+    top:3,
+    left:4
   },
   pauseToggleButton:{
-    top:5,
+    top:3,
     left:-1
   },
   searchButton:{
-    top:5
   },
   scCopyContainer :{
     position:'absolute',
@@ -792,7 +808,6 @@ const styles = StyleSheet.create({
     height:45
   },
   playlistButton:{
-    top:5
   },
   trackInfoContainer:{
     flex:2,
@@ -822,7 +837,7 @@ const styles = StyleSheet.create({
   trackDescriptionTextFullscreen:{
     fontSize: 16,
     textAlign: 'center',
-    height: 40,
+    height: 30,
   },
   artwork : {
     justifyContent: 'center',
@@ -837,34 +852,30 @@ const styles = StyleSheet.create({
   },
   controlsFadeImage:{
     flex:5,
+    marginBottom:-2,
     width:null,
     height:null,
-    marginBottom:-1
+    alignItems:'center',
+    justifyContent:'center' 
   },
   controlsBackground:{
     backgroundColor: THEME.playerControlsBgColor
   },
   fgArtCoverImage :{
-    padding:0,
     flex:1,
     width:null,
     height:null,
     alignItems:'center',
     justifyContent:'flex-end'
   },
-  favoriteToggleCenteredPosition:{
-    alignSelf:'auto'
-  },
-  fgArtCoverContainer:{
-    borderColor:THEME.contentBorderColor,
-    paddingBottom: 20,
-    paddingLeft:30,
-    paddingRight:30
+  miniArtCoverImage:{
+    
+    justifyContent:'center'
   },
   miniFgArtworkContainer:{
     flex:1,
-    paddingLeft:5,
-    paddingRight:5
+    paddingLeft:20,
+    paddingRight:20
   }
 });
 const sliderTrackStyles = {

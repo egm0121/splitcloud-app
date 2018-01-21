@@ -9,6 +9,11 @@ export function reviewStateReducer(state = initialState.reviewState, currAction)
       ...state,
       actionCounter : state.actionCounter + 1
     }
+  case actionTypes.SET_REVIEW_COMPLETED:
+    return {
+      ...state,
+      done : true
+    }
   default:
     return state;
   }
