@@ -6,28 +6,12 @@ import React, { PropTypes, Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
-  TextInput,
-  ListView,
-  Image,
-  View,
-  TouchableOpacity,
-  LayoutAnimation,
-  Alert
+  View
 } from 'react-native';
-import config from '../helpers/config';
-
 import TrackListContainer from '../containers/trackListContainer';
 import BackButton from  '../components/backButton';
-
-import Button from '../components/button';
-import FilterInput from '../components/filterInput';
-
 import HeaderBar from '../components/headerBar';
 
-
-import {setGlobalSetting} from '../redux/actions/settingsActions';
-import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 
 class PlaylistContainer extends Component {
@@ -36,7 +20,6 @@ class PlaylistContainer extends Component {
     console.log('PlaylistContainer playlist',this.props.playlist)
   }
   render() {
-
     const playlistFilteredList = this.props.playlist.tracks.
       filter((track) => 'isVisible' in track ? track.isVisible : true);
     return (

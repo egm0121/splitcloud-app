@@ -64,7 +64,7 @@ class AudioPlayerContainer extends Component {
       userVolume:1,
       elapsed:0,
       duration:0,
-      status:false,
+      status:'',
       volumeSliderValue:1,
       playbackProgressValue:[1],
       pan : this.props.pan,

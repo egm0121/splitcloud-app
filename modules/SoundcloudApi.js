@@ -9,7 +9,8 @@ class SoundCloudApi {
       v2: 'api-v2.soundcloud.com'
     };
     this.clientId = clientId;
-    this.timeout = 2*1e3;
+    this.timeout = 4*1e3;
+    this.extendedTimeout = 10*1e3;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
     this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
     this.initializeCacheDecorators();
@@ -47,12 +48,12 @@ class SoundCloudApi {
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramObj[key])}`)
       .join('&');
   }
-  _buildRequestObject(version,route,params = {},method = SoundCloudApi.methods.GET,cancelToken,body){
+  _buildRequestObject(version,route,params = {},method = SoundCloudApi.methods.GET,cancelToken,timeout){
     let urlParams = this._toQueryString(params);
     return {
       method : method ,
       url : `http://${this.endpoints[version]}/${route}?client_id=${this.clientId}&${urlParams}`,
-      timeout : this.timeout,
+      timeout : timeout || this.timeout,
       cancelToken
     }
   }
@@ -155,7 +156,8 @@ class SoundCloudApi {
   }
   getScUserPlaylists(scIdOrUrl){
     return this.resolveResourceId(scIdOrUrl).then((resp) => {
-      return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/playlists`)
+      return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/playlists`,
+              undefined,undefined,undefined,this.extendedTimeout);
     }).then(resp => {
       let playlistData = resp.data;
 
