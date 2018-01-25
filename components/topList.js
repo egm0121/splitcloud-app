@@ -64,6 +64,12 @@ class TopList extends Component {
         visible:true
       },
       {
+        name:'SELECTION',
+        label:'Playlists',
+        enabled:props.isOnline,
+        visible:true
+      },
+      {
         name:'PLS',
         label:'Explore',
         enabled:props.isOnline,
@@ -111,9 +117,14 @@ class TopList extends Component {
       this.state.selectedGenre !== prevState.selectedGenre ||
       this.state.selectedRegion !== prevState.selectedRegion
     ){
-      this.loadTopSoundCloudTracks().then(this.updateResultList,(err) => {
-        console.log('ignore as old genre request',err)
-      });
+      if(this.getCurrSectionObj().scChartType){
+        this.loadTopSoundCloudTracks().then(this.updateResultList);
+      }
+      if(this.getCurrSectionObj().name == 'SELECTION'){
+        this.loadSoundCloudSections().then((data) => {
+          console.log('Soundcloud Sections loaded',data);
+        });
+      }
     }
   }
   getOptionsListByType(type){
@@ -169,6 +180,21 @@ class TopList extends Component {
         this.props.onLoadingStateChange(false);
       }
     );
+    return requestPromise;
+  }
+  loadSoundCloudSections(){
+    this._invalidatePrevRequest();
+    this.props.onLoadingStateChange(true);
+    let requestPromise = this.scApi.getSoundcloudSelections({
+      cancelToken : this.generateRequestInvalidationToken().token
+    });
+    requestPromise.catch((err) => {
+      this.props.onRequestFail(err,this.state.selectedGenre);
+      return Promise.resolve(err);
+    }).then((val) => {
+      if(axios.isCancel(val))return false;
+      this.props.onLoadingStateChange(false);
+    });
     return requestPromise;
   }
   updateResultList(resp){
@@ -241,6 +267,7 @@ class TopList extends Component {
           </View>}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
+          {this.getCurrSectionObj().name == 'SELECTION' && <Text>Soundcloud Selections tab!</Text>}
           <ModalPicker
             overlayStyle={this.getPickerOverlayDisplay('genre')}
             options={this.state.genreOptions}

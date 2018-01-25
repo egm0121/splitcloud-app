@@ -13,6 +13,7 @@ class SoundCloudApi {
     this.extendedTimeout = 10*1e3;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
     this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
+    this.transformSelectionPayload = this.transformSelectionPayload.bind(this);
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
@@ -116,6 +117,20 @@ class SoundCloudApi {
       return retValue;
     });
   }
+  getSoundcloudSelections(opts ={}){
+    let [cancelToken,queryOpts] = this._extractCancelToken(opts);
+    return this.request(SoundCloudApi.api.v2,'selections',{
+      limit:5,
+      offset:0,
+      ...queryOpts
+    },SoundCloudApi.methods.GET,cancelToken)
+    .then(resp => {
+      let retValue = resp.data.collection
+        .map(this.transformSelectionPayload)
+        .filter(s => !Object.values(SoundCloudApi.selectionChart).includes(s.urn) );
+      return retValue;
+    });
+  }
   resolveScResource(scResourceUrl){
     return this.request(SoundCloudApi.api.v1,'resolve',{
       url:scResourceUrl
@@ -174,14 +189,29 @@ class SoundCloudApi {
     trackObj.stream_url = trackObj.uri + '/stream'
     return trackObj;
   }
+  transformSelectionPayload(selection){
+    return {
+      urn : selection.urn,
+      label : selection.title,
+      description : selection.description,
+      playlists: (selection.playlists || []).map(this.transformPlaylistPayload)
+    };
+  }
   transformPlaylistPayload(t){
+    let tracks = undefined;
+    if(t.tracks){
+      tracks = t.tracks.map(this.normalizeStreamUrlProperty)
+        .map(this.transformTrackPayload);
+    }
     return {
       type: 'playlist',
       id: t.id,
       label : t.title,
       username: t.user.username,
       artwork : t.artwork_url,
-      tracks: t.tracks.map(this.normalizeStreamUrlProperty).map(this.transformTrackPayload)
+      duration : t.duration,
+      trackCount: t.track_count,
+      tracks
     };
   }
   transformTrackPayload(t){
@@ -238,6 +268,10 @@ SoundCloudApi.api = {
 SoundCloudApi.chartType = {
   TOP:'top',
   TRENDING:'trending'
+}
+SoundCloudApi.selectionChart = {
+  TOP:'soundcloud:selections:charts-top',
+  TRENDING:'soundcloud:selections:charts-trending'
 }
 SoundCloudApi.genre = {
   ALL : 'soundcloud:genres:all-music',
