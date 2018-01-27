@@ -26,6 +26,7 @@ import TrackListContainer from '../containers/trackListContainer';
 import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
+import SelectionExpolorer from './selectionExplorer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 import AppText from './appText';
 class TopList extends Component {
@@ -121,9 +122,7 @@ class TopList extends Component {
         this.loadTopSoundCloudTracks().then(this.updateResultList);
       }
       if(this.getCurrSectionObj().name == 'SELECTION'){
-        this.loadSoundCloudSections().then((data) => {
-          console.log('Soundcloud Sections loaded',data);
-        });
+        this.loadSoundCloudSections().then(this.updateResultList);
       }
     }
   }
@@ -267,7 +266,9 @@ class TopList extends Component {
           </View>}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
-          {this.getCurrSectionObj().name == 'SELECTION' && <Text>Soundcloud Selections tab!</Text>}
+          {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
+            {...this.props} selectionList={this.state.trackList}
+            />}
           <ModalPicker
             overlayStyle={this.getPickerOverlayDisplay('genre')}
             options={this.state.genreOptions}

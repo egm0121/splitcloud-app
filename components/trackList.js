@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import THEME from '../styles/variables';
 import AppText from './appText';
-
+import PlaylistItem from './playlistItem';
 class TrackList extends Component {
   constructor(props){
     super(props);
@@ -102,6 +102,9 @@ class TrackList extends Component {
         </View>
       </View>
       );
+    }
+    if(rowData.type == 'playlist'){
+      return <PlaylistItem item={rowData} onSelected={this._onSongSelected} />;
     }
     return (
       <View style={styles.row}>

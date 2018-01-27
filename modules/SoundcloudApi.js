@@ -181,6 +181,13 @@ class SoundCloudApi {
         .filter( p => p.tracks.length);
     });
   }
+  getScPlaylist(scId){
+    return this.request(SoundCloudApi.api.v1,`playlists/${scId}`,
+        undefined,undefined,undefined,this.extendedTimeout)
+      .then((resp) => {
+        return this.transformPlaylistPayload(resp.data);
+      })
+  }
   getClientId(){
     return this.clientId;
   }
