@@ -20,7 +20,9 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor:THEME.mainBgColor,
     paddingHorizontal:10,
-    paddingVertical:10
+    paddingVertical:10,
+    borderBottomWidth:1,
+    borderBottomColor:THEME.contentBorderColor
   },
   itemText : {
     color: THEME.mainColor,

@@ -62,11 +62,10 @@ class SelectionExplorer extends Component {
     });
   }
   onSectionSelected(sectionItem){
-    if(this.state.currSection == sectionItem.urn) return false;
     this.setState((state) => {
       let listData = this.denormalizeDataList(state.pureList)
       return {
-        currSection: sectionItem.urn,
+        currSection: state.currSection != sectionItem.urn ? sectionItem.urn :'',
         renderList: this.ds.cloneWithRowsAndSections(listData)
       };
     });

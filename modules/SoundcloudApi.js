@@ -38,6 +38,11 @@ class SoundCloudApi {
       'getScUserPlaylists',
       600*1e3
     );
+    this.getSoundcloudSelections = CacheDecorator.withCache(
+      this.getSoundcloudSelections.bind(this),
+      'getSoundcloudSelections',
+      3600*1e3
+    );
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);
