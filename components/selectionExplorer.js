@@ -16,14 +16,13 @@ class SelectionExplorer extends Component {
     this.renderSectionHeader = this.renderSectionHeader.bind(this);
     this.getSectionDataByUrn = this.getSectionDataByUrn.bind(this);
     this.onPlaylistSelected = this.onPlaylistSelected.bind(this);
+    this.onSectionSelected = this.onSectionSelected.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.emptyResultRow = [{
-      label:this.props.emptyLabel,
-      isEmpty:true
-    }];
+    
     this.state = {
       pureList : [],
-      renderList: this.ds.cloneWithRows(this.emptyResultRow)
+      currSection: 'soundcloud:selections:featured',
+      renderList: this.ds.cloneWithRows([])
     };
   }
   componentWillMount(){
@@ -37,12 +36,14 @@ class SelectionExplorer extends Component {
   getSectionDataByUrn(urn){
     return this.state.pureList.find((curr)=> curr.urn == urn);
   }
-  updateList(listArr){
-    const denormalizedData = listArr.reduce((acc,selection) => {
+  denormalizeDataList(listArr){
+    return listArr.reduce((acc,selection) => {
       acc[selection.urn] = selection.playlists;
       return acc;
     },{});
-    console.log('update selection list with',listArr,denormalizedData);
+  }
+  updateList(listArr){
+    const denormalizedData = this.denormalizeDataList(listArr);
     this.setState({
       pureList: listArr,
       renderList: this.ds.cloneWithRowsAndSections(denormalizedData)
@@ -60,17 +61,33 @@ class SelectionExplorer extends Component {
       }
     });
   }
-  renderRowWithData(rowData) {
-    return <PlaylistItem item={rowData} onSelected={this.onPlaylistSelected} />;
+  onSectionSelected(sectionItem){
+    if(this.state.currSection == sectionItem.urn) return false;
+    this.setState((state) => {
+      let listData = this.denormalizeDataList(state.pureList)
+      return {
+        currSection: sectionItem.urn,
+        renderList: this.ds.cloneWithRowsAndSections(listData)
+      };
+    });
+    console.log('new active section',sectionItem.urn);
+  }
+  renderRowWithData(rowData,sectionId) {
+    return this.state.currSection === sectionId && 
+      <PlaylistItem item={rowData} onSelected={this.onPlaylistSelected} />;
   }
   renderSectionHeader(sectionData,sectionId) {
     let data = this.getSectionDataByUrn(sectionId);
     if(!data) return null;
-    return <SelectionHeaderItem label={data.label} description={data.description} />;
+    return <SelectionHeaderItem item={data}
+      onSelected={this.onSectionSelected} 
+      />;
   }
   render(){
     return <View style={styles.container}>
       <ListView 
+        initialListSize={20}
+        pageSize={20}
         contentContainerStyle={styles.list}
         dataSource={this.state.renderList}
         removeClippedSubviews={false}

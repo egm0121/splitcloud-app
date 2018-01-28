@@ -45,29 +45,29 @@ class TopList extends Component {
     this.onSectionChange = this.onSectionChange.bind(this);
     this.state = {
       sectionList:[{
-        name:'LOCAL',
-        label:'Saved',
-        enabled:true,
-        visible:true
-      },
-      {
         name:'TOP',
         scChartType: SoundCloudApi.chartType.TOP,
-        label:'Top Chart',
+        label:'Top Music',
         enabled:props.isOnline,
         visible:true
       },
       {
         name:'TRENDING',
-        label:'New & Hot',
+        label:'Trending',
         scChartType: SoundCloudApi.chartType.TRENDING,
         enabled:props.isOnline,
         visible:true
       },
       {
         name:'SELECTION',
-        label:'Playlists',
+        label:'Discover',
         enabled:props.isOnline,
+        visible:true
+      },
+      {
+        name:'LOCAL',
+        label:'Saved',
+        enabled:true,
         visible:true
       },
       {

@@ -4,14 +4,14 @@ import THEME from '../styles/variables';
 import AppText from './appText';
 export default function SelectionHeaderItem(props){
   return <View style={{flexDirection:'row'}}>
-      <View style={styles.container}>
+      <TouchableOpacity onPress={props.onSelected.bind(false,props.item)} style={styles.container}>
         <AppText bold={true} style={[styles.itemText,styles.titleText]} >
-            {props.label}
+            {props.item.label}
         </AppText>
         <AppText style={styles.itemText} >
-          {props.description}
+          {props.item.description}
         </AppText>
-      </View>
+      </TouchableOpacity>
   </View> ;
 }
 
