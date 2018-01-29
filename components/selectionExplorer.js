@@ -6,22 +6,19 @@ import {
 } from 'react-native';
 import THEME from '../styles/variables';
 import SelectionHeaderItem from './selectionHeaderItem';
-import PlaylistItem from './playlistItem';
+import SelectionHorizontalListing from './selectionHorizontalListing';
 import PlaylistContainer from '../containers/playlistContainer';
 class SelectionExplorer extends Component {
 
   constructor(props){
     super(props);
     this.renderRowWithData = this.renderRowWithData.bind(this);
-    this.renderSectionHeader = this.renderSectionHeader.bind(this);
     this.getSectionDataByUrn = this.getSectionDataByUrn.bind(this);
     this.onPlaylistSelected = this.onPlaylistSelected.bind(this);
-    this.onSectionSelected = this.onSectionSelected.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     
     this.state = {
       pureList : [],
-      currSection: 'soundcloud:selections:featured',
       renderList: this.ds.cloneWithRows([])
     };
   }
@@ -37,16 +34,13 @@ class SelectionExplorer extends Component {
     return this.state.pureList.find((curr)=> curr.urn == urn);
   }
   denormalizeDataList(listArr){
-    return listArr.reduce((acc,selection) => {
-      acc[selection.urn] = selection.playlists;
-      return acc;
-    },{});
+    return listArr;
   }
   updateList(listArr){
     const denormalizedData = this.denormalizeDataList(listArr);
     this.setState({
       pureList: listArr,
-      renderList: this.ds.cloneWithRowsAndSections(denormalizedData)
+      renderList: this.ds.cloneWithRows(denormalizedData)
     });
   }
   onPlaylistSelected(playlist){
@@ -61,37 +55,25 @@ class SelectionExplorer extends Component {
       }
     });
   }
-  onSectionSelected(sectionItem){
-    this.setState((state) => {
-      let listData = this.denormalizeDataList(state.pureList)
-      return {
-        currSection: state.currSection != sectionItem.urn ? sectionItem.urn :'',
-        renderList: this.ds.cloneWithRowsAndSections(listData)
-      };
-    });
-    console.log('new active section',sectionItem.urn);
-  }
+  
   renderRowWithData(rowData,sectionId) {
-    return this.state.currSection === sectionId && 
-      <PlaylistItem item={rowData} onSelected={this.onPlaylistSelected} />;
+    if(!rowData)return null;
+    return <View style={{flexDirection:'row'}} >
+          <View style={{flexDirection:'column',flex:1}}>
+            <SelectionHeaderItem item={rowData}/>
+            <SelectionHorizontalListing items={rowData.playlists} onSelected={this.onPlaylistSelected}/>
+        </View>
+      </View>;
+   // return <PlaylistItem item={rowData} onSelected={this.onPlaylistSelected} />;
   }
-  renderSectionHeader(sectionData,sectionId) {
-    let data = this.getSectionDataByUrn(sectionId);
-    if(!data) return null;
-    return <SelectionHeaderItem item={data}
-      onSelected={this.onSectionSelected} 
-      />;
-  }
+  
   render(){
     return <View style={styles.container}>
       <ListView 
-        initialListSize={20}
-        pageSize={20}
         contentContainerStyle={styles.list}
         dataSource={this.state.renderList}
-        removeClippedSubviews={false}
+        removeClippedSubviews={true}
         renderRow={this.renderRowWithData}
-        renderSectionHeader={this.renderSectionHeader}
         />
     </View>
   }

@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View,Image,TouchableOpacity  } from 'react-native';
 import THEME from '../styles/variables';
 import AppText from './appText';
-import { formatDurationExtended } from '../helpers/formatters';
+import { formatDurationExtended,ucFirst } from '../helpers/formatters';
 
 function getSmallArtworkUrl(url){
   if(!url)return;
@@ -12,7 +12,9 @@ function getSmallArtworkUrl(url){
 export default function PlaylistItem(props){
   const rowTextStyle = [],
     artworkImage = {url:getSmallArtworkUrl(props.item.artwork)};
-  return <View style={styles.row}>
+  
+  const containerLayout = [styles.row,styles['row'+ucFirst(props.layout)]];
+  return <View style={containerLayout}>
       <TouchableOpacity onPress={props.onSelected.bind(false,props.item)}>
         <View style={styles.rowArtworkContainer}>
           <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
@@ -33,12 +35,14 @@ export default function PlaylistItem(props){
 }
 
 PlaylistItem.defaultProps = {
+  layout:'full',
   emptyLabel : 'No items :(',
   onDescRender: (item) => {
     return `${item.trackCount} songs •  ${formatDurationExtended(item.duration,{milli:true})}`
   }
 };
 PlaylistItem.propTypes = {
+  layout: PropTypes.string,
   item : PropTypes.object.isRequired,
   onSelected: PropTypes.func.isRequired,
   onDescRender: PropTypes.func
@@ -48,6 +52,10 @@ const styles = StyleSheet.create({
     color: THEME.mainColor,
     fontSize: 14,
     paddingRight:20
+  },
+  rowHorizontal:{
+    marginBottom:20,
+    marginTop:20,
   },
   row : {
     flex: 1,
@@ -64,12 +72,11 @@ const styles = StyleSheet.create({
     borderRadius:4
   },
   rowArtworkContainer:{
-    width:60,
-    paddingTop:5
+    width:60
   },
   rowLabel : {
     flex: 10,
-    height: 72,
+    height: 50,
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0
   },
@@ -87,24 +94,24 @@ const styles = StyleSheet.create({
   },
   rowLabelText: {
     color: THEME.mainHighlightColor,
-    lineHeight:20,
+    lineHeight:18,
     fontSize: 15,
     fontWeight:'500'
   },
   rowTitleText:{
     color: THEME.mainHighlightColor,
-    lineHeight:20,
+    lineHeight:16,
     fontSize: 15
   },
   rowAuthorText:{
     color: THEME.mainHighlightColor,
-    lineHeight:18,
+    lineHeight:17,
     fontSize: 13
   },
   rowDescText :{
     color: THEME.mainColor,
     fontSize: 13,
-    lineHeight:20
+    lineHeight:17
   },
   hightlightText : {
     color: THEME.mainActiveColor
@@ -126,17 +133,5 @@ const styles = StyleSheet.create({
     fontWeight:'200',
     lineHeight:55,
     textAlign : 'right'
-  },
-  footer : {
-    borderColor : THEME.contentBorderColor,
-    borderTopWidth :1,
-    backgroundColor: THEME.mainBgColor
-  },
-  closeAction : {
-    flex: 1,
-    color: '#FFFFFF',
-    fontWeight: '300',
-    height: 40,
-    padding: 10
   }
 });
