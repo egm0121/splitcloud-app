@@ -35,7 +35,7 @@ export default function PlaylistItem(props){
 }
 
 PlaylistItem.defaultProps = {
-  layout:'full',
+  layout:'default',
   emptyLabel : 'No items :(',
   onDescRender: (item) => {
     return `${item.trackCount} songs •  ${formatDurationExtended(item.duration,{milli:true})}`
@@ -57,13 +57,15 @@ const styles = StyleSheet.create({
     marginBottom:20,
     marginTop:20,
   },
+  rowDefault:{
+    marginBottom:15,
+    marginTop:15,
+  },
   row : {
     flex: 1,
     flexDirection:'row',
-    marginBottom:5,
-    marginTop:5,
     paddingLeft: 20,
-    paddingRight: 0
+    paddingRight: 20
   },
   rowArtworkImage:{
     width:50,

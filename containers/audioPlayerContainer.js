@@ -43,6 +43,7 @@ class AudioPlayerContainer extends Component {
     super(props);
     this._onPlayTogglePress = this._onPlayTogglePress.bind(this);
     this._onPickerToggle = this._onPickerToggle.bind(this);
+    this._onTrackLabelPressed = this._onTrackLabelPressed.bind(this);
     this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
     this._onSeekToTime = this._onSeekToTime.bind(this);
     this._onSeekToTimeStart = this._onSeekToTimeStart.bind(this);
@@ -50,6 +51,7 @@ class AudioPlayerContainer extends Component {
     this._goToNextTrack = this._goToNextTrack.bind(this);
     this._goToPrevTrack = this._goToPrevTrack.bind(this);
     this._toggleCurrentPlaylist = this._toggleCurrentPlaylist.bind(this);
+    this._toggleFavoritePlaylist = this._toggleFavoritePlaylist.bind(this);
     this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
     this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
     this._onAudioSessionInterruption = this._onAudioSessionInterruption.bind(this);
@@ -257,7 +259,27 @@ class AudioPlayerContainer extends Component {
       }
     });
   }
+  _onTrackLabelPressed(){
+    if(this._hasCurrentTrackObj()){
+      return this._toggleCurrentPlaylist();
+    }
+    return this._onPickerToggle();
+  }
   _toggleCurrentPlaylist(){
+    this.props.navigator.push({
+      title : 'CurrentPlaylistContainer -' + this.props.currentPlaylistId,
+      name : 'CurrentPlaylistContainer' + this.props.currentPlaylistId,
+      component: CurrentPlaylistContainer,
+      passProps : {
+        playlistId: this.props.currentPlaylistId,
+        playlistTitle : `Up Next - ${this.props.side == 'L' ? 'Left' : 'Right'} Side`,
+        side : this.props.side,
+        showMenu : false,
+        onClose: () => this.props.navigator.pop()
+      }
+    });
+  }
+  _toggleFavoritePlaylist(){
     let prevRoute =
       this.findRouteByName('CurrentPlaylistContainer.' + this.props.side);
     if(prevRoute){
@@ -269,7 +291,8 @@ class AudioPlayerContainer extends Component {
       component: CurrentPlaylistContainer,
       passProps : {
         side : this.props.side,
-        playlistTitle : `FAVORITES | ${this.props.side == 'L' ? 'LEFT' : 'RIGHT'} PLAYER`,
+        playlistId: 'default_'+this.props.side,
+        playlistTitle : `Favorites Tracks - ${this.props.side == 'L' ? 'Left' : 'Right'} Side`,
         onClose: () => {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)
@@ -428,10 +451,12 @@ class AudioPlayerContainer extends Component {
         volumeSliderValue={this.state.volumeSliderValue}
         playbackProgressValue={this.state.playbackProgressValue}
         onPickerToggle={this._onPickerToggle}
+        onTrackLabelPress={this._onTrackLabelPressed}
         onUploaderProfileOpen={this._onUploaderProfileOpen}
         openScUploaderLink={this._openScUploaderLink}
         onSeekToTimeStart={this._onSeekToTimeStart}
         onSeekToTime={this._onSeekToTime}
+        toggleFavoritePlaylist={this._toggleFavoritePlaylist}
         toggleCurrentPlaylist={this._toggleCurrentPlaylist}
         goToPrevTrack={this._goToPrevTrack}
         onPlayTogglePress={this._onPlayTogglePress}

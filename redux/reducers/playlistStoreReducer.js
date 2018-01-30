@@ -7,7 +7,6 @@ function findTrackById(searchId){
 }
 function applyFilterVisibility(value,playlistId){
   return (track) => {
-    if(playlistId.indexOf('default') != 0) return {...track,isVisible:true};
     if(!value || value == '') return {...track,isVisible:true};
     let matchString = track.label.toLowerCase() + '' + track.username.toLowerCase();
     let isVisible = matchString.indexOf(value.toLowerCase()) != -1;
