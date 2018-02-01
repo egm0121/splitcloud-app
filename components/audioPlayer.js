@@ -137,20 +137,22 @@ class AudioPlayer extends Component {
                   {this.renderInSplitMode(
                   <View style={[tracknameStyles]}>
                     <View style={[styles.horizontalContainer]}>
-                      <View style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}>
-                       <Image style={[styles.fgArtCoverImage,styles.miniArtCoverImage]}
-                        source={artworkSource}
-                        resizeMode={'contain'}>
-                       <ToggleFavoriteTrackContainer 
-                          side={this.props.side} 
-                          track={this._getCurrentTrackObj()} 
-                          style={[styles.favoriteToggleCenteredPosition]}
-                          size={'small'}
-                        />
-                      </Image>
-                     </View>
+                      <TouchableOpacity  
+                        style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}
+                        onPress={this.props.toggleCurrentPlaylist}>
+                          <Image style={[styles.fgArtCoverImage,styles.miniArtCoverImage]}
+                            source={artworkSource}
+                            resizeMode={'contain'}>
+                          <ToggleFavoriteTrackContainer 
+                              side={this.props.side} 
+                              track={this._getCurrentTrackObj()} 
+                              style={[styles.favoriteToggleCenteredPosition]}
+                              size={'small'}
+                            />
+                          </Image>
+                        </TouchableOpacity>
                      <View style={styles.trackInfoContainer}>
-                       <TouchableOpacity  onPress={this.props.onPickerToggle} style={styles.trackRowContainer}>
+                       <TouchableOpacity  onPress={this.props.onTrackLabelPress} style={styles.trackRowContainer}>
                          <AppText bold={true} style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                           { trackLabelPlaceholder }
                          </AppText>
@@ -166,7 +168,7 @@ class AudioPlayer extends Component {
                   )}
                 {this.renderInFullscreen(
                   <View style={tracknameStyles}>
-                    <TouchableOpacity onPress={this.props.onPickerToggle}>
+                    <TouchableOpacity onPress={this.props.onTrackLabelPress}>
                       <AppText bold={true} style={tracknameTextStyles} numberOfLines={1} ellipsizeMode={'tail'}>
                        { trackLabelPlaceholder }
                       </AppText>
@@ -202,7 +204,7 @@ class AudioPlayer extends Component {
                 <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
                   <Button style={[styles.container,styles.playlistButton]}
                       image={require('../assets/flat_select.png')}
-                      onPressed={this.props.toggleCurrentPlaylist} />
+                      onPressed={this.props.toggleFavoritePlaylist} />
                   <Button style={[styles.container,styles.startRow]}
                           image={require('../assets/flat_prev.png')}
                           size={'bigger'}
@@ -252,13 +254,15 @@ class AudioPlayer extends Component {
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
-          <Image style={[styles.fgArtCoverImage,resizeStyle]}
-           source={artworkSource} >
-            <ToggleFavoriteTrackContainer 
-              side={this.props.side} 
-              track={this._getCurrentTrackObj()} 
-            />
-          </Image>
+          <TouchableOpacity onPress={this.props.toggleCurrentPlaylist}>
+            <Image style={[styles.fgArtCoverImage,resizeStyle]}
+              source={artworkSource} >
+              <ToggleFavoriteTrackContainer 
+                side={this.props.side} 
+                track={this._getCurrentTrackObj()} 
+              />
+            </Image>
+          </TouchableOpacity>
       </Image>
   }
 }

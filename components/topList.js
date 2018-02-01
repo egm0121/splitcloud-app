@@ -26,6 +26,7 @@ import TrackListContainer from '../containers/trackListContainer';
 import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
+import SelectionExpolorer from './selectionExplorer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 import AppText from './appText';
 class TopList extends Component {
@@ -44,23 +45,29 @@ class TopList extends Component {
     this.onSectionChange = this.onSectionChange.bind(this);
     this.state = {
       sectionList:[{
-        name:'LOCAL',
-        label:'Saved',
-        enabled:true,
-        visible:true
-      },
-      {
         name:'TOP',
         scChartType: SoundCloudApi.chartType.TOP,
-        label:'Top Chart',
+        label:'Top Music',
         enabled:props.isOnline,
         visible:true
       },
       {
         name:'TRENDING',
-        label:'New & Hot',
+        label:'Trending',
         scChartType: SoundCloudApi.chartType.TRENDING,
         enabled:props.isOnline,
+        visible:true
+      },
+      {
+        name:'SELECTION',
+        label:'Discover',
+        enabled:props.isOnline,
+        visible:true
+      },
+      {
+        name:'LOCAL',
+        label:'Saved',
+        enabled:true,
         visible:true
       },
       {
@@ -111,9 +118,12 @@ class TopList extends Component {
       this.state.selectedGenre !== prevState.selectedGenre ||
       this.state.selectedRegion !== prevState.selectedRegion
     ){
-      this.loadTopSoundCloudTracks().then(this.updateResultList,(err) => {
-        console.log('ignore as old genre request',err)
-      });
+      if(this.getCurrSectionObj().scChartType){
+        this.loadTopSoundCloudTracks().then(this.updateResultList);
+      }
+      if(this.getCurrSectionObj().name == 'SELECTION'){
+        this.loadSoundCloudSections().then(this.updateResultList);
+      }
     }
   }
   getOptionsListByType(type){
@@ -169,6 +179,21 @@ class TopList extends Component {
         this.props.onLoadingStateChange(false);
       }
     );
+    return requestPromise;
+  }
+  loadSoundCloudSections(){
+    this._invalidatePrevRequest();
+    this.props.onLoadingStateChange(true);
+    let requestPromise = this.scApi.getSoundcloudSelections({
+      cancelToken : this.generateRequestInvalidationToken().token
+    });
+    requestPromise.catch((err) => {
+      this.props.onRequestFail(err,this.state.selectedGenre);
+      return Promise.resolve(err);
+    }).then((val) => {
+      if(axios.isCancel(val))return false;
+      this.props.onLoadingStateChange(false);
+    });
     return requestPromise;
   }
   updateResultList(resp){
@@ -241,6 +266,9 @@ class TopList extends Component {
           </View>}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
+          {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
+            {...this.props} selectionList={this.state.trackList}
+            />}
           <ModalPicker
             overlayStyle={this.getPickerOverlayDisplay('genre')}
             options={this.state.genreOptions}
