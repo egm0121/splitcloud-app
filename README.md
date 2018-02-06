@@ -10,9 +10,9 @@ You can also choose to listen to the same song on both headphones by using the m
 
 Tap on the track title label to search songs and add them to your playlist.
 
-### Demo
+### The App
 
-![demo splitcloud gif](https://bytebucket.org/edellorbo/splitcloud/raw/3a041dd0b48c04cf36521d0f6f3ccd299724a6cf/assets/splitcloud_animated.gif)
+![splitcloud](https://cdn-images-1.medium.com/max/800/1*_MedN7kEkKkLKPjCzNbWzA.png)
 
 ### Dev instructions
 
