@@ -41,9 +41,8 @@ class CurrentPlaylistContainer extends Component {
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
 
     this.state = {
-      filterListValue : '',
       isOverlayMenuOpen:false
-    }
+    };
   }
   onClearPlaylist(){
     Alert.alert(
@@ -112,7 +111,7 @@ class CurrentPlaylistContainer extends Component {
         <View style={styles.filterContainerView}>
           <FilterInput
             placeholder={'Filter songs...'}
-            value={this.props.playlist.filterTracks}
+            value={this.props.playlistFilter}
             onChangeText={this.onFilterTextChange}
             onClearFilter={this.onClearFilter}
             />
@@ -194,11 +193,13 @@ const mapStateToProps = (state,props) => {
   const playlistState = state.playlist.find((playlist) => playlist.side === props.side);
   const playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == props.playlistId);
   const queue = playlistStore.tracks;
+  const playlistFilter = playlistStore.filterTracks
   return {
     picker : pickerState,
     playlist : playlistState,
     settings : state.settings,
     queue,
+    playlistFilter,
     playlistStore
   };
 }
