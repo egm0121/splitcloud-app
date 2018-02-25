@@ -6,20 +6,13 @@ import React, { PropTypes, Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
-  TextInput,
-  ListView,
-  Image,
   View,
-  TouchableOpacity,
   LayoutAnimation,
   Alert
 } from 'react-native';
-import config from '../helpers/config';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
 import BackButton from  '../components/backButton';
-import ClearPlaylistButton from '../components/clearPlaylistButton';
 import Button from '../components/button';
 import FilterInput from '../components/filterInput';
 import MenuOverlay from '../components/menuOverlay';
@@ -33,7 +26,7 @@ import {
 } from '../redux/actions/currentPlaylistActions';
 import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
-import {formatDuration,formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
+import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 
 class CurrentPlaylistContainer extends Component {
@@ -48,9 +41,8 @@ class CurrentPlaylistContainer extends Component {
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
 
     this.state = {
-      filterListValue : '',
       isOverlayMenuOpen:false
-    }
+    };
   }
   onClearPlaylist(){
     Alert.alert(
@@ -109,16 +101,17 @@ class CurrentPlaylistContainer extends Component {
       <View style={styles.container}>
         <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
-          <Button
+          {this.props.showMenu && <Button
             size="small"
             style={styles.playlistMenuButton}
             image={require('../assets/menu_dots_vertical.png')}
             onPressed={this.onPlaylistMenuOpen} ></Button>
+          }
         </HeaderBar>
         <View style={styles.filterContainerView}>
           <FilterInput
             placeholder={'Filter songs...'}
-            value={this.props.playlist.filterTracks}
+            value={this.props.playlistFilter}
             onChangeText={this.onFilterTextChange}
             onClearFilter={this.onClearFilter}
             />
@@ -148,8 +141,13 @@ class CurrentPlaylistContainer extends Component {
     );
   }
 }
+CurrentPlaylistContainer.defaultProps = {
+  showMenu : true
+};
 CurrentPlaylistContainer.propTypes = {
+  showMenu : PropTypes.bool, 
   side : PropTypes.string.isRequired,
+  playlistId : PropTypes.string.isRequired,
   playlist : PropTypes.object.isRequired,
   playlistTitle : PropTypes.string.isRequired,
   onRemoveTrack: PropTypes.func,
@@ -193,18 +191,20 @@ const mapStateToProps = (state,props) => {
   const pickerState =
     state.songPickers.find((playlist) => playlist.side == props.side);
   const playlistState = state.playlist.find((playlist) => playlist.side === props.side);
-  const playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == 'default_'+props.side);
+  const playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == props.playlistId);
   const queue = playlistStore.tracks;
+  const playlistFilter = playlistStore.filterTracks
   return {
     picker : pickerState,
     playlist : playlistState,
     settings : state.settings,
     queue,
+    playlistFilter,
     playlistStore
   };
 }
 const mapDispatchToProps = (dispatch,props) => {
-  const defaultPlaylist = 'default_'+props.side;
+  const defaultPlaylist = props.playlistId;
   return {
     setGlobalSetting(key,value){
       dispatch(setGlobalSetting(key,value));

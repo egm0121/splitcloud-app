@@ -104,7 +104,8 @@ class uploaderProfileContainer extends Component {
     );
     requestPromise
     .catch((err) => {
-      this.props.onRequestFail(err);
+      console.log(err);
+      this.onRequestFail(err);
       return Promise.resolve(err);
     });
     return requestPromise;
