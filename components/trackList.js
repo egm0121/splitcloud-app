@@ -53,7 +53,7 @@ class TrackList extends Component {
         this.listRef.scrollTo({x:0, y:0, animated:true});
       }
     }
-    if(this.props.currentPlayingTrack != newProps.tracksData){
+    if(this.props.currentTrack != newProps.currentTrack){
       this.updateResultList([...newProps.tracksData]);
     }
   }
