@@ -4,11 +4,9 @@
 
 import React, { PropTypes, Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   Image,
-  TextInput,
   ListView,
   View,
   TouchableOpacity,
@@ -23,7 +21,10 @@ class TrackList extends Component {
     this.updateResultList = this.updateResultList.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
     this._onSongAction = this._onSongAction.bind(this);
+    this.setListRef = this.setListRef.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.listRef = null;
+    this.timerRef = null;
     this.emptyResultRow = [{
       label:this.props.emptyLabel,
       isEmpty:true
@@ -37,13 +38,28 @@ class TrackList extends Component {
   componentWillMount(){
     this.updateResultList(this.props.tracksData);
   }
+  componentDidMount(){
+    if(this.props.tracksData && this.props.scrollToCurrentTrack ){
+      setImmediate( ()=> {
+        this.scrollToCurrentTrack(this.props.tracksData);
+      });
+    }
+  }
   componentWillReceiveProps(newProps){
     if(this.props.tracksData != newProps.tracksData){
       this.updateResultList(newProps.tracksData);
+      if( this.props.resetToTop ) {
+        console.log('scroll to top');
+        this.listRef.scrollTo({x:0, y:0, animated:true});
+      }
     }
     if(this.props.currentPlayingTrack != newProps.tracksData){
       this.updateResultList([...newProps.tracksData]);
     }
+  }
+  setListRef(ref){
+    this.listRef = ref;
+    this.props.listRef(ref);
   }
   updateResultList(tracks){
     // in case of empty results or no search terms
@@ -70,6 +86,18 @@ class TrackList extends Component {
   }
   isTrack(rowData){
     return rowData.id && rowData.label && !rowData.isEmpty
+  }
+  scrollToCurrentTrack(trackList){
+    const scrollPx = this.getCurrentTrackIndex(trackList) * 82 ;
+    this.listRef.scrollTo({
+      x: 0, 
+      y: scrollPx,
+      animated: true
+    });
+  }
+  getCurrentTrackIndex(list){
+    const { currentTrack } = this.props;
+    return list.findIndex((track) => track.id === currentTrack.id); 
   }
   getSmallArtworkUrl(url){
     if(!url)return;
@@ -145,7 +173,7 @@ class TrackList extends Component {
           renderHeader={this.props.onHeaderRender}
           onEndReached={this.props.onEndReached}
           onEndReachedThreshold={this.props.onEndThreshold}
-          renderRow={this.renderRowWithData.bind(this)} ref={(ref) => this.props.listRef(ref)} />
+          renderRow={this.renderRowWithData.bind(this)} ref={this.setListRef} />
       </View>
     );
   }
@@ -168,7 +196,9 @@ TrackList.propTypes = {
   renderArtwork: PropTypes.bool,
   onHeaderRender: PropTypes.func,
   currentTrackId: PropTypes.number,
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
+  resetToTop: PropTypes.bool,
+  scrollToCurrentTrack: PropTypes.bool
 };
 
 const styles = StyleSheet.create({
