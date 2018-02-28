@@ -8,6 +8,7 @@ import {
   soundcloudEndpoint,
   playbackModeTypes,
   messages,
+  playlistType,
   NOW_PLAYING_ASSET_NAME
 } from '../helpers/constants';
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
@@ -275,6 +276,7 @@ class AudioPlayerContainer extends Component {
         playlistTitle : `Up Next - ${this.props.side == 'L' ? 'Left' : 'Right'} Side`,
         side : this.props.side,
         showMenu : false,
+        playlistType : playlistType.UP_NEXT,
         onClose: () => this.props.navigator.pop()
       }
     });
@@ -293,6 +295,7 @@ class AudioPlayerContainer extends Component {
         side : this.props.side,
         playlistId: 'default_'+this.props.side,
         playlistTitle : `Favorites Tracks - ${this.props.side == 'L' ? 'Left' : 'Right'} Side`,
+        playlistType : playlistType.FAVORITES,
         onClose: () => {
           this.props.navigator.jumpTo(
             this.findRouteByName(this.props.routeName)

@@ -17,6 +17,7 @@ import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
 import OfflineModeBanner from './components/offlineModeBanner';
 import AnalyticsService from './modules/AnalyticsService';
+import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
 import THEME from './styles/variables';
@@ -52,6 +53,7 @@ class SplitCloudApp extends Component {
   constructor(props){
     super(props);
     this.configureScene = this.configureScene.bind(this);
+    this.onSceneDidFocus = this.onSceneDidFocus.bind(this);
     this.setStylesGlobalOvverides();
   }
   setStylesGlobalOvverides(){
@@ -63,11 +65,17 @@ class SplitCloudApp extends Component {
       gestures: {}, // or null
     };
   }
+  onSceneDidFocus(route){
+    console.log('new scene will focus:',route);
+    NavigationStateNotifier.onSceneDidFocus(route);
+  }
   render() {
     return (
         <Provider store={store} >
             <Navigator
                 initialRoute={{ title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }}
+                onDidFocus={this.onSceneDidFocus}
+                ref={(navigator)=> {this.navigator = navigator;}}
                 renderScene={(route, navigator) => {
                   AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;

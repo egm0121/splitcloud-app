@@ -28,7 +28,8 @@ import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
-
+import NavigationStateNotifier from '../modules/NavigationStateNotifier';
+import {playlistType} from '../helpers/constants';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
@@ -38,11 +39,19 @@ class CurrentPlaylistContainer extends Component {
     this.onOverlayClosed = this.onOverlayClosed.bind(this);
     this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
     this.onOfflineModeToggle = this.onOfflineModeToggle.bind(this);
+    this.componentDidFocus = this.componentDidFocus.bind(this);
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
-
+    this.focusSub = NavigationStateNotifier.addListener(
+      this.props.routeName,
+      this.componentDidFocus
+    );
+    
     this.state = {
       isOverlayMenuOpen:false
     };
+  }
+  componentDidFocus(route){
+    console.log('CurrentPlayerContainer did focus scroll to selected song');
   }
   onClearPlaylist(){
     Alert.alert(
@@ -92,11 +101,15 @@ class CurrentPlaylistContainer extends Component {
       ]
     );
   }
+  componentWillUnmount(){
+    this.focusSub.off();
+  }
   render() {
     const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
     console.log('currentPlaylistContainer unfiltered track',this.props.queue )
     const playlistFilteredList = this.props.queue
       .filter((track) => 'isVisible' in track ? track.isVisible : true);
+    const isUpNextPlaylist = this.props.playlistType === playlistType.UP_NEXT;
     return (
       <View style={styles.container}>
         <HeaderBar title={this.props.playlistTitle}>
@@ -122,6 +135,7 @@ class CurrentPlaylistContainer extends Component {
             onTrackSelected={this.props.onPlayTrack}
             side={this.props.side}
             trackActionStyles={[{fontSize:45}]}
+            scrollToCurrentTrack={isUpNextPlaylist}
             />
         <MenuOverlay onClose={this.onOverlayClosed}
            closeLabel={'Close'}

@@ -46,16 +46,45 @@ class TrackListContainer extends Component {
     this.onTrackAction = this.onTrackAction.bind(this);
     this.onTrackSelected = this.onTrackSelected.bind(this);
     this.trackListRef = null;
-    console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
+    console.log('TrackListContainer onEndThreshold',props.onEndThreshold);
+  }
+  componentDidMount(){
+    if(this.props.trackList && this.props.scrollToCurrentTrack ){
+      this.scrollToCurrentTrack(this.props.trackList);
+    }
   }
   componentWillReceiveProps(newProps){
-    if(this.props.resetToTop && (this.props.trackList !== newProps.trackList)){
-      console.log('scroll to top');
-      this.trackListRef.scrollTo({x:0, y:0, animated:true});
+    if(this.props.trackList !== newProps.trackList){
+      console.log('props.trackList changed')
+      if(this.props.scrollToCurrentTrack &&
+         this.getCurrentTrackIndex(newProps.trackList)){
+        this.scrollToCurrentTrack(newProps.trackList);
+      } 
+      if(this.props.resetToTop) {
+        console.log('scroll to top');
+        this.trackListRef.scrollTo({x:0, y:0, animated:true});
+      }
     }
+  }
+  scrollToCurrentTrack(trackList){
+    const scrollPx = this.getCurrentTrackIndex(trackList) * 82 ;
+    console.log('scroll to index',
+      this.getCurrentTrackIndex(trackList),
+      'scroll amount',
+      scrollPx
+    );
+    this.trackListRef.scrollTo({
+      x: 0, 
+      y: scrollPx,
+      animated: false
+    });
+
   }
   hasFavoriteTrack(track){
     return this.props.favoritePlaylist.tracks.find(t => t.id == track.id);
+  }
+  getCurrentTrackIndex(list){
+    return list.findIndex((track) => track.id === this.props.currentPlayingTrack.id); 
   }
   onTrackAction(track,trackList){
     if(typeof this.props.onTrackActionRender == 'function'){
@@ -131,7 +160,8 @@ TrackListContainer.propTypes = {
   onTrackSelected: PropTypes.func.isRequired,
   onPlaylistSelected: PropTypes.func,
   onHeaderRender: PropTypes.func,
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
+  scrollToCurrentTrack: PropTypes.bool
 }
 const styles = StyleSheet.create({
   container: {
