@@ -15,7 +15,7 @@ function currentPlaylistReducer(state , currAction){
   case actionTypes.FILTER_PLAYLIST:
     return {
       ...state,
-      filterTracks:currAction.value
+      filterTracks:currAction.value //TODO: deprecate filter playlist , moved to playlistStore
     }
   default:
     return state;
@@ -29,7 +29,7 @@ export function playlistReducer(state = initialState.playlist,action){
     return state.map((playlist)=>{
       if(playlist.side == action.side){
         return {
-          ...currentPlaylistReducer(playlist,action)
+          ...currentPlaylistReducer(playlist,action) //TODO: deprecate filter playlist , moved to playlistStore
         };
       }
       return {

@@ -18,7 +18,11 @@ export const audioPlayerStates = {
   PAUSED : 'PAUSED',
   BUFFERING : 'BUFFERING'
 };
-
+export const playlistType = {
+  UP_NEXT : 'UP_NEXT_PLAYLIST',
+  FAVORITES : '',
+  REGULAR : 'REGULAR' 
+}
 export const messages = {
   SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control'
 }

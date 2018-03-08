@@ -45,15 +45,9 @@ class TrackListContainer extends Component {
     this.onTrackActionRender = this.onTrackActionRender.bind(this);
     this.onTrackAction = this.onTrackAction.bind(this);
     this.onTrackSelected = this.onTrackSelected.bind(this);
-    this.trackListRef = null;
-    console.log('TrackListContainer onEndThreshold',props.onEndThreshold)
+    console.log('TrackListContainer onEndThreshold',props.onEndThreshold);
   }
-  componentWillReceiveProps(newProps){
-    if(this.props.resetToTop && (this.props.trackList !== newProps.trackList)){
-      console.log('scroll to top');
-      this.trackListRef.scrollTo({x:0, y:0, animated:true});
-    }
-  }
+  
   hasFavoriteTrack(track){
     return this.props.favoritePlaylist.tracks.find(t => t.id == track.id);
   }
@@ -99,7 +93,6 @@ class TrackListContainer extends Component {
       <View style={styles.container}>
         <TrackList
           onHeaderRender={this.props.onHeaderRender}
-          listRef={(ref) => this.trackListRef = ref}
           tracksData={this.props.trackList}
           onTrackDescRender={this.onTrackDescRender}
           onTrackActionRender={this.onTrackActionRender}
@@ -109,6 +102,8 @@ class TrackListContainer extends Component {
           isLoading={this.props.isLoading}
           onEndReached={this.props.onEndReached}
           onEndThreshold={this.props.onEndThreshold}
+          resetToTop={this.props.resetToTop}
+          scrollToCurrentTrack={this.props.scrollToCurrentTrack}
         ></TrackList>
       </View>
     );
@@ -131,7 +126,8 @@ TrackListContainer.propTypes = {
   onTrackSelected: PropTypes.func.isRequired,
   onPlaylistSelected: PropTypes.func,
   onHeaderRender: PropTypes.func,
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
+  scrollToCurrentTrack: PropTypes.bool
 }
 const styles = StyleSheet.create({
   container: {
