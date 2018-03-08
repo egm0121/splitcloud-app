@@ -8,6 +8,7 @@
   "dependencies": {
     "axios": "^0.15.3",
     "es2015-event-emitter": "0.0.3",
+    "js-md5": "^0.7.3",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "log-suppress": "^1.0.3",
