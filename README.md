@@ -30,6 +30,10 @@ react-native link react-native-store-review
 ### manual install pod inside node_modules/react-native-audio-streaming
 run 
 ```
+cd ios
+
+rm -rf Pods
+rm -rf Podfile.lock
 pod install
 ```
 ### Remove custom compiler flags
