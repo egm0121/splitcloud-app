@@ -193,7 +193,7 @@ class AudioPlayer extends Component {
                       onValuesChangeFinish={this.props.onSeekToTime}
                       onValuesChangeStart={this.props.onSeekToTimeStart}
                       sliderLength={progressTrackLength}
-                      trackStyle={{ borderRadius: 12, height: 3 }}
+                      trackStyle={{ borderRadius: 4, height: 2 }}
                       selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
                       unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                       markerStyle={markerStyle} />
@@ -486,9 +486,9 @@ const sliderTrackStyles = {
   min : mainFgColor
 };
 const markerStyle = {
-  height:17,
-  width:4,
-  borderRadius: 2,
+  height:12,
+  width:12,
+  borderRadius: 6,
   backgroundColor:THEME.mainHighlightColor,
   borderWidth: 0,
   shadowColor:'black',
