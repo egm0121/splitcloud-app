@@ -20,6 +20,8 @@ import ToggleFavoriteTrackContainer from '../containers/toggleFavoriteTrackConta
 import MultiSlider from 'react-native-multi-slider';
 import { formatDurationExtended } from '../helpers/formatters';
 
+const isBufferingLabel = 'Buffering - ';
+
 class AudioPlayer extends Component {
   constructor(props){
     super(props);
@@ -85,7 +87,6 @@ class AudioPlayer extends Component {
       'L' : 'left',
       'R' : 'right'
     };
-    const isBufferingLabel = 'Buffering - ';
     let isUiPlaybackActive = this._isPlayerPlaying() || this._isPlayerBuffering();
     let playbackSource = isUiPlaybackActive ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
@@ -468,7 +469,8 @@ const styles = StyleSheet.create({
     width:null,
     height:null,
     alignItems:'center',
-    justifyContent:'flex-end'
+    justifyContent:'flex-end',
+    borderRadius:8,
   },
   miniArtCoverImage:{
     justifyContent:'center'
