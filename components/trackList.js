@@ -15,6 +15,8 @@ import {
 import THEME from '../styles/variables';
 import AppText from './appText';
 import PlaylistItem from './playlistItem';
+import TrackItem from './trackItem';
+
 class TrackList extends Component {
   constructor(props){
     super(props);
@@ -104,21 +106,6 @@ class TrackList extends Component {
     return url.replace('-large', '-t67x67');
   }
   renderRowWithData(rowData) {
-    const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
-    let isTrack,trackAuthor,trackTitle,artworkImage;
-    if(this.isTrack(rowData)){
-      isTrack = true;
-      [trackAuthor,trackTitle] = rowData.label.split('-').map((l) => l.trim());
-      if(!trackTitle || trackTitle.length == 0){
-        trackTitle = trackAuthor;
-        trackAuthor = rowData.username;
-      }
-      artworkImage = {url:this.getSmallArtworkUrl(rowData.artwork)};
-      if(rowData.id == this.props.currentTrack.id){
-        rowTextStyle.push(styles.hightlightText);
-      }
-    }
-
     if(rowData.isEmpty){
       return (
       <View style={[styles.rowContainerPlaceholder]}>
@@ -134,35 +121,14 @@ class TrackList extends Component {
     if(rowData.type == 'playlist'){
       return <PlaylistItem item={rowData} onSelected={this._onSongSelected} />;
     }
-    return (
-      <View style={styles.row}>
-        {this.props.renderArtwork &&
-          <TouchableOpacity onPress={this._onSongSelected.bind(this,rowData)}>
-            <View style={styles.rowArtworkContainer}>
-              <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
-            </View>
-          </TouchableOpacity>
-          }
-          <TouchableOpacity style={styles.rowLabel} onPress={this._onSongSelected.bind(this,rowData)}>
-              <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
-                {trackTitle}
-              </AppText>
-              <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
-                {trackAuthor}
-              </AppText>
-              <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
-                {this.props.onTrackDescRender(rowData)}
-              </AppText>
-          </TouchableOpacity>
-          {!rowData.isEmpty ?
-            <TouchableOpacity style={styles.rowAction} onPress={this._onSongAction.bind(this,rowData)}>
-              <Text style={[styles.rowActionText].concat((this.props.trackActionStyles || [] ))}>
-                {this.props.onTrackActionRender(rowData)}
-              </Text>
-            </TouchableOpacity>: null
-            }
-      </View>
-    );
+    return <TrackItem 
+      item={rowData} 
+      currentTrack={this.props.currentTrack}
+      onSelected={this._onSongSelected} 
+      onAction={this._onSongAction} 
+      onTrackActionRender={this.props.onTrackActionRender}
+      onTrackDescRender={this.props.onTrackDescRender}
+    />
   }
   render() {
     return (
@@ -181,8 +147,6 @@ class TrackList extends Component {
 
 TrackList.defaultProps = {
   emptyLabel : 'No items :(',
-  onTrackActionRender : () => '+',
-  renderArtwork: true,
   isLoading: false,
   onEndThreshold: 150,
   listRef : () => {}
@@ -211,95 +175,23 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.contentBgColor,
     flexDirection:'column'
   },
-  row : {
-    flex: 1,
-    flexDirection:'row',
-    marginBottom:5,
-    marginTop:5,
-    paddingLeft: 20,
-    paddingRight: 0
-  },
-  rowArtworkImage:{
-    width:50,
-    height:50,
-    backgroundColor: THEME.listBorderColor,
-    borderRadius:4
-  },
-  rowArtworkContainer:{
-    width:60,
-    paddingTop:5
-  },
-  rowLabel : {
-    flex: 10,
-    height: 72,
-    borderColor: THEME.listBorderColor,
-    borderBottomWidth:0
-  },
   rowContainerPlaceholder:{
     flex: 1,
     flexDirection:'row',
     marginBottom:5,
     marginTop:5
   },
-  rowPlaceholder :{
+  rowPlaceholder:{
     flex : 1,
   },
   loadingIndicator:{
     paddingVertical:10
-  },
-  rowLabelText: {
-    color: THEME.mainHighlightColor,
-    lineHeight:20,
-    fontSize: 15,
-    fontWeight:'500'
-  },
-  rowTitleText:{
-    color: THEME.mainHighlightColor,
-    lineHeight:20,
-    fontSize: 15
-  },
-  rowAuthorText:{
-    color: THEME.mainHighlightColor,
-    lineHeight:18,
-    fontSize: 13
-  },
-  rowDescText :{
-    color: THEME.mainColor,
-    fontSize: 13,
-    lineHeight:20
-  },
-  hightlightText : {
-    color: THEME.mainActiveColor
   },
   placeholderRowText:{
     color:THEME.mainColor,
     lineHeight:30,
     textAlign:'center',
     fontSize: 17
-  },
-  rowAction : {
-    flex: 2,
-    paddingRight:20
-  },
-  rowActionText :{
-    color: THEME.mainColor,
-    opacity:0.8,
-    fontSize: 45,
-    fontWeight:'200',
-    lineHeight:55,
-    textAlign : 'right'
-  },
-  footer : {
-    borderColor : THEME.contentBorderColor,
-    borderTopWidth :1,
-    backgroundColor: THEME.mainBgColor
-  },
-  closeAction : {
-    flex: 1,
-    color: '#FFFFFF',
-    fontWeight: '300',
-    height: 40,
-    padding: 10
   }
 });
 
