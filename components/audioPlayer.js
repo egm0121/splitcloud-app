@@ -20,6 +20,8 @@ import ToggleFavoriteTrackContainer from '../containers/toggleFavoriteTrackConta
 import MultiSlider from 'react-native-multi-slider';
 import { formatDurationExtended } from '../helpers/formatters';
 
+const isBufferingLabel = 'Buffering - ';
+
 class AudioPlayer extends Component {
   constructor(props){
     super(props);
@@ -85,7 +87,6 @@ class AudioPlayer extends Component {
       'L' : 'left',
       'R' : 'right'
     };
-    const isBufferingLabel = 'Buffering - ';
     let isUiPlaybackActive = this._isPlayerPlaying() || this._isPlayerBuffering();
     let playbackSource = isUiPlaybackActive ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
@@ -192,7 +193,7 @@ class AudioPlayer extends Component {
                       onValuesChangeFinish={this.props.onSeekToTime}
                       onValuesChangeStart={this.props.onSeekToTimeStart}
                       sliderLength={progressTrackLength}
-                      trackStyle={{ borderRadius: 12, height: 3 }}
+                      trackStyle={{ borderRadius: 4, height: 2 }}
                       selectedStyle={{backgroundColor: 'rgb(255,255,255)'}}
                       unselectedStyle={{backgroundColor: 'rgba(255,255,255,0.3)'}}
                       markerStyle={markerStyle} />
@@ -468,7 +469,8 @@ const styles = StyleSheet.create({
     width:null,
     height:null,
     alignItems:'center',
-    justifyContent:'flex-end'
+    justifyContent:'flex-end',
+    borderRadius:8,
   },
   miniArtCoverImage:{
     justifyContent:'center'
@@ -484,9 +486,9 @@ const sliderTrackStyles = {
   min : mainFgColor
 };
 const markerStyle = {
-  height:17,
-  width:4,
-  borderRadius: 2,
+  height:12,
+  width:12,
+  borderRadius: 6,
   backgroundColor:THEME.mainHighlightColor,
   borderWidth: 0,
   shadowColor:'black',
