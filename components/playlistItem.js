@@ -38,7 +38,9 @@ PlaylistItem.defaultProps = {
   layout:'default',
   emptyLabel : 'No items :(',
   onDescRender: (item) => {
-    return `${item.trackCount} songs •  ${formatDurationExtended(item.duration,{milli:true})}`
+    const tracksCount = item.trackCount ? `${item.trackCount} songs` : '';
+    const duration = `${formatDurationExtended(item.duration,{milli:true})}`;
+    return tracksCount ? `${tracksCount} • ${duration}`  : `Duration ${duration}`; 
   }
 };
 PlaylistItem.propTypes = {
