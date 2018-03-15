@@ -208,15 +208,13 @@ class AudioPlayer extends Component {
                       onPressed={this.props.toggleFavoritePlaylist} />
                   <Button style={[styles.container,styles.startRow]}
                           image={require('../assets/flat_prev.png')}
-                          size={'bigger'}
                           onPressed={this.props.goToPrevTrack} />
                   <View style={styles.playToggleButtonContainer}>
                     <Button style={playPauseButtonStyle} image={playbackSource}
-                        size={'huge'} onPressed={this.props.onPlayTogglePress} />
+                        size={'big'} onPressed={this.props.onPlayTogglePress} />
                   </View>
                   <Button style={[styles.container,styles.endRow]}
-                          image={require('../assets/flat_next.png')}
-                          size={'bigger'}
+                          image={require('../assets/flat_next.png')}   
                           onPressed={this.props.goToNextTrack} />
                   <Button style={[styles.container,styles.searchButton]}
                           image={require('../assets/flat_search.png')}
@@ -383,7 +381,7 @@ const styles = StyleSheet.create({
     height: 30
   },textShadowStyle),
   playToggleButtonContainer:{
-    borderWidth:1.5,
+    borderWidth:0,
     borderRadius:50,
     height:55,
     width:55,
@@ -391,11 +389,11 @@ const styles = StyleSheet.create({
     marginHorizontal:10
   },
   playToggleButton:{
-    top:3,
+    top:10,
     left:4
   },
   pauseToggleButton:{
-    top:3,
+    top:10,
     left:-1
   },
   searchButton:{

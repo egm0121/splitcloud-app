@@ -17,6 +17,8 @@ import AppText from './appText';
 import PlaylistItem from './playlistItem';
 import TrackItem from './trackItem';
 
+const LIST_ITEM_HEIGHT = 82;
+
 class TrackList extends Component {
   constructor(props){
     super(props);
@@ -81,7 +83,7 @@ class TrackList extends Component {
       this.props.onTrackSelected(rowData,this.state.pureList);
     }
   }
-  _onSongAction(rowData,){
+  _onSongAction(rowData){
     if(!rowData.isEmpty){
       this.props.onTrackAction(rowData,this.state.pureList);
     }
@@ -90,7 +92,7 @@ class TrackList extends Component {
     return rowData.id && rowData.label && !rowData.isEmpty
   }
   scrollToCurrentTrack(trackList){
-    const scrollPx = this.getCurrentTrackIndex(trackList) * 82 ;
+    const scrollPx = this.getCurrentTrackIndex(trackList) * LIST_ITEM_HEIGHT ;
     this.listRef.scrollTo({
       x: 0, 
       y: scrollPx,
