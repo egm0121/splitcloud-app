@@ -205,6 +205,7 @@ class AudioPlayer extends Component {
                 <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
                   <Button style={[styles.container,styles.playlistButton]}
                       image={require('../assets/flat_select.png')}
+                      size={'small'}
                       onPressed={this.props.toggleFavoritePlaylist} />
                   <Button style={[styles.container,styles.startRow]}
                           image={require('../assets/flat_prev.png')}
