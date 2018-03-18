@@ -53,18 +53,16 @@ export default function TrackItem(props){
         </AppText>
     </TouchableOpacity>
     {!rowData.isEmpty ?
-      <TouchableOpacity style={styles.rowAction} onPress={props.onAction.bind(null,rowData)}>
-        <Text style={[styles.rowActionText].concat((props.trackActionStyles || [] ))}>
-          {props.onTrackActionRender(rowData)}
-        </Text>
-      </TouchableOpacity>: null
+      <View style={styles.rowAction} >
+        {props.onTrackActionRender(rowData)}
+      </View>: null
       }
   </View>;
 }
 
 TrackItem.defaultProps = {
   layout:'default',
-  onTrackActionRender : () => '+',
+  onTrackActionRender : () => null,
   renderArtwork: true,
 };
 TrackItem.propTypes = {
@@ -146,13 +144,5 @@ const styles = StyleSheet.create({
   rowAction : {
     flex: 2,
     paddingRight:20
-  },
-  rowActionText :{
-    color: THEME.mainColor,
-    opacity:0.8,
-    fontSize: 45,
-    fontWeight:'200',
-    lineHeight:55,
-    textAlign : 'right'
   }
 });

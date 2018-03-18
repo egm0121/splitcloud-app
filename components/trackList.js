@@ -24,7 +24,6 @@ class TrackList extends Component {
     super(props);
     this.updateResultList = this.updateResultList.bind(this);
     this._onSongSelected = this._onSongSelected.bind(this);
-    this._onSongAction = this._onSongAction.bind(this);
     this.setListRef = this.setListRef.bind(this);
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.listRef = null;
@@ -83,11 +82,6 @@ class TrackList extends Component {
       this.props.onTrackSelected(rowData,this.state.pureList);
     }
   }
-  _onSongAction(rowData){
-    if(!rowData.isEmpty){
-      this.props.onTrackAction(rowData,this.state.pureList);
-    }
-  }
   isTrack(rowData){
     return rowData.id && rowData.label && !rowData.isEmpty
   }
@@ -127,7 +121,6 @@ class TrackList extends Component {
       item={rowData} 
       currentTrack={this.props.currentTrack}
       onSelected={this._onSongSelected} 
-      onAction={this._onSongAction} 
       onTrackActionRender={this.props.onTrackActionRender}
       onTrackDescRender={this.props.onTrackDescRender}
     />
@@ -157,7 +150,6 @@ TrackList.propTypes = {
   tracksData : PropTypes.array.isRequired,
   emptyLabel : PropTypes.string,
   onTrackSelected: PropTypes.func,
-  onTrackAction: PropTypes.func,
   onTrackActionRender: PropTypes.func,
   renderArtwork: PropTypes.bool,
   onHeaderRender: PropTypes.func,

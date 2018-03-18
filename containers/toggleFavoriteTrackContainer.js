@@ -31,7 +31,8 @@ class ToggleFavoriteTrackContainer extends Component {
 ToggleFavoriteTrackContainer.propTypes = {
   side : PropTypes.string.isRequired,
   track : PropTypes.object.isRequired,
-  style : PropTypes.array
+  style : PropTypes.array,
+  inlineLayout : PropTypes.bool
 }
 const mapStateToProps = (state,props) => {
   let favoritePlaylist = state.playlistStore.find(
@@ -47,7 +48,7 @@ const mapDispatchToProps = (dispatch,props) => ({
 
     const showFeedback = () => dispatch(pushNotification({type:'success',message:'Favorite '+actionMessage}));
     if(isFavorite){
-      Alert.alert('Remove from favorite?','',[
+      Alert.alert('Remove track from favorites?','',[
         {
           text:'Yes',
           onPress:() => dispatch(
