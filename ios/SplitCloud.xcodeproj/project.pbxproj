@@ -343,6 +343,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1DD6BB1D205183D700A157FD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		7813F4821FCE1CFC00F83C93 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -455,6 +462,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				788C632E1F9355440043AA46 /* Recovered References */,
 				7847E62324D1486A9893F49B /* Resources */,
+				1DD6BB1D205183D700A157FD /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";

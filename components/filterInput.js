@@ -33,7 +33,7 @@ class FilterInput extends Component{
     }
   }
   render(){
-    let isEmpty = this.props.value.length == 0;
+    let isEmpty = !this.props.value || this.props.value.length == 0;
     let clearButtonOpacity = isEmpty ? 0 : 1;
     let inputViewStyle = [styles.filterInputView,this.props.inputViewStyle];
     let inputStyle = [styles.filterInput,this.props.inputStyle];

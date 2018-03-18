@@ -1,4 +1,4 @@
-import AnalyticsService from '../../modules/AnalyticsService';
+import AnalyticsService from '../../modules/Analytics';
 import { actionTypes } from '../constants/actions';
 const actionTypeWhitelist = [
   actionTypes.CHANGE_PLAYBACK_MODE,

@@ -38,7 +38,9 @@ PlaylistItem.defaultProps = {
   layout:'default',
   emptyLabel : 'No items :(',
   onDescRender: (item) => {
-    return `${item.trackCount} songs •  ${formatDurationExtended(item.duration,{milli:true})}`
+    const tracksCount = item.trackCount ? `${item.trackCount} songs` : '';
+    const duration = `${formatDurationExtended(item.duration,{milli:true})}`;
+    return tracksCount ? `${tracksCount} • ${duration}`  : `Duration ${duration}`; 
   }
 };
 PlaylistItem.propTypes = {
@@ -82,18 +84,6 @@ const styles = StyleSheet.create({
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0
   },
-  rowContainerPlaceholder:{
-    flex: 1,
-    flexDirection:'row',
-    marginBottom:5,
-    marginTop:5
-  },
-  rowPlaceholder :{
-    flex : 1,
-  },
-  loadingIndicator:{
-    paddingVertical:10
-  },
   rowLabelText: {
     color: THEME.mainHighlightColor,
     lineHeight:18,
@@ -117,12 +107,6 @@ const styles = StyleSheet.create({
   },
   hightlightText : {
     color: THEME.mainActiveColor
-  },
-  placeholderRowText:{
-    color:THEME.mainColor,
-    lineHeight:30,
-    textAlign:'center',
-    fontSize: 17
   },
   rowAction : {
     flex: 2,

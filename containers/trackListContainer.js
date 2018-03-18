@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import TrackList from '../components/trackList';
+import ToggleFavoriteTrackContainer from './toggleFavoriteTrackContainer';
 import PlaylistContainer from './playlistContainer';
 import {
   pushNotification
@@ -43,7 +44,6 @@ class TrackListContainer extends Component {
     );
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onTrackActionRender = this.onTrackActionRender.bind(this);
-    this.onTrackAction = this.onTrackAction.bind(this);
     this.onTrackSelected = this.onTrackSelected.bind(this);
     console.log('TrackListContainer onEndThreshold',props.onEndThreshold);
   }
@@ -51,14 +51,15 @@ class TrackListContainer extends Component {
   hasFavoriteTrack(track){
     return this.props.favoritePlaylist.tracks.find(t => t.id == track.id);
   }
-  onTrackAction(track,trackList){
-    if(typeof this.props.onTrackActionRender == 'function'){
-      return this.props.onTrackAction(track, trackList, this.hasFavoriteTrack(track));
-    }
-  }
   onTrackActionRender(track){
     if(typeof this.props.onTrackActionRender == 'function'){
       return this.props.onTrackActionRender(track, this.hasFavoriteTrack(track));
+    } else {
+      return <ToggleFavoriteTrackContainer 
+        inlineLayout 
+        side={this.props.side}
+        track={track}
+      />
     }
   }
   onTrackSelected(...args){
@@ -97,7 +98,6 @@ class TrackListContainer extends Component {
           onTrackDescRender={this.onTrackDescRender}
           onTrackActionRender={this.onTrackActionRender}
           currentTrack={this.props.currentPlayingTrack}
-          onTrackAction={this.onTrackAction}
           onTrackSelected={this.onTrackSelected}
           isLoading={this.props.isLoading}
           onEndReached={this.props.onEndReached}
@@ -110,11 +110,7 @@ class TrackListContainer extends Component {
   }
 }
 TrackListContainer.defaultProps ={
-  resetToTop:false,
-  onTrackActionRender(track,isFavoriteTrack){
-    if(track.type == 'playlist') return null;
-    return isFavoriteTrack ? '×':'+';
-  }
+  resetToTop:false
 }
 TrackListContainer.propTypes = {
   side : PropTypes.string.isRequired,
@@ -122,7 +118,6 @@ TrackListContainer.propTypes = {
   currentPlayingTrack : PropTypes.object.isRequired,
   resetToTop: PropTypes.bool,
   onTrackActionRender: PropTypes.func,
-  onTrackAction: PropTypes.func.isRequired,
   onTrackSelected: PropTypes.func.isRequired,
   onPlaylistSelected: PropTypes.func,
   onHeaderRender: PropTypes.func,
@@ -151,17 +146,6 @@ const mapStateToProps = (state,props) => {
 }
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
-  onTrackAction : (track,trackList,isTrackFavorite) => {
-    let actionMessage = '';
-    if(isTrackFavorite){
-      actionMessage = 'Deleted';
-      dispatch(removePlaylistItem(props.side,track,'default_'+props.side));
-    } else {
-      actionMessage = 'Added';
-      dispatch(addPlaylistItem(props.side,track,'default_'+props.side))
-    }
-    dispatch(pushNotification({type : 'success',message : `Favorite ${actionMessage}!`}));
-  },
   onTrackSelected : (track,trackList) => {
     console.log('tracklist connect onTrackSelected');
     dispatch(setPlaylist(props.side,trackList,'playbackQueue_'+props.side));

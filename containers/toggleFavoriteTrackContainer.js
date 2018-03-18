@@ -3,7 +3,7 @@
  */
 
 import React, { PropTypes, Component } from 'react';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import ToggleFavoriteButton from '../components/toggleFavoriteButton';
 import {
@@ -31,7 +31,8 @@ class ToggleFavoriteTrackContainer extends Component {
 ToggleFavoriteTrackContainer.propTypes = {
   side : PropTypes.string.isRequired,
   track : PropTypes.object.isRequired,
-  style : PropTypes.array
+  style : PropTypes.array,
+  inlineLayout : PropTypes.bool
 }
 const mapStateToProps = (state,props) => {
   let favoritePlaylist = state.playlistStore.find(
@@ -44,11 +45,25 @@ const mapStateToProps = (state,props) => {
 const mapDispatchToProps = (dispatch,props) => ({
   onToggleFavorite(isFavorite){
     const actionMessage = isFavorite ? 'Removed' : 'Added';
-    const action = isFavorite ? 
-      removePlaylistItem(props.side,props.track,'default_'+props.side) :
-      addPlaylistItem(props.side,props.track,'default_'+props.side);
-    dispatch(pushNotification({type:'success',message:'Favorite '+actionMessage}));
-    return dispatch(action);
+
+    const showFeedback = () => dispatch(pushNotification({type:'success',message:'Favorite '+actionMessage}));
+    if(isFavorite){
+      Alert.alert('Remove track from favorites?','',[
+        {
+          text:'Yes',
+          onPress:() => dispatch(
+            removePlaylistItem(props.side,props.track,'default_'+props.side)
+          ) && showFeedback(),
+          style:'positive'
+        },{
+          text: 'Cancel',
+          onPress: () =>{}
+        }
+      ]);  
+    } else {
+      dispatch(addPlaylistItem(props.side,props.track,'default_'+props.side));
+      showFeedback();
+    }
   }
 });
 const ConnectedToggleFavoriteTrackContainer = connect(mapStateToProps,mapDispatchToProps)(ToggleFavoriteTrackContainer);
