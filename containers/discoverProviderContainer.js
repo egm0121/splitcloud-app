@@ -4,28 +4,15 @@
 
 import React, { PropTypes, Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
-  TextInput,
-  ListView,
   View,
-  TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
 import config from '../helpers/config';
 import THEME from '../styles/variables'
-import { connect } from 'react-redux';
-import BackButton from '../components/backButton';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import TrackListContainer from '../containers/trackListContainer';
-import {
-  pushNotification
-} from '../redux/actions/notificationActions';
-import {
-  addPlaylistItem
-} from '../redux/actions/currentPlaylistActions';
-import {formatDuration, formatGenreLabel} from '../helpers/formatters';
+
 const {SC_CLIENT_ID} = config;
 
 class DiscoverProviderContainer extends Component {
@@ -133,20 +120,5 @@ const styles = StyleSheet.create({
     zIndex:20
   }
 });
-const mapStateToProps = (state,props) => {
-  const playlistState =
-    state.playlist.filter((picker) => picker.side == props.side).pop();
-  const queue = playlistState.playbackQueue;
-  return {
-    playlist : playlistState,
-    currentTrack : queue[playlistState.currentTrackIndex]
-  };
-}
-const mapDispatchToProps = (dispatch,props) =>({
-  pushNotification: (notification) => dispatch(pushNotification(notification))
-});
-const ConnectedDiscoverProviderContainer = connect(mapStateToProps,mapDispatchToProps)(DiscoverProviderContainer);
 
-AppRegistry.registerComponent('DiscoverProviderContainer', () => ConnectedDiscoverProviderContainer);
-
-export default ConnectedDiscoverProviderContainer;
+export default DiscoverProviderContainer;

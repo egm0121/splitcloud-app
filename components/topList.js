@@ -65,17 +65,18 @@ class TopList extends Component {
         visible:true
       },
       {
+        name:'PLS',
+        label:'Onstripes',
+        enabled:props.isOnline,
+        visible:true // TODO
+      },
+      {
         name:'LOCAL',
         label:'Saved',
         enabled:true,
         visible:true
-      },
-      {
-        name:'PLS',
-        label:'Explore',
-        enabled:props.isOnline,
-        visilble:false
-      }],
+      }
+      ],
       section :'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
