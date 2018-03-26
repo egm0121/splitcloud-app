@@ -27,7 +27,7 @@ import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
-import MediaLibraryExplorer from '../components/mediaLibraryExplorer';
+//import MediaLibraryExplorer from './mediaLibraryExplorer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 import AppText from './appText';
 class TopList extends Component {
@@ -273,7 +273,7 @@ class TopList extends Component {
           </View>}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
-          {this.getCurrSectionObj().name == 'ITUNESLIBRARY' && <MediaLibraryExplorer {...this.props}/>}
+          {/*this.getCurrSectionObj().name == 'ITUNESLIBRARY' && <MediaLibraryExplorer {...this.props}/>*/}
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
             {...this.props} selectionList={this.state.trackList}
             />}

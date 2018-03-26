@@ -11,7 +11,6 @@ import axios from 'axios';
 import THEME from '../styles/variables'
 import MediaLibraryApi from '../modules/mediaLibraryApi';
 import TrackListContainer from '../containers/trackListContainer';
-import mediaLibraryApi from '../modules/mediaLibraryApi';
 
 class MediaLibraryExplorer extends Component {
   constructor(props){
