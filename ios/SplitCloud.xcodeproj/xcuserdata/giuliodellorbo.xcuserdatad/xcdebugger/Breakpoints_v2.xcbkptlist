@@ -14,7 +14,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "5"
-            endingLineNumber = "5">
+            endingLineNumber = "5"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -29,8 +31,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "6"
             endingLineNumber = "6"
-            landmarkName = "@interface ReactNativeAudioStreaming"
-            landmarkType = "2">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -40,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.m"
-            timestampString = "503283318.523696"
+            timestampString = "543797329.028995"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "138"
             endingLineNumber = "138"
-            landmarkName = "RCT_EXPORT_METHOD()"
+            landmarkName = "RCT_EXPORT_METHOD"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -56,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.m"
-            timestampString = "503283318.523696"
+            timestampString = "543797329.0291491"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "137"
             endingLineNumber = "137"
-            landmarkName = "RCT_EXPORT_METHOD()"
+            landmarkName = "RCT_EXPORT_METHOD"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
