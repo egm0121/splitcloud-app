@@ -27,6 +27,7 @@ import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
+import MediaLibraryExplorer from '../components/mediaLibraryExplorer';
 import {formatDuration, formatGenreLabel} from '../helpers/formatters';
 import AppText from './appText';
 class TopList extends Component {
@@ -74,7 +75,13 @@ class TopList extends Component {
         name:'PLS',
         label:'Explore',
         enabled:props.isOnline,
-        visilble:false
+        visible:false
+      },
+      {
+        name:'ITUNESLIBRARY',
+        label:'Music Library',
+        enabled:true,
+        visible:false
       }],
       section :'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
@@ -266,6 +273,7 @@ class TopList extends Component {
           </View>}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
+          {this.getCurrSectionObj().name == 'ITUNESLIBRARY' && <MediaLibraryExplorer {...this.props}/>}
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
             {...this.props} selectionList={this.state.trackList}
             />}
