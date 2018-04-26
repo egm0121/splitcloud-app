@@ -25,8 +25,8 @@
 		22D58CA1129F45CC8957AA41 /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D61851379FDF4BC88B1D4D61 /* libRNDeviceInfo.a */; };
 		5ECACD3E8D084CF996D15503 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */; };
 		600393DBC17B45BE9AB8EDCC /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2410903D6A76436B927629F1 /* Lato-Regular.ttf */; };
-		785BC3412069A8B000CCD765 /* libStreamingKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3402069A7E600CCD765 /* libStreamingKit.a */; };
-		785BC3602069ABA000CCD765 /* libPods-ReactNativeAudioStreaming.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC33E2069A7E600CCD765 /* libPods-ReactNativeAudioStreaming.a */; };
+		785BC3D42069B35D00CCD765 /* libReactNativeAudioStreaming.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3CA2069B31D00CCD765 /* libReactNativeAudioStreaming.a */; };
+		785BC3D52069B35D00CCD765 /* libStreamingKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3D32069B33000CCD765 /* libStreamingKit.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		9FAB352B4B204D7EA5135968 /* libRNiTunes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A455F4EB97994CA18994FCB2 /* libRNiTunes.a */; };
 		A460AFB9A7F24EC08E91E6CC /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F0C35BEBCDD4B88B110F9AC /* Lato-Bold.ttf */; };
@@ -112,23 +112,23 @@
 			remoteGlobalIDString = F12AFB9B1ADAF8F800E0535D;
 			remoteInfo = RNFS;
 		};
-		781F156F2067DB440076FC13 /* PBXContainerItemProxy */ = {
+		785BC3C92069B31D00CCD765 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 79E52D6F39714ED7AB2914B7 /* RNiTunes.xcodeproj */;
+			containerPortal = 785BC3C52069B31D00CCD765 /* ReactNativeAudioStreaming.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = FFEC319C1C46B4EB0080A80E;
-			remoteInfo = RNiTunes;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = ReactNativeAudioStreaming;
 		};
-		785BC33D2069A7E600CCD765 /* PBXContainerItemProxy */ = {
+		785BC3D02069B33000CCD765 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 785BC3382069A7E600CCD765 /* Pods.xcodeproj */;
+			containerPortal = 785BC3CB2069B32F00CCD765 /* Pods.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 3D796608261BE7EF75B9CA099BE45490;
 			remoteInfo = "Pods-ReactNativeAudioStreaming";
 		};
-		785BC33F2069A7E600CCD765 /* PBXContainerItemProxy */ = {
+		785BC3D22069B33000CCD765 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 785BC3382069A7E600CCD765 /* Pods.xcodeproj */;
+			containerPortal = 785BC3CB2069B32F00CCD765 /* Pods.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8354B6B10F10687EE626DF43663B075A;
 			remoteInfo = StreamingKit;
@@ -175,13 +175,6 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
-		C29CBEA21D43DCE6001D0888 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D860C55F11CC49E2A0AE844B /* ReactNativeAudioStreaming.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 134814201AA4EA6300B7C361;
-			remoteInfo = ReactNativeAudioStreaming;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -209,7 +202,8 @@
 		2F0C35BEBCDD4B88B110F9AC /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
 		53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTActionSheet.a; sourceTree = "<group>"; };
 		70E59A0E6B4B4854A49B721E /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
-		785BC3382069A7E600CCD765 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/Pods/Pods.xcodeproj"; sourceTree = "<group>"; };
+		785BC3C52069B31D00CCD765 /* ReactNativeAudioStreaming.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeAudioStreaming.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.xcodeproj"; sourceTree = "<group>"; };
+		785BC3CB2069B32F00CCD765 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/Pods/Pods.xcodeproj"; sourceTree = "<group>"; };
 		78BD77291E9A534100F10066 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		79E52D6F39714ED7AB2914B7 /* RNiTunes.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNiTunes.xcodeproj; path = "../node_modules/react-native-itunes/RNiTunes.xcodeproj"; sourceTree = "<group>"; };
@@ -221,7 +215,6 @@
 		C2F0039EF8C841CB9820B32E /* Lato-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Medium.ttf"; path = "../assets/fonts/Lato-Medium.ttf"; sourceTree = "<group>"; };
 		CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = Slider.xcodeproj; path = "../node_modules/react-native-multi-slider/iOS/Slider.xcodeproj"; sourceTree = "<group>"; };
 		D61851379FDF4BC88B1D4D61 /* libRNDeviceInfo.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNDeviceInfo.a; sourceTree = "<group>"; };
-		D860C55F11CC49E2A0AE844B /* ReactNativeAudioStreaming.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeAudioStreaming.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -237,8 +230,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				785BC3602069ABA000CCD765 /* libPods-ReactNativeAudioStreaming.a in Frameworks */,
-				785BC3412069A8B000CCD765 /* libStreamingKit.a in Frameworks */,
+				785BC3D42069B35D00CCD765 /* libReactNativeAudioStreaming.a in Frameworks */,
+				785BC3D52069B35D00CCD765 /* libStreamingKit.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -395,11 +388,19 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		785BC3392069A7E600CCD765 /* Products */ = {
+		785BC3C62069B31D00CCD765 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				785BC33E2069A7E600CCD765 /* libPods-ReactNativeAudioStreaming.a */,
-				785BC3402069A7E600CCD765 /* libStreamingKit.a */,
+				785BC3CA2069B31D00CCD765 /* libReactNativeAudioStreaming.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		785BC3CC2069B32F00CCD765 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				785BC3D12069B33000CCD765 /* libPods-ReactNativeAudioStreaming.a */,
+				785BC3D32069B33000CCD765 /* libStreamingKit.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -453,7 +454,8 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				785BC3382069A7E600CCD765 /* Pods.xcodeproj */,
+				785BC3CB2069B32F00CCD765 /* Pods.xcodeproj */,
+				785BC3C52069B31D00CCD765 /* ReactNativeAudioStreaming.xcodeproj */,
 				78BD77291E9A534100F10066 /* RCTLinking.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -465,7 +467,6 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
-				D860C55F11CC49E2A0AE844B /* ReactNativeAudioStreaming.xcodeproj */,
 				BBF7D9320DF04D5086F14733 /* RNDeviceInfo.xcodeproj */,
 				70E59A0E6B4B4854A49B721E /* RNFS.xcodeproj */,
 				CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */,
@@ -503,14 +504,6 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* Example.app */,
 				00E356EE1AD99517003FC87E /* ExampleTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		C29CBE951D43DCE6001D0888 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C29CBEA31D43DCE6001D0888 /* libReactNativeAudioStreaming.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -586,8 +579,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 785BC3392069A7E600CCD765 /* Products */;
-					ProjectRef = 785BC3382069A7E600CCD765 /* Pods.xcodeproj */;
+					ProductGroup = 785BC3CC2069B32F00CCD765 /* Products */;
+					ProjectRef = 785BC3CB2069B32F00CCD765 /* Pods.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -634,8 +627,8 @@
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
 				},
 				{
-					ProductGroup = C29CBE951D43DCE6001D0888 /* Products */;
-					ProjectRef = D860C55F11CC49E2A0AE844B /* ReactNativeAudioStreaming.xcodeproj */;
+					ProductGroup = 785BC3C62069B31D00CCD765 /* Products */;
+					ProjectRef = 785BC3C52069B31D00CCD765 /* ReactNativeAudioStreaming.xcodeproj */;
 				},
 				{
 					ProductGroup = 786EC7891EEECF1E0067842D /* Products */;
@@ -737,25 +730,25 @@
 			remoteRef = 78176BAB1F6014A8004630F7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		781F15702067DB440076FC13 /* libRNiTunes.a */ = {
+		785BC3CA2069B31D00CCD765 /* libReactNativeAudioStreaming.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libRNiTunes.a;
-			remoteRef = 781F156F2067DB440076FC13 /* PBXContainerItemProxy */;
+			path = libReactNativeAudioStreaming.a;
+			remoteRef = 785BC3C92069B31D00CCD765 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		785BC33E2069A7E600CCD765 /* libPods-ReactNativeAudioStreaming.a */ = {
+		785BC3D12069B33000CCD765 /* libPods-ReactNativeAudioStreaming.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = "libPods-ReactNativeAudioStreaming.a";
-			remoteRef = 785BC33D2069A7E600CCD765 /* PBXContainerItemProxy */;
+			remoteRef = 785BC3D02069B33000CCD765 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		785BC3402069A7E600CCD765 /* libStreamingKit.a */ = {
+		785BC3D32069B33000CCD765 /* libStreamingKit.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libStreamingKit.a;
-			remoteRef = 785BC33F2069A7E600CCD765 /* PBXContainerItemProxy */;
+			remoteRef = 785BC3D22069B33000CCD765 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		786EC79B1EEECF1E0067842D /* libRNDeviceInfo.a */ = {
@@ -798,13 +791,6 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		C29CBEA31D43DCE6001D0888 /* libReactNativeAudioStreaming.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libReactNativeAudioStreaming.a;
-			remoteRef = C29CBEA21D43DCE6001D0888 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

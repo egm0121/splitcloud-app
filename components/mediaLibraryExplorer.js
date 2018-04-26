@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import THEME from '../styles/variables'
-import MediaLibraryApi from '../modules/mediaLibraryApi';
+import MediaLibraryApi from '../modules/MediaLibraryApi';
 import TrackListContainer from '../containers/trackListContainer';
 
 class MediaLibraryExplorer extends Component {
@@ -19,6 +19,7 @@ class MediaLibraryExplorer extends Component {
       'MediaLibraryExplorer mounted with props',this.props.side
     );
     console.log(this.props.onTrackAction)
+    this.updateResultList = this.updateResultList.bind(this);
     this.state = {
       trackList : []
     };
@@ -33,17 +34,16 @@ class MediaLibraryExplorer extends Component {
   componentWillUnmount(){
   }
   loadTracks(){
-    return this.api.getAllTracks().then((resp) => {
-      let payload = resp.data;
-      return payload;
-    });
+    return this.api.getAllTracks();
   }
-  updateResultList(resp){
+  updateResultList(tracks){
+    console.log('media library trackList',tracks);
     // in case of empty results or no search terms
-    if(!resp){
+    if(!tracks){
       return this.setState({ trackList : [] });
     }
-    //this.setState({ trackList : tracks });
+    this.setState({ trackList : tracks });
+
   }
   render() {
     return (

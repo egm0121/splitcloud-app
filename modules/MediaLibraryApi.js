@@ -20,7 +20,7 @@ class MediaLibraryApi {
   getAllTracks(){
     return this.api.getTracks().then((tracks) => {
       console.log(tracks);
-      return tracks;
+      return tracks.map(this.transformTrackPayload);
     });
   }
   normalizeStreamUrlProperty(trackObj){
@@ -53,41 +53,19 @@ class MediaLibraryApi {
       tracks
     };
   }
-  transformTrackPayload(t){
-    return this.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        type: 'track',
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration,
-        playbackCount: t.playback_count
-      });
-  }
-  transformUserPayload(user){
+  transformTrackPayload(t,i){
     return {
-      scUploaderLink:user.permalink_url,
-      id:user.id,
-      type:'user',
-      username: user.username,
-      firstName : user.first_name,
-      lastName: user.last_name,
-      city: user.city,
-      country: user.country,
-      description: user.description,
-      followersCount: user.followers_count,
-      avatarUrl: user.avatar_url,
-      websiteTitle: user.website_title,
-      websiteCount: user.website_count,
-      likesCount: user.likes_count,
-      trackCount: user.track_count
+      id: 'local'+i,
+      type: 'track',
+      label : t.title,
+      username: t.albumArtist,
+      streamUrl : null,
+      artwork : t.albumArtwork,
+      scUploaderLink : null,
+      duration: t.duration,
+      playbackCount: t.playCount,
+      origin : 'library'
     };
-  }
-  resolveStreamUrlFromTrackId(id){
-    return `https://api.soundcloud.com/tracks/${id}/stream`;
   }
   resolvePlayableTrackItem(trackObj){
     return trackObj;
