@@ -2,7 +2,7 @@ import CacheDecorator from '../helpers/cacheDecorator';
 import iTunes from 'react-native-itunes';
 
 class MediaLibraryApi {
-
+  
   constructor(){
     this.api = iTunes;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
@@ -18,7 +18,7 @@ class MediaLibraryApi {
     // );
   }
   getAllTracks(){
-    return this.api.getTracks().then((tracks) => {
+    return this.api.getTracks({fields:this.TRACK_FIELDS}).then((tracks) => {
       console.log(tracks);
       return tracks.map(this.transformTrackPayload);
     });
@@ -59,17 +59,26 @@ class MediaLibraryApi {
       type: 'track',
       label : t.title,
       username: t.albumArtist,
-      streamUrl : null,
+      streamUrl : t.assetUrl,
       artwork : t.albumArtwork,
       scUploaderLink : null,
       duration: t.duration,
       playbackCount: t.playCount,
-      origin : 'library'
+      provider : 'library'
     };
   }
   resolvePlayableTrackItem(trackObj){
     return trackObj;
   }
 }
+MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
+  'title',
+  'albumArtist',
+  'assetUrl',
+  'isCloudItem',
+  'albumArtwork',
+  'duration',
+  'playCount'
+];
 
 export default MediaLibraryApi;

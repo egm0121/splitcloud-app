@@ -64,13 +64,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:THEME.mainBgColor
-  },
-  backButton:{
-    position:'absolute',
-    left:0,
-    paddingLeft:10,
-    top:20,
-    zIndex:20
   }
 });
 
