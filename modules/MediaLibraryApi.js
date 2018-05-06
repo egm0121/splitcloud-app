@@ -19,14 +19,11 @@ class MediaLibraryApi {
   }
   getAllTracks(){
     return this.api.getTracks({fields:this.TRACK_FIELDS}).then((tracks) => {
-      console.log(tracks);
-      return tracks.map(this.transformTrackPayload);
+      return tracks.filter(this.isDeviceTrack).map(this.transformTrackPayload);
     });
   }
-  normalizeStreamUrlProperty(trackObj){
-    if(trackObj.stream_url)return trackObj;
-    trackObj.stream_url = trackObj.uri + '/stream'
-    return trackObj;
+  isDeviceTrack(t){
+    return t.isCloudItem === false;
   }
   transformSelectionPayload(selection){
     return {
@@ -39,8 +36,7 @@ class MediaLibraryApi {
   transformPlaylistPayload(t){
     let tracks = undefined;
     if(t.tracks){
-      tracks = t.tracks.map(this.normalizeStreamUrlProperty)
-        .map(this.transformTrackPayload);
+      tracks = t.tracks.map(this.transformTrackPayload);
     }
     return {
       type: 'playlist',
@@ -62,8 +58,8 @@ class MediaLibraryApi {
       streamUrl : t.assetUrl,
       artwork : t.albumArtwork,
       scUploaderLink : null,
-      duration: t.duration,
-      playbackCount: t.playCount,
+      duration: t.duration * 1e3,
+      // playbackCount: t.playCount,
       provider : 'library'
     };
   }
