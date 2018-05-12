@@ -56,7 +56,8 @@ class MediaLibraryApi {
       label : t.title,
       username: t.albumArtist,
       streamUrl : t.assetUrl,
-      artwork : t.albumArtwork,
+      //artwork : t.artwork, works but needs performance optimization 
+      //+ base64 payload should be cached outside of the redux store
       scUploaderLink : null,
       duration: t.duration * 1e3,
       // playbackCount: t.playCount,
@@ -72,7 +73,7 @@ MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
   'albumArtist',
   'assetUrl',
   'isCloudItem',
-  'albumArtwork',
+//  'artwork', disable artwork for now for performance reasons
   'duration',
   'playCount'
 ];

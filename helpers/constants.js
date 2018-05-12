@@ -16,7 +16,8 @@ export const audioPlayerStates = {
   PLAYING :'PLAYING',
   STOPPED :'STOPPED',
   PAUSED : 'PAUSED',
-  BUFFERING : 'BUFFERING'
+  BUFFERING : 'BUFFERING',
+  LOADING : 'LOADING'
 };
 export const playlistType = {
   UP_NEXT : 'UP_NEXT_PLAYLIST',

@@ -11,7 +11,7 @@ import {
   playlistType,
   NOW_PLAYING_ASSET_NAME
 } from '../helpers/constants';
-import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
+import HybridPlayer from '../modules/HybridPlayer';
 import AudioPlayer from '../components/audioPlayer';
 import SongPickerContainer from './songPickerContainer';
 import UploaderProfileContainer from './uploaderProfileContainer';
@@ -60,7 +60,7 @@ class AudioPlayerContainer extends Component {
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
     this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
-    this.musicPlayer = new ReactNativeStreamingPlayer();
+    this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
     this.state = {
       volume:1,
