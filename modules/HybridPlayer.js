@@ -169,12 +169,18 @@ export default class HybridPlayer extends ReactNativeStreamingPlayer {
     if(this.state.playerMode == HybridPlayer.STREAMING){
       return super.setSoundUrl(soundUrl)
     }
+    this.state.isPlaybackReady = false;
     if(this.itunesPlayer){
       this.itunesPlayer.stop(() => {
         this.itunesPlayer.release();
+        this._createNewSoundPlayerWithUrl(soundUrl);
       });
+    } else {
+      this._createNewSoundPlayerWithUrl(soundUrl);
     } 
     
+  }
+  _createNewSoundPlayerWithUrl(soundUrl){
     console.log('setSoundUrl with url',soundUrl,'state', this.state);
     this.itunesPlayer = new SoundPlayer(soundUrl,'',(err) => {
       if(err){
@@ -182,14 +188,16 @@ export default class HybridPlayer extends ReactNativeStreamingPlayer {
         throw new Error(err);
       } else {
         this.state.isPlaybackReady = true;
+        this.itunesPlayer.setVolume(this.state.volume);
+        this.itunesPlayer.setPan(this.state.pan);
+
         if(this.state.playWhenReady){
           this.play();
         }
         console.log('correctly loaded soundUrl on SoundPlayer instance');
       }
     });
-    this.itunesPlayer.setVolume(this.state.volume);
-    this.itunesPlayer.setPan(this.state.pan);
+   
     this.emitCurrentStateEvent();
   }
   getSoundUrl(){
