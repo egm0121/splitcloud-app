@@ -23,9 +23,6 @@ export default class HybridPlayer extends ReactNativeStreamingPlayer {
       isPlaybackReady : false 
     }
   }
-  _proxyPlayerEvents(){
-
-  }
   getPlayerMode(){
     return this.state.playerMode;
   }
