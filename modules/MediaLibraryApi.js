@@ -6,46 +6,101 @@ class MediaLibraryApi {
   constructor(){
     this.api = iTunes;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
-    this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
-    this.transformSelectionPayload = this.transformSelectionPayload.bind(this);
+    this.transformAlbumPayload = this.transformAlbumPayload.bind(this);
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
-    // this.getPopularByGenre = CacheDecorator.withCache(
-    //   this.getPopularByGenre.bind(this),
-    //   'getPopularByGenre',
-    //   3600*1e3
-    // );
+    this.getAllTracks = CacheDecorator.withCache(
+      this.getAllTracks.bind(this),'getAllTracks'
+    );
+    this.getArtistList = CacheDecorator.withCache(
+      this.getArtistList.bind(this),'getArtistList'
+    );
+    this.getAlbumList = CacheDecorator.withCache(
+      this.getAlbumList.bind(this),'getAlbumList'
+    );
   }
   getAllTracks(){
     return this.api.getTracks({fields:this.TRACK_FIELDS}).then((tracks) => {
       return tracks.filter(this.isDeviceTrack).map(this.transformTrackPayload);
     });
   }
+  getAllPlaylist(){
+    return this.getAllTracks().then(tracks => ({
+      type: 'playlist',
+      isAlbum: false,
+      id: 'local_all',
+      label : 'All Local Music',
+      username: 'Media Library',
+      tracks
+    }));
+  }
+  getArtistList(){
+    return this.api.getArtists().then((artistList) => { 
+      return artistList.map( (name,i) => ({username: name,id:'local_artist_'+i}));
+    });
+  }
+  getAlbumList(){
+    return this.api.getAlbums().then((albumList) => {
+      return albumList.map(this.transformAlbumPayload);
+    })
+  }
+  getArtist(artistName){
+    return this.getAllTracks().then(tracks => {
+      return tracks.filter(t => t.username == artistName);
+    }).then(artistSongs => {
+      if(artistSongs.length === 0){
+        return {
+          ...this.transformAlbumPayload({
+            albumArtist : artistName
+          },0,false),
+          tracks:[]
+        }
+      }
+      let albumPayload = this.transformAlbumPayload({
+        albumTitle : artistSongs[0].album,
+        albumArtist : artistSongs[0].username,
+      },0,false);
+     
+      albumPayload.tracks = artistSongs;
+      return albumPayload;
+    });
+  }
+  getAlbum(albumTitle){
+    return this.getAllTracks().then(tracks => {
+      return tracks.filter(t => t.album == albumTitle);
+    }).then(albumsSong => {
+      if(albumsSong.length === 0){
+        return {
+          ...this.transformAlbumPayload({
+            albumTitle : albumTitle,
+          },0,false),
+          tracks:[]
+        }
+      }
+      let albumPayload = this.transformAlbumPayload({
+        albumTitle : albumsSong[0].album,
+        albumArtist : albumsSong[0].username,
+      },0);
+      albumPayload.tracks = albumsSong;
+      return albumPayload;
+    });
+  }
   isDeviceTrack(t){
     return t.isCloudItem === false;
   }
-  transformSelectionPayload(selection){
-    return {
-      urn : selection.urn,
-      label : selection.title,
-      description : selection.description,
-      playlists: (selection.playlists || []).map(this.transformPlaylistPayload)
-    };
-  }
-  transformPlaylistPayload(t){
+  transformAlbumPayload(t,i,isAlbum = true){
     let tracks = undefined;
     if(t.tracks){
       tracks = t.tracks.map(this.transformTrackPayload);
     }
     return {
       type: 'playlist',
-      id: t.id,
-      label : t.title,
-      username: t.user.username,
-      artwork : t.artwork_url,
-      duration : t.duration,
-      trackCount: t.track_count,
+      isAlbum: isAlbum,
+      id: 'local_album_'+i,
+      label : t.albumTitle,
+      username: t.albumArtist,
+      artwork : t.artwork,
       tracks
     };
   }
@@ -60,6 +115,7 @@ class MediaLibraryApi {
       //+ base64 payload should be cached outside of the redux store
       scUploaderLink : null,
       duration: t.duration * 1e3,
+      album: t.albumTitle,
       // playbackCount: t.playCount,
       provider : 'library'
     };
@@ -71,6 +127,7 @@ class MediaLibraryApi {
 MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
   'title',
   'albumArtist',
+  'albumTitle',
   'assetUrl',
   'isCloudItem',
 //  'artwork', disable artwork for now for performance reasons

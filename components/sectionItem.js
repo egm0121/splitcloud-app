@@ -6,6 +6,7 @@ export default function SectionItem(props){
   let isActiveStyle = props.active == props.name ? styles.itemSelected:null;
   return <TouchableOpacity
     key={props.key}
+    style={props.style}
     onPress={() => {
       props.onSelected(props.name)
     }

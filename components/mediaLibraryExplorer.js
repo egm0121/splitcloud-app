@@ -7,11 +7,10 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import axios from 'axios';
 import THEME from '../styles/variables'
-import MediaLibraryApi from '../modules/MediaLibraryApi';
-import TrackListContainer from '../containers/trackListContainer';
-
+import MediaLibraryApi from '../modules/MediaLibraryApi';     
+import SectionItem from './sectionItem';
+import PlaylistContainer from '../containers/playlistContainer';
 class MediaLibraryExplorer extends Component {
   constructor(props){
     super(props);
@@ -19,39 +18,55 @@ class MediaLibraryExplorer extends Component {
       'MediaLibraryExplorer mounted with props',this.props.side
     );
     console.log(this.props.onTrackAction)
-    this.updateResultList = this.updateResultList.bind(this);
     this.state = {
-      trackList : []
+      trackList : [],
+      sections : [
+        {
+          label:'All Music',
+          name:'all'
+        },
+        {
+          label:'Artists',
+          name:'artists'
+        },
+        {
+          label:'Albums',
+          name:'albums'
+        },
+        
+      ]
     };
     
     this.api = new MediaLibraryApi();
   }
   componentWillMount(){
-    this.loadTracks().then(this.updateResultList).catch((err) =>{
-      console.error(err)
-    });
-  }
-  componentWillUnmount(){
+    this.api.getAllTracks();
   }
   loadTracks(){
     return this.api.getAllTracks();
   }
-  updateResultList(tracks){
-    console.log('media library trackList',tracks);
-    // in case of empty results or no search terms
-    if(!tracks){
-      return this.setState({ trackList : [] });
-    }
-    this.setState({ trackList : tracks });
-
+  browseBy(sectionName){
+    if(sectionName == 'all'){
+      this.api.getAllPlaylist().then(playlist => {
+        this.props.navigator.push({
+          title : 'PlaylistContainer - '+playlist.label+' - ' + this.props.side,
+          name : 'PlaylistContainer' + this.props.side,
+          component: PlaylistContainer,
+          passProps : {
+            playlist,
+            side : this.props.side,
+            onClose: () => this.props.navigator.pop()
+          }
+        });
+      });      
+    }   
   }
   render() {
     return (
       <View style={styles.container}>
-        <TrackListContainer
-          side={this.props.side}
-          trackList={this.state.trackList}
-        />
+      {this.state.sections.map( (section,key) => {
+        return <SectionItem name={section.name} label={section.label} key={key} onSelected={this.browseBy.bind(this,section.name)} />
+      })}  
       </View>
     );
   }
