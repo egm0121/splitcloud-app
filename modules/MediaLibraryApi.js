@@ -25,6 +25,9 @@ class MediaLibraryApi {
       return tracks.filter(this.isDeviceTrack).map(this.transformTrackPayload);
     });
   }
+  getArtworkForTrack(track){
+    //return
+  }
   getAllPlaylist(){
     return this.getAllTracks().then(tracks => ({
       type: 'playlist',
@@ -37,7 +40,14 @@ class MediaLibraryApi {
   }
   getArtistList(){
     return this.api.getArtists().then((artistList) => { 
-      return artistList.map( (name,i) => ({username: name,id:'local_artist_'+i}));
+      return artistList.map( (name,i) => ({
+        username: '',
+        label: name,
+        type: 'playlist',
+        isAlbum: false,
+        duration:0,
+        id:'local_artist_'+i
+      }));
     });
   }
   getAlbumList(){
@@ -52,13 +62,14 @@ class MediaLibraryApi {
       if(artistSongs.length === 0){
         return {
           ...this.transformAlbumPayload({
-            albumArtist : artistName
+            albumTitle : artistName,
+            albumArtist : artistName,
           },0,false),
           tracks:[]
         }
       }
       let albumPayload = this.transformAlbumPayload({
-        albumTitle : artistSongs[0].album,
+        albumTitle : artistName,
         albumArtist : artistSongs[0].username,
       },0,false);
      
@@ -101,6 +112,7 @@ class MediaLibraryApi {
       label : t.albumTitle,
       username: t.albumArtist,
       artwork : t.artwork,
+      duration: 0,
       tracks
     };
   }

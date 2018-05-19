@@ -6,11 +6,14 @@ import React, { PropTypes, Component } from 'react';
 import {
   StyleSheet,
   View,
+  TouchableOpacity
 } from 'react-native';
 import THEME from '../styles/variables'
 import MediaLibraryApi from '../modules/MediaLibraryApi';     
 import SectionItem from './sectionItem';
 import PlaylistContainer from '../containers/playlistContainer';
+import MediaLibraryListing from './mediaLibraryListing';
+import Button from './button';
 class MediaLibraryExplorer extends Component {
   constructor(props){
     super(props);
@@ -27,11 +30,11 @@ class MediaLibraryExplorer extends Component {
         },
         {
           label:'Artists',
-          name:'artists'
+          name:'artist'
         },
         {
           label:'Albums',
-          name:'albums'
+          name:'album'
         },
         
       ]
@@ -41,6 +44,7 @@ class MediaLibraryExplorer extends Component {
   }
   componentWillMount(){
     this.api.getAllTracks();
+    this.api.getAlbumList();
   }
   loadTracks(){
     return this.api.getAllTracks();
@@ -59,13 +63,33 @@ class MediaLibraryExplorer extends Component {
           }
         });
       });      
+    } else {
+      this.props.navigator.push({
+        title : 'MediaLibraryListing - '+sectionName+' - ' + this.props.side,
+        name : 'MediaLibraryListing' + this.props.side,
+        component: MediaLibraryListing,
+        passProps : {
+          browseCategory: sectionName,
+          side : this.props.side,
+          onClose: () => this.props.navigator.pop()
+        }
+      })
     }   
   }
   render() {
     return (
       <View style={styles.container}>
       {this.state.sections.map( (section,key) => {
-        return <SectionItem name={section.name} label={section.label} key={key} onSelected={this.browseBy.bind(this,section.name)} />
+        return <TouchableOpacity style={styles.rowContainer} key={key}>
+          <SectionItem onSelected={this.browseBy.bind(this,section.name)} 
+            forceActive={true} name={section.name} 
+            style={styles.categoryContainer} 
+            textStyle={styles.sectionLabel} 
+            label={section.label}  />
+          <Button style={styles.arrowBtn} 
+            image={require('../assets/flat_fwd_arrow.png')} size={'tiny'} 
+            onPressed={this.browseBy.bind(this,section.name)} />
+          </TouchableOpacity>
       })}  
       </View>
     );
@@ -79,6 +103,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor:THEME.mainBgColor
+  },
+  categoryContainer:{
+    flex:1
+  },
+  arrowBtn:{
+    flex:0,
+    width:50
+  },
+  rowContainer:{
+    paddingLeft:20,
+    paddingVertical:20,
+    flexDirection:'row',
+  },
+  sectionLabel:{
+    fontSize:16
   }
 });
 

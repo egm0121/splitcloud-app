@@ -76,11 +76,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  iconText:{
-    color: THEME.mainHighlightColor,
-    fontSize: 16,
-    fontWeight:'600'
-  },
   closeButton :{
     position:'absolute',
     left:0,

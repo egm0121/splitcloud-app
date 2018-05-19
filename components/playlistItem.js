@@ -21,6 +21,8 @@ export default function PlaylistItem(props){
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={styles.rowLabel} onPress={props.onSelected.bind(false,props.item)}>
+          {props.item.username && props.item.label ?
+          <View>
           <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
             {props.item.label}
           </AppText>
@@ -30,6 +32,11 @@ export default function PlaylistItem(props){
           <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
             {props.onDescRender(props.item)}
           </AppText>
+          </View>:
+          <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText,styles.singleLineTitle]} >
+            {props.item.label}
+          </AppText>
+          }
       </TouchableOpacity>
   </View>;
 }
@@ -40,7 +47,13 @@ PlaylistItem.defaultProps = {
   onDescRender: (item) => {
     const tracksCount = item.trackCount ? `${item.trackCount} songs` : '';
     const duration = `${formatDurationExtended(item.duration,{milli:true})}`;
-    return tracksCount ? `${tracksCount} • ${duration}`  : `Duration ${duration}`; 
+    if(tracksCount){
+      return `${tracksCount} • ${duration}`
+    }
+    if(item.duration){
+      return `Duration ${duration}`;
+    }
+    return ''; 
   }
 };
 PlaylistItem.propTypes = {
@@ -94,6 +107,10 @@ const styles = StyleSheet.create({
     color: THEME.mainHighlightColor,
     lineHeight:16,
     fontSize: 15
+  },
+  singleLineTitle:{
+    lineHeight:35,
+    fontSize:17
   },
   rowAuthorText:{
     color: THEME.mainHighlightColor,
