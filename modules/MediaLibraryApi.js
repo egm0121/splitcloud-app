@@ -1,5 +1,7 @@
 import CacheDecorator from '../helpers/cacheDecorator';
 import iTunes from 'react-native-itunes';
+import sanitizeFilename from 'sanitize-filename';
+import RNFS from 'react-native-fs';
 
 class MediaLibraryApi {
   
@@ -7,7 +9,11 @@ class MediaLibraryApi {
     this.api = iTunes;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
     this.transformAlbumPayload = this.transformAlbumPayload.bind(this);
+    this.cacheArtworkToFile = this.cacheArtworkToFile.bind(this);
     this.initializeCacheDecorators();
+    this.cacheLibraryArtworks().then(results => {
+      console.log('all artwork cached to file',results);
+    })
   }
   initializeCacheDecorators(){
     this.getAllTracks = CacheDecorator.withCache(
@@ -25,8 +31,25 @@ class MediaLibraryApi {
       return tracks.filter(this.isDeviceTrack).map(this.transformTrackPayload);
     });
   }
+  getArtworkFilenameForTrack(track){
+    return sanitizeFilename(track.label + '-' + track.username + '.jpg').replace(' ','_');
+  }
   getArtworkForTrack(track){
-    //return
+    return 'file://' + RNFS.DocumentDirectoryPath + '/' + this.getArtworkFilenameForTrack(track);
+  }
+  cacheArtworkToFile(album){
+    let image = album.artwork.replace(/^data:image\/jpeg;base64,/, '');
+    let filename = this.getArtworkFilenameForTrack(album);
+    return RNFS.writeFile( RNFS.DocumentDirectoryPath + '/' + filename , image, 'base64')
+      .then(() => {
+        let res = {filename, uri: this.getArtworkForTrack(album)};
+        return res;
+      });
+  }
+  cacheLibraryArtworks(){
+    return this.getAlbumList().then((albumList) => {
+      return Promise.all(albumList.map(this.cacheArtworkToFile))
+    })
   }
   getAllPlaylist(){
     return this.getAllTracks().then(tracks => ({
@@ -123,8 +146,10 @@ class MediaLibraryApi {
       label : t.title,
       username: t.albumArtist,
       streamUrl : t.assetUrl,
-      //artwork : t.artwork, works but needs performance optimization 
-      //+ base64 payload should be cached outside of the redux store
+      artwork : this.getArtworkForTrack({
+        label : t.albumTitle,
+        username: t.albumArtist,
+      }), 
       scUploaderLink : null,
       duration: t.duration * 1e3,
       album: t.albumTitle,

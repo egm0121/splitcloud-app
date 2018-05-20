@@ -6,6 +6,7 @@ import React, { PropTypes, Component } from 'react';
 import {
   StyleSheet,
   View,
+  Image,
   TouchableOpacity
 } from 'react-native';
 import THEME from '../styles/variables'
@@ -90,7 +91,7 @@ class MediaLibraryExplorer extends Component {
             image={require('../assets/flat_fwd_arrow.png')} size={'tiny'} 
             onPressed={this.browseBy.bind(this,section.name)} />
           </TouchableOpacity>
-      })}  
+      })}
       </View>
     );
   }
