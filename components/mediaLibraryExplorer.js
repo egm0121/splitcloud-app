@@ -15,13 +15,13 @@ import SectionItem from './sectionItem';
 import PlaylistContainer from '../containers/playlistContainer';
 import MediaLibraryListing from './mediaLibraryListing';
 import Button from './button';
+
 class MediaLibraryExplorer extends Component {
   constructor(props){
     super(props);
     console.log(
       'MediaLibraryExplorer mounted with props',this.props.side
     );
-    console.log(this.props.onTrackAction)
     this.state = {
       trackList : [],
       sections : [
@@ -37,7 +37,6 @@ class MediaLibraryExplorer extends Component {
           label:'Albums',
           name:'album'
         },
-        
       ]
     };
     

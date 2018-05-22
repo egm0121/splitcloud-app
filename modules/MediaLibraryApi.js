@@ -11,9 +11,6 @@ class MediaLibraryApi {
     this.transformAlbumPayload = this.transformAlbumPayload.bind(this);
     this.cacheArtworkToFile = this.cacheArtworkToFile.bind(this);
     this.initializeCacheDecorators();
-    this.cacheLibraryArtworks().then(results => {
-      console.log('all artwork cached to file',results);
-    })
   }
   initializeCacheDecorators(){
     this.getAllTracks = CacheDecorator.withCache(
@@ -146,7 +143,7 @@ class MediaLibraryApi {
       label : t.title,
       username: t.albumArtist,
       streamUrl : t.assetUrl,
-      artwork : this.getArtworkForTrack({
+      artwork : this.getArtworkFilenameForTrack({
         label : t.albumTitle,
         username: t.albumArtist,
       }), 
@@ -171,5 +168,15 @@ MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
   'duration',
   'playCount'
 ];
+
+let artworkCacheInitialized = false;
+
+if( !artworkCacheInitialized ){
+  console.log('start caching album artwork');
+  (new MediaLibraryApi()).cacheLibraryArtworks().then(results => {
+    console.log('all artwork cached to file',results);
+    artworkCacheInitialized = true;
+  });
+}
 
 export default MediaLibraryApi;

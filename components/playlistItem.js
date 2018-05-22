@@ -2,7 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View,Image,TouchableOpacity  } from 'react-native';
 import THEME from '../styles/variables';
 import AppText from './appText';
-import { formatDurationExtended,ucFirst } from '../helpers/formatters';
+import { formatDurationExtended, ucFirst } from '../helpers/formatters';
 
 function getSmallArtworkUrl(url){
   if(!url)return;

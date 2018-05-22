@@ -1,6 +1,8 @@
 import {
   LayoutAnimation
 } from 'react-native';
+import RNFS from 'react-native-fs';
+
 export const playbackModeTypes = {
   SPLIT : 'S',
   LEFT : 'L',
@@ -39,4 +41,10 @@ export const animationPresets = {
     ...LayoutAnimation.Presets.easeInEaseOut,
     duration:100
   }
+}
+export const APP_DOCUMENTS_FOLDER = RNFS.DocumentDirectoryPath;
+
+export const musicProviderType = {
+  SOUNDCLOUD: 'soudcloud',
+  LIBRARY: 'library'
 }

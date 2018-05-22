@@ -18,7 +18,7 @@ import Button from '../components/button';
 import AppText from '../components/appText';
 import ToggleFavoriteTrackContainer from '../containers/toggleFavoriteTrackContainer';
 import MultiSlider from 'react-native-multi-slider';
-import { formatDurationExtended } from '../helpers/formatters';
+import { formatDurationExtended, getArtworkImagePath, isLocalTrack } from '../helpers/formatters';
 
 const isBufferingLabel = 'Buffering - ';
 
@@ -55,6 +55,10 @@ class AudioPlayer extends Component {
     return this._getCurrentTrackObj().username;
   }
   _getCurrentTrackArtwork(){
+    if( isLocalTrack(this._getCurrentTrackObj()) 
+      && this._getCurrentTrackObj().artwork){
+      return getArtworkImagePath(this._getCurrentTrackObj().artwork);
+    }
     const scArtwork = this._getCurrentTrackObj().artwork ?
       this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
     return scArtwork || false;
