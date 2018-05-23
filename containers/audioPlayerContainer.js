@@ -28,6 +28,8 @@ import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
 import FileDownloadManager from '../modules/FileDownloadManager';
+import { isLocalTrack } from '../helpers/formatters';
+import MediaLibraryPlaylist from './mediaLibraryPlaylist';
 
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -220,6 +222,21 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onUploaderProfileOpen(){
+    if( isLocalTrack(this._getCurrentTrackObj()) ){
+      return this.props.navigator.push({
+        title : 'MediaLibraryPlaylist - ' + this.props.side,
+        name : 'MediaLibraryPlaylist.' + this.props.side,
+        component: MediaLibraryPlaylist,
+        passProps : {
+          side : this.props.side,
+          browseCategory: 'artist',
+          playlist: {
+            label : this._getCurrentTrackObj().username
+          },
+          onClose: () => this.props.navigator.pop()
+        }
+      });
+    }
     if(!this.props.isOnline) return false;
     this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
     let prevPickerRoute = this.findRouteByName(

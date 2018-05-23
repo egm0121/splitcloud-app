@@ -23,10 +23,10 @@ class PlaylistContainer extends Component {
       tracks: null
     }
     this.scApi = new SoundCloudApi({clientId: config.SC_CLIENT_ID});
-    console.log('PlaylistContainer playlist',this.props.playlist)
+    console.log('PlaylistContainer props.playlist',this.props.playlist)
   }
   componentWillMount(){
-    if(!this.props.playlist.tracks){
+    if(this.props.playlist && !this.props.playlist.tracks && !this.props.browseCategory){
       this.fetchPlaylistTracks().then((data) =>{
         this.setState({
           playlist: data
