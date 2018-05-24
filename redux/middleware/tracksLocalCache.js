@@ -1,6 +1,7 @@
 import { actionTypes } from '../constants/actions';
 import { globalSettings } from '../../helpers/constants';
 import FileDownloadManager from '../../modules/FileDownloadManager';
+import { isLocalTrack } from '../../helpers/formatters';
 let trackManager = new FileDownloadManager({extension:'mp3'});
 
 trackManager.initCacheDir().then(
@@ -15,6 +16,10 @@ const findTrackInAnyStoredPlaylist = (playlistArr,track) => {
   });
 }
 const storeLocalTrack = (track) => {
+  if(isLocalTrack(track)){
+    console.info('track is from local media library. skip download to cache')
+    return false;
+  }
   let assetUrl = track.streamUrl, assetId = track.id;
   console.info('trackCacheMiddleware: attempt download asset ->', assetUrl);
   trackManager.hasLocalAsset(assetId)
