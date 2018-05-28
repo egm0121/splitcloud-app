@@ -108,6 +108,7 @@ class TrackListContainer extends Component {
           onEndThreshold={this.props.onEndThreshold}
           resetToTop={this.props.resetToTop}
           scrollToCurrentTrack={this.props.scrollToCurrentTrack}
+          emptyLabel={this.props.emptyLabel}
         ></TrackList>
       </View>
     );

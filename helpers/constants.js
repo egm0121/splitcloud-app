@@ -27,7 +27,8 @@ export const playlistType = {
   REGULAR : 'REGULAR' 
 }
 export const messages = {
-  SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control'
+  SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control',
+  EMPTY_LIBRARY_PLAYLIST : 'No tracks found! \n\n Please make sure the album \n is downloaded to your device.'
 }
 
 export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';

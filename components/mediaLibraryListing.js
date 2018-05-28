@@ -14,6 +14,7 @@ import HeaderBar from './headerBar';
 import BackButton from './backButton';
 import PlaylistContainer from '../containers/playlistContainer';
 import { ucFirst } from '../helpers/formatters';
+import { messages } from '../helpers/constants'
 
 class MediaLibraryListing extends Component {
   constructor(props){
@@ -67,6 +68,7 @@ class MediaLibraryListing extends Component {
         passProps : {
           playlist: playlist,
           side : this.props.side,
+          emptyLabel: messages.EMPTY_LIBRARY_PLAYLIST,
           onClose: () => this.props.navigator.pop()
         }
       });

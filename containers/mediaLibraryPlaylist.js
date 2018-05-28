@@ -6,9 +6,10 @@ const playlistMap ={
   'album':'getAlbum',
   'artist':'getArtist'
 };
-
-export default withPlaylistProvider((props) => {
+const MediaLibraryPlaylist = withPlaylistProvider((props) => {
   let mediaPlayerApi = new MediaLibraryApi();
   let methodName = playlistMap[props.browseCategory];
   return mediaPlayerApi[methodName](props.playlist.label);
 })(PlaylistContainer);
+
+export default MediaLibraryPlaylist;
