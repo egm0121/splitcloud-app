@@ -99,7 +99,7 @@ class AudioPlayer extends Component {
       styles.pauseToggleButton : styles.playToggleButton);
 
     let {width} = Dimensions.get('window');
-    let progressTrackLength = width - 140;
+    let progressTrackLength = width - 160;
     let showBgArtCover = this._getCurrentTrackArtwork();
     let artworkSource = showBgArtCover ?
       {uri:this._getCurrentTrackArtwork()} :
@@ -296,7 +296,7 @@ AudioPlayer.propTypes = {
   openScUploaderLink : PropTypes.func 
 };
 
-const volumeMarginSide = 80;
+const volumeMarginSide = 110;
 const playbackHorizontalMargin = 10;
 const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
@@ -360,15 +360,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: mainFgColor,
     height:30,
+    fontSize:16,
+    fontWeight: 'bold',
     lineHeight: 22,
     width:50
   },
   playbackTimeSmall:{
-    fontSize:12,
+    fontSize:14,
     width:60
   },
   playbackTimeInitial:{
-    marginLeft:10
+    marginLeft:20
   },
   playbackTrackContainer:{
     marginHorizontal: playbackHorizontalMargin
@@ -376,7 +378,7 @@ const styles = StyleSheet.create({
   volumeSlider:{
     flex:1,
     justifyContent: 'center',
-    marginHorizontal: volumeMarginSide
+    marginHorizontal: volumeMarginSide,
   },
   welcome: Object.assign({
     fontSize: 20,
