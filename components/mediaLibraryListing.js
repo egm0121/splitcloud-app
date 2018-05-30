@@ -12,9 +12,8 @@ import MediaLibraryApi from '../modules/MediaLibraryApi';
 import TrackListContainer from '../containers/trackListContainer';
 import HeaderBar from './headerBar';
 import BackButton from './backButton';
-import PlaylistContainer from '../containers/playlistContainer';
+import MediaLibraryPlaylist from '../containers/mediaLibraryPlaylist';
 import { ucFirst } from '../helpers/formatters';
-import { messages } from '../helpers/constants'
 
 class MediaLibraryListing extends Component {
   constructor(props){
@@ -62,13 +61,13 @@ class MediaLibraryListing extends Component {
     const fetchMethod = this.playlistMap[this.props.browseCategory];
     this.api[fetchMethod](playlist.label).then(playlist => {
       this.props.navigator.push({
-        title : 'PlaylistContainer - '+playlist.label+' - ' + this.props.side,
-        name : 'PlaylistContainer' + this.props.side,
-        component: PlaylistContainer,
+        title : 'MediaLibraryPlaylist - '+playlist.label+' - ' + this.props.side,
+        name : 'MediaLibraryPlaylist' + this.props.side,
+        component: MediaLibraryPlaylist,
         passProps : {
           playlist: playlist,
+          browseCategory: this.props.browseCategory,
           side : this.props.side,
-          emptyLabel: messages.EMPTY_LIBRARY_PLAYLIST,
           onClose: () => this.props.navigator.pop()
         }
       });

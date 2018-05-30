@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 
-export default function(playlistProvider){
+export default function(playlistProvider, emptyLabel){
   return function(PlaylistComponent){
     return class withPlaylistProvider extends Component{
       constructor(props){
@@ -24,6 +24,7 @@ export default function(playlistProvider){
         return <PlaylistComponent {...this.props} 
                 playlist={this.state.playlist} 
                 isLoading={this.state.isLoading}
+                emptyLabel={emptyLabel}
               />
       }
     }

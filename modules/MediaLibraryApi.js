@@ -99,7 +99,9 @@ class MediaLibraryApi {
   }
   getAlbum(albumTitle){
     return this.getAllTracks().then(tracks => {
-      return tracks.filter(t => t.album == albumTitle);
+      const albumTracks = tracks.filter(t => t.album == albumTitle)
+      .sort((a,b) => a.trackNumber -  b.trackNumber );
+      return albumTracks;
     }).then(albumsSong => {
       if(albumsSong.length === 0){
         return {
@@ -150,6 +152,7 @@ class MediaLibraryApi {
       scUploaderLink : null,
       duration: t.duration * 1e3,
       album: t.albumTitle,
+      trackNumber: t.albumTrackNumber,
       // playbackCount: t.playCount,
       provider : 'library'
     };
@@ -162,9 +165,9 @@ MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
   'title',
   'albumArtist',
   'albumTitle',
+  'albumTrackNumber',
   'assetUrl',
   'isCloudItem',
-//  'artwork', disable artwork for now for performance reasons
   'duration',
   'playCount'
 ];
