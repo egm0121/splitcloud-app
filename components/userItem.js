@@ -14,13 +14,13 @@ class UserItem extends Component {
   render(){
     const { user } = this.props;
     const name = user.username || user.firstName +' '+user.lastName;
-    return <View>
+    const artwork = this.props.user.avatarUrl ? 
+        {url:this.props.user.avatarUrl} : null;
+    return <View style={styles.container}>
         <TouchableOpacity
-        onPress={this.props.onSelected.bind(this,user)} >
-          <View style={styles.itemContainer}>
-            <Image style={styles.profileImage} source={{url:this.props.user.avatarUrl}} resizeMode={'cover'}/>
+        onPress={this.props.onSelected.bind(this,user)} style={styles.itemContainer} >
+            <Image style={styles.profileImage} source={artwork} resizeMode={'cover'}/>
             <AppText style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</AppText>
-          </View>
         </TouchableOpacity>
     </View>;
   }
@@ -30,6 +30,16 @@ UserItem.propTypes = {
   onSelected : PropTypes.func
 };
 const styles = StyleSheet.create({
+  container:{
+    flex:1,
+    flexDirection:'row',
+  },
+  itemContainer:{
+    flex:1,
+    paddingHorizontal:20,
+    marginVertical:20,
+    flexDirection:'row',
+  },
   userText:{
     flex:1,
     color: THEME.mainHighlightColor,
@@ -39,15 +49,11 @@ const styles = StyleSheet.create({
   },
   profileImage:{
     borderRadius:25,
-    backgroundColor:'gray',
+    backgroundColor: THEME.listBorderColor,
     width:50,
     height:50,
-    marginRight:20
-  },
-  itemContainer:{
-    flexDirection:'row',
-    marginHorizontal:20,
-    marginVertical:20
+    marginRight:20,
+    flex:0
   }
 });
 

@@ -50,38 +50,37 @@ class TopList extends Component {
         scChartType: SoundCloudApi.chartType.TOP,
         label:'Top Music',
         enabled:props.isOnline,
-        visible:true
+        visible:true,
+        offlineAvailable:false
       },
       {
         name:'TRENDING',
         label:'Trending',
         scChartType: SoundCloudApi.chartType.TRENDING,
         enabled:props.isOnline,
-        visible:true
+        visible:true,
+        offlineAvailable:false
       },
       {
         name:'SELECTION',
         label:'Discover',
         enabled:props.isOnline,
-        visible:true
+        visible:true,
+        offlineAvailable:false
       },
       {
         name:'LOCAL',
-        label:'Saved',
+        label:'Local Music',
         enabled:true,
-        visible:true
+        visible:true,
+        offlineAvailable:true
       },
       {
         name:'PLS',
         label:'Explore',
         enabled:props.isOnline,
-        visible:false
-      },
-      {
-        name:'ITUNESLIBRARY',
-        label:'Music Library',
-        enabled:true,
-        visible:true
+        visible:false,
+        offlineAvailable:false
       }],
       section :'TOP',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
@@ -109,7 +108,7 @@ class TopList extends Component {
       console.log('isOnline changed for topList')
       this.setState((state) => {
         let sectionList = state.sectionList.map(s => {
-          if(s.name !== 'LOCAL') s.enabled = newProps.isOnline;
+          if(!s.offlineAvailable) s.enabled = newProps.isOnline;
           return s;
         });
         return {
@@ -273,7 +272,6 @@ class TopList extends Component {
           </View>}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
-          {this.getCurrSectionObj().name == 'ITUNESLIBRARY' && <MediaLibraryExplorer {...this.props}/>}
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
             {...this.props} selectionList={this.state.trackList}
             />}

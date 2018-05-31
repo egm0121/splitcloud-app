@@ -61,10 +61,10 @@ class MediaLibraryApi {
   getArtistList(){
     return this.api.getArtists().then((artistList) => { 
       return artistList.map( (name,i) => ({
-        username: '',
+        username: name,
         label: name,
         type: 'playlist',
-        isAlbum: false,
+        isArtist: true,
         duration:0,
         id:'local_artist_'+i
       }));

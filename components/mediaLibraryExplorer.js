@@ -15,6 +15,7 @@ import SectionItem from './sectionItem';
 import PlaylistContainer from '../containers/playlistContainer';
 import MediaLibraryListing from './mediaLibraryListing';
 import Button from './button';
+import AppText from './appText';
 
 class MediaLibraryExplorer extends Component {
   constructor(props){
@@ -79,8 +80,10 @@ class MediaLibraryExplorer extends Component {
   render() {
     return (
       <View style={styles.container}>
+       <AppText bold={true} style={[styles.heading]}>Music Library</AppText>
       {this.state.sections.map( (section,key) => {
-        return <TouchableOpacity style={styles.rowContainer} key={key}>
+        return <TouchableOpacity style={styles.rowContainer} 
+          onSelected={this.browseBy.bind(this,section.name)} key={key}>
           <SectionItem onSelected={this.browseBy.bind(this,section.name)} 
             forceActive={true} name={section.name} 
             style={styles.categoryContainer} 
@@ -91,6 +94,7 @@ class MediaLibraryExplorer extends Component {
             onPressed={this.browseBy.bind(this,section.name)} />
           </TouchableOpacity>
       })}
+      <AppText bold={true} style={[styles.heading]}>Saved Songs</AppText>
       </View>
     );
   }
@@ -101,23 +105,31 @@ MediaLibraryExplorer.propTypes = {
 }
 const styles = StyleSheet.create({
   container: {
+    flexDirection:'column',
     flex: 1,
-    backgroundColor:THEME.mainBgColor
+    
   },
   categoryContainer:{
-    flex:1
+    flex:1,
   },
   arrowBtn:{
     flex:0,
-    width:50
+    width:30
   },
   rowContainer:{
     paddingLeft:20,
     paddingVertical:20,
     flexDirection:'row',
+    backgroundColor:THEME.mainBgColor
   },
   sectionLabel:{
     fontSize:16
+  },
+  heading:{
+    color: THEME.mainHighlightColor,
+    fontSize: 18,
+    paddingLeft:20,
+    paddingVertical:20,
   }
 });
 

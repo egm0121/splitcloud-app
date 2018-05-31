@@ -5,6 +5,7 @@ import React, { PropTypes, Component } from 'react';
 import { AppRegistry, StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
 import TrackListContainer from './trackListContainer';
+import MediaLibraryExplorer from '../components/mediaLibraryExplorer';
 class OfflineTracksContainer extends Component {
   constructor(props){
     super(props);
@@ -13,6 +14,9 @@ class OfflineTracksContainer extends Component {
     return (
       <View style={styles.container}>
         <TrackListContainer {...this.props}
+          onHeaderRender={() => <View style={styles.headerContainer}>
+            <MediaLibraryExplorer {...this.props} />
+            </View>}
           side={this.props.side}
           trackList={this.props.tracks}
         />
@@ -26,6 +30,9 @@ OfflineTracksContainer.propTypes = {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  headerContainer:{
+    flexDirection:'row'
   }
 });
 const mapStateToProps = (state,props) => {

@@ -100,6 +100,7 @@ class AudioPlayer extends Component {
 
     let {width} = Dimensions.get('window');
     let progressTrackLength = width - 160;
+    let volumeSliderWidth = width - 160;
     let showBgArtCover = this._getCurrentTrackArtwork();
     let artworkSource = showBgArtCover ?
       {uri:this._getCurrentTrackArtwork()} :
@@ -227,7 +228,8 @@ class AudioPlayer extends Component {
                           size={'small'}/>
                 </View>
                 <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
-                  <View style={styles.volumeSlider}>
+                  <View style={styles.volumePad}></View>
+                  <View style={[styles.volumeSlider]}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
                       minimumTrackTintColor={sliderTrackStyles.min}
@@ -235,6 +237,7 @@ class AudioPlayer extends Component {
                       onValueChange={this.props.onVolumeValueChange}
                       value={this.props.volumeSliderValue} />
                   </View>
+                  <View style={styles.volumePad}></View>
                 </View>
                 <TouchableOpacity onPress={this.props.openScUploaderLink} style={[styles.scCopyContainer]}>
                   <Image
@@ -296,7 +299,7 @@ AudioPlayer.propTypes = {
   openScUploaderLink : PropTypes.func 
 };
 
-const volumeMarginSide = 110;
+const volumeMarginSide = 80;
 const playbackHorizontalMargin = 10;
 const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
@@ -375,10 +378,12 @@ const styles = StyleSheet.create({
   playbackTrackContainer:{
     marginHorizontal: playbackHorizontalMargin
   },
+  volumePad:{
+    flex:2,
+  },
   volumeSlider:{
-    flex:1,
+    flex:3,
     justifyContent: 'center',
-    marginHorizontal: volumeMarginSide,
   },
   welcome: Object.assign({
     fontSize: 20,
