@@ -1,4 +1,4 @@
-import { playbackModeTypes, APP_DOCUMENTS_FOLDER, musicProviderType } from './constants';
+import { playbackModeTypes, APP_ARTWORK_CACHE_FOLDER, musicProviderType } from './constants';
 export function toInt(float){
   return parseInt(float,10);
 }
@@ -47,7 +47,7 @@ export function formatNumberPrefix(number){
 }
 
 export function getArtworkImagePath(filename){
-  return 'file://' + APP_DOCUMENTS_FOLDER + '/' + filename;
+  return 'file://' + APP_ARTWORK_CACHE_FOLDER + '/' + filename;
 }
 
 export function isLocalTrack(t){

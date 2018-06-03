@@ -44,6 +44,7 @@ export const animationPresets = {
   }
 }
 export const APP_DOCUMENTS_FOLDER = RNFS.DocumentDirectoryPath;
+export const APP_ARTWORK_CACHE_FOLDER = APP_DOCUMENTS_FOLDER + '/' + 'artwork_cache';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',

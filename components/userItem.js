@@ -14,12 +14,13 @@ class UserItem extends Component {
   render(){
     const { user } = this.props;
     const name = user.username || user.firstName +' '+user.lastName;
-    const artwork = this.props.user.avatarUrl ? 
-        {url:this.props.user.avatarUrl} : null;
+    const artwork = user.avatarUrl ? 
+        {url: user.avatarUrl} : require('../assets/alt_album_cover.png');
+    const emptyArtworkBg = user.avatarUrl ? null :styles.transparentBg
     return <View style={styles.container}>
         <TouchableOpacity
         onPress={this.props.onSelected.bind(this,user)} style={styles.itemContainer} >
-            <Image style={styles.profileImage} source={artwork} resizeMode={'cover'}/>
+            <Image style={[styles.profileImage,emptyArtworkBg]} source={artwork} resizeMode={'cover'}/>
             <AppText style={styles.userText} numberOfLines={1} ellipsizeMode={'tail'}>{name}</AppText>
         </TouchableOpacity>
     </View>;
@@ -46,6 +47,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 35,
     fontWeight:'600'
+  },
+  transparentBg:{
+    backgroundColor:'transparent',
   },
   profileImage:{
     borderRadius:25,

@@ -2,7 +2,7 @@ import CacheDecorator from '../helpers/cacheDecorator';
 import iTunes from 'react-native-itunes';
 import sanitizeFilename from 'sanitize-filename';
 import RNFS from 'react-native-fs';
-
+import { APP_ARTWORK_CACHE_FOLDER } from '../helpers/constants';
 class MediaLibraryApi {
   
   constructor(){
@@ -10,6 +10,7 @@ class MediaLibraryApi {
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
     this.transformAlbumPayload = this.transformAlbumPayload.bind(this);
     this.cacheArtworkToFile = this.cacheArtworkToFile.bind(this);
+    this.createLibraryArtworkCache = this.createLibraryArtworkCache.bind(this);
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
@@ -32,19 +33,27 @@ class MediaLibraryApi {
     return sanitizeFilename(track.label + '-' + track.username + '.jpg').replace(' ','_');
   }
   getArtworkForTrack(track){
-    return 'file://' + RNFS.DocumentDirectoryPath + '/' + this.getArtworkFilenameForTrack(track);
+    return 'file://' + APP_ARTWORK_CACHE_FOLDER + '/' + this.getArtworkFilenameForTrack(track);
   }
   cacheArtworkToFile(album){
     let image = album.artwork.replace(/^data:image\/jpeg;base64,/, '');
     let filename = this.getArtworkFilenameForTrack(album);
-    return RNFS.writeFile( RNFS.DocumentDirectoryPath + '/' + filename , image, 'base64')
+    return RNFS.writeFile( APP_ARTWORK_CACHE_FOLDER + '/' + filename , image, 'base64')
       .then(() => {
         let res = {filename, uri: this.getArtworkForTrack(album)};
         return res;
       });
   }
+  createLibraryArtworkCache(){
+    return RNFS.mkdir(APP_ARTWORK_CACHE_FOLDER,{NSURLIsExcludedFromBackupKey : true})
+    .then(() => {
+      console.log('MediaLibraryApi asset caching dir :',APP_ARTWORK_CACHE_FOLDER);
+    });
+  }
   cacheLibraryArtworks(){
-    return this.getAlbumList().then((albumList) => {
+    return this.createLibraryArtworkCache()
+    .then(this.getAlbumList())
+    .then((albumList) => {
       return Promise.all(albumList.map(this.cacheArtworkToFile))
     })
   }
