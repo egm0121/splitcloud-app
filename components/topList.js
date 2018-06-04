@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  Image,
   ListView,
   ActivityIndicator,
   View,
@@ -49,6 +50,7 @@ class TopList extends Component {
         name:'TOP',
         scChartType: SoundCloudApi.chartType.TOP,
         label:'Top Music',
+        icon: require('../assets/section_top_chart.png'),
         enabled:props.isOnline,
         visible:true,
         offlineAvailable:false
@@ -56,6 +58,7 @@ class TopList extends Component {
       {
         name:'TRENDING',
         label:'Trending',
+        icon: require('../assets/section_trending_up.png'),
         scChartType: SoundCloudApi.chartType.TRENDING,
         enabled:props.isOnline,
         visible:true,
@@ -64,13 +67,15 @@ class TopList extends Component {
       {
         name:'SELECTION',
         label:'Discover',
+        icon: require('../assets/section_playlist_discover.png'),
         enabled:props.isOnline,
         visible:true,
         offlineAvailable:false
       },
       {
         name:'LOCAL',
-        label:'Local Music',
+        label:'Local music',
+        icon: require('../assets/section_local_music.png'),
         enabled:true,
         visible:true,
         offlineAvailable:true
@@ -233,11 +238,21 @@ class TopList extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
+        <SectionTabBar disableScroll 
+         style={styles.sectionContainer}
+         active={this.state.section} 
+         onSelected={this.onSectionChange}>
           {
             this.state.sectionList
             .filter(s => s.visible)
-            .map(({name,label,enabled},key) => enabled && <SectionItem key={key} name={name} label={label}/>)
+            .map(({name,label,enabled,icon},key) => enabled && 
+            <SectionItem key={key} name={name} label={label} style={styles.sectionItemContainer}>{
+             isActive => {
+               let activeStyle = isActive ? styles.activeSectionIcon : null;
+               return <Image source={icon} resizeMode={'contain'} style={[styles.sectionIcon,activeStyle]} />
+             }
+            }
+            </SectionItem>)
           }
         </SectionTabBar>
         {this.getCurrSectionObj().scChartType &&
@@ -337,6 +352,22 @@ const styles = StyleSheet.create({
     fontSize : 16,
     textAlign: 'center',
     color: THEME.mainColor
+  },
+  sectionContainer:{
+    paddingLeft:0,
+    paddingVertical:10
+  },
+  sectionItemContainer:{
+    flex:1,
+    alignItems:'center'
+  },
+  sectionIcon:{
+    width:40,
+    height:40,
+    opacity:0.7
+  },
+  activeSectionIcon:{
+    opacity:1
   },
   openModalStyle : {
     height: 250

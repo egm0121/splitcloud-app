@@ -52,7 +52,7 @@ class MediaLibraryApi {
   }
   cacheLibraryArtworks(){
     return this.createLibraryArtworkCache()
-    .then(this.getAlbumList())
+    .then(this.getAlbumList)
     .then((albumList) => {
       return Promise.all(albumList.map(this.cacheArtworkToFile))
     })

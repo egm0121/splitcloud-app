@@ -3,9 +3,8 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import THEME from '../styles/variables';
 
 export default function SectionTabBar(props){
-  return <View style={styles.tabBarContainer}>
-  <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-    {React.Children.map( props.children, function(child){
+  let renderTabs = () => {
+    return React.Children.map( props.children, function(child){
       if(React.isValidElement(child)){
         return React.cloneElement(child, {
           onSelected: props.onSelected,
@@ -13,8 +12,13 @@ export default function SectionTabBar(props){
         });
       }
       return child;
-    })}
-  </ScrollView>
+    })
+  }
+  return <View style={[styles.tabBarContainer,props.style]}>
+  { props.disableScroll ? renderTabs() :
+  <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+    {renderTabs()}
+  </ScrollView>}
   </View>;
 }
 
