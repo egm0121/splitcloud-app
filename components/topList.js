@@ -28,8 +28,7 @@ import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
-import MediaLibraryExplorer from './mediaLibraryExplorer';
-import {formatDuration, formatGenreLabel} from '../helpers/formatters';
+import {formatGenreLabel} from '../helpers/formatters';
 import AppText from './appText';
 class TopList extends Component {
 
@@ -87,7 +86,7 @@ class TopList extends Component {
         visible:false,
         offlineAvailable:false
       }],
-      section :'TOP',
+      section : props.isOnline ? 'TOP' : 'LOCAL',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -104,8 +103,10 @@ class TopList extends Component {
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
     this.showStreamableOnly = this.props.showStreamableOnly;
-    //fetch inial genre list
-    this.loadTopSoundCloudTracks().then(this.updateResultList);
+    //fetch initial section list only if online
+    if(this.props.isOnline){
+      this.loadTopSoundCloudTracks().then(this.updateResultList);
+    }
   }
   componentWillReceiveProps(newProps){
     console.log('props changed for topList',newProps.networkType);
@@ -244,15 +245,18 @@ class TopList extends Component {
          onSelected={this.onSectionChange}>
           {
             this.state.sectionList
-            .filter(s => s.visible)
-            .map(({name,label,enabled,icon},key) => enabled && 
-            <SectionItem key={key} name={name} label={label} style={styles.sectionItemContainer}>{
+            .filter(s => s.visible && s.enabled)
+            .map(({name,label,enabled,icon},key,arr) => {
+              let itemStyle = arr.length > 1 ?
+              styles.sectionItemContainer: styles.sectionSingleItem;
+              return <SectionItem key={key} name={name} label={label} style={itemStyle}>{
              isActive => {
                let activeStyle = isActive ? styles.activeSectionIcon : null;
                return <Image source={icon} resizeMode={'contain'} style={[styles.sectionIcon,activeStyle]} />
              }
             }
-            </SectionItem>)
+          </SectionItem>
+          })
           }
         </SectionTabBar>
         {this.getCurrSectionObj().scChartType &&
@@ -355,16 +359,21 @@ const styles = StyleSheet.create({
   },
   sectionContainer:{
     paddingLeft:0,
+    alignItems:'flex-start',
     paddingVertical:10
   },
   sectionItemContainer:{
     flex:1,
     alignItems:'center'
   },
+  sectionSingleItem:{
+    width:80,
+    alignItems:'center'
+  },
   sectionIcon:{
-    width:40,
-    height:40,
-    opacity:0.7
+    width:35,
+    height:35,
+    opacity:0.5
   },
   activeSectionIcon:{
     opacity:1

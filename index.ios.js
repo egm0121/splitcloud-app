@@ -66,18 +66,33 @@ class SplitCloudApp extends Component {
     };
   }
   onSceneDidFocus(route){
-    console.log('new scene will focus:',route);
+    console.log('new scene did focus:',route);
     NavigationStateNotifier.onSceneDidFocus(route);
+    let screenName = route.title;
+    if( this.isMainPlayerScreen(route) ){
+      screenName += ' | mode: ' + this.getActivePlaybackMode(store);  
+    }
+    AnalyticsService.sendScreenView( screenName || 'Component Screen');
+  }
+  isMainPlayerScreen(route){
+    return route.name == 'MainSceneContainer';
+  }
+  getActivePlaybackMode(store){
+    return store.getState().mode;
   }
   render() {
     return (
         <Provider store={store} >
             <Navigator
-                initialRoute={{ title: 'MainSceneContainer',name:'MainSceneContainer', index: 0, component: MainSceneContainer }}
+                initialRoute={{ 
+                  title: 'MainSceneContainer', 
+                  name:'MainSceneContainer',
+                  index: 0, 
+                  component: MainSceneContainer
+                }}
                 onDidFocus={this.onSceneDidFocus}
                 ref={(navigator)=> {this.navigator = navigator;}}
                 renderScene={(route, navigator) => {
-                  AnalyticsService.sendScreenView(route.title || 'Component');
                   let Component = route.component;
                   return <NetworkAvailability>{
                         (isOnline,networkType) => {

@@ -4,15 +4,15 @@ import THEME from '../styles/variables';
 import AppText from './appText';
 export default function SectionItem(props){
   let isActive = props.active == props.name ;
-  let isActiveStyle = isActive ? styles.itemSelected:null;
+  let isActiveStyle;
   const isF = (f) => typeof f === 'function';
   let isIconLabel;
   let itemSelectedContainer = props.active == props.name ? styles.itemSelectedContainer:null;
-  if(props.forceActive) isActiveStyle = styles.itemSelected;
+  if(props.forceActive || isActive) isActiveStyle = styles.itemSelected;
   if(props.children) isIconLabel = styles.iconLabel;
   return <TouchableOpacity
     key={props.key}
-    style={[props.style,styles.container,itemSelectedContainer]}
+    style={[props.style,itemSelectedContainer]}
     onPress={() => { props.onSelected(props.name)}}>
     { isF(props.children) && props.children(isActive)}
     <AppText bold={!isIconLabel} style={[styles.itemText,isActiveStyle,props.textStyle,isIconLabel]}>{props.label}</AppText>
@@ -31,12 +31,6 @@ const styles = StyleSheet.create({
     flex:1,
     fontSize: 13,
     paddingRight:0,
-  },
-  container:{
-    opacity: 0.7
-  },
-  itemSelectedContainer:{
-    opacity:1
   },
   itemSelected:{
     color: THEME.mainHighlightColor
