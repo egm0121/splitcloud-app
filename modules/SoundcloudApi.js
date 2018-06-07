@@ -46,6 +46,7 @@ class SoundCloudApi {
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);
+    console.log('sc api request object',requestObj);
     return axios(requestObj);
   }
   _toQueryString(paramObj){

@@ -48,7 +48,7 @@ class TopList extends Component {
       sectionList:[{
         name:'TOP',
         scChartType: SoundCloudApi.chartType.TOP,
-        label:'Top Music',
+        label:'Popular',
         icon: require('../assets/section_top_chart.png'),
         enabled:props.isOnline,
         visible:true,
@@ -73,7 +73,7 @@ class TopList extends Component {
       },
       {
         name:'LOCAL',
-        label:'Local music',
+        label:'Library',
         icon: require('../assets/section_local_music.png'),
         enabled:true,
         visible:true,
@@ -250,37 +250,28 @@ class TopList extends Component {
               let itemStyle = arr.length > 1 ?
               styles.sectionItemContainer: styles.sectionSingleItem;
               return <SectionItem key={key} name={name} label={label} style={itemStyle}>{
-             isActive => {
-               let activeStyle = isActive ? styles.activeSectionIcon : null;
-               return <Image source={icon} resizeMode={'contain'} style={[styles.sectionIcon,activeStyle]} />
-             }
-            }
-          </SectionItem>
-          })
+              isActive => {
+                let activeStyle = isActive ? styles.activeSectionIcon : null;
+                return <Image source={icon} resizeMode={'contain'} style={[styles.sectionIcon,activeStyle]} />
+              }
+              }</SectionItem>
+            })
           }
         </SectionTabBar>
         {this.getCurrSectionObj().scChartType &&
           <View style={{flex:1}}>
             <View style={styles.listDescription}>
               <View style={styles.genreSelectionBtn}>
-                <TouchableHighlight onPress={this.openRegionPicker}>
-                  <View>
-                    <AppText style={styles.listDetailText} >Region</AppText>
-                    <AppText style={styles.genreSelectionText}>{
-                      this.getLabelForRegion(this.state.selectedRegion)
-                    }</AppText>
-                  </View>
-                </TouchableHighlight>
-              </View>
-              <View style={styles.genreSelectionBtn}>
-                  <TouchableHighlight onPress={this.openGenrePicker}>
-                    <View>
-                      <AppText style={styles.listDetailText}>Genre</AppText>
-                      <AppText style={styles.genreSelectionText}>{
-                        this.getLabelForGenre(this.state.selectedGenre)
-                      }</AppText>
+                  <TouchableOpacity onPress={this.openGenrePicker}>
+                    <View style={{flexDirection:'row'}}>                    
+                      <AppText bold style={styles.listDetailText}>
+                        {`${this.getCurrSectionObj().label} tracks`}
+                      </AppText>                     
+                      <AppText bold style={styles.genreSelectionText}>{
+                          this.getLabelForGenre(this.state.selectedGenre)
+                      }</AppText>                      
                     </View>
-                  </TouchableHighlight>
+                  </TouchableOpacity>
               </View>
             </View>
             <TrackListContainer {...this.props}
@@ -300,12 +291,6 @@ class TopList extends Component {
             selected={this.state.selectedGenre}
             onClose={this.onClosePicker}
             onValueChange={this._onGenreChange}/>
-          <ModalPicker
-           overlayStyle={this.getPickerOverlayDisplay('region')}
-           options={this.state.regionOptions}
-           selected={this.state.selectedRegion}
-           onClose={this.onClosePicker}
-           onValueChange={this._onRegionChange}/>
       </View>
     );
   }
@@ -328,34 +313,27 @@ const styles = StyleSheet.create({
     flex:1,
     paddingRight: 10,
     paddingVertical:10,
-    alignItems:'center'
+ 
   },
   genreSelectionText : {
     color : THEME.mainActiveColor,
-    fontSize : 16,
-    lineHeight:23,
-    textAlign: 'center',
-    fontWeight:'600'
+    fontSize : 18,
+    textAlign: 'right',
+    fontWeight:'600',
+    flex:1
   },
   listDescription : {
-    backgroundColor: THEME.contentBgColor,
+    backgroundColor: THEME.mainBgColor,
     paddingLeft:10,
+    paddingVertical:10,
     borderBottomWidth:1,
     borderColor: THEME.contentBorderColor,
     justifyContent:'space-between',
     flexDirection:'row'
   },
-  listDescriptionText :{
-    paddingRight:20,
-    fontSize : 18,
-    paddingVertical:10,
-    fontWeight:'600',
-    color: THEME.mainHighlightColor
-  },
   listDetailText :{
-    fontSize : 16,
-    textAlign: 'center',
-    color: THEME.mainColor
+    fontSize : 18,
+    color: THEME.mainHighlightColor
   },
   sectionContainer:{
     paddingLeft:0,

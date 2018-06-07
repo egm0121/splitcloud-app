@@ -3,6 +3,7 @@ import iTunes from 'react-native-itunes';
 import sanitizeFilename from 'sanitize-filename';
 import RNFS from 'react-native-fs';
 import { APP_ARTWORK_CACHE_FOLDER } from '../helpers/constants';
+let assetCacheInitialized = false;
 class MediaLibraryApi {
   
   constructor(){
@@ -23,6 +24,9 @@ class MediaLibraryApi {
     this.getAlbumList = CacheDecorator.withCache(
       this.getAlbumList.bind(this),'getAlbumList'
     );
+  }
+  requestMediaAccess(){
+    this.api.getTracks({fields:this.TRACK_FIELDS});
   }
   getAllTracks(){
     return this.api.getTracks({fields:this.TRACK_FIELDS}).then((tracks) => {
@@ -50,10 +54,16 @@ class MediaLibraryApi {
       console.log('MediaLibraryApi asset caching dir :',APP_ARTWORK_CACHE_FOLDER);
     });
   }
+  refreshLibraryArtworks(){
+    assetCacheInitialized = false;
+    this.cacheLibraryArtworks();
+  }
   cacheLibraryArtworks(){
+    if(assetCacheInitialized) return Promise.reject('cache already initialized');
     return this.createLibraryArtworkCache()
     .then(this.getAlbumList)
     .then((albumList) => {
+      assetCacheInitialized = true;
       return Promise.all(albumList.map(this.cacheArtworkToFile))
     })
   }
@@ -180,15 +190,11 @@ MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
   'duration',
   'playCount'
 ];
-
-let artworkCacheInitialized = false;
-
-if( !artworkCacheInitialized ){
-  console.log('start caching album artwork');
-  (new MediaLibraryApi()).cacheLibraryArtworks().then(results => {
-    console.log('all artwork cached to file',results);
-    artworkCacheInitialized = true;
-  });
+let requestLibAcces = false;
+if(!requestLibAcces){
+  //call an api just to ask for confirmation to access lib on first start
+  (new MediaLibraryApi).requestMediaAccess();
+  requestLibAcces = true;
 }
 
 export default MediaLibraryApi;

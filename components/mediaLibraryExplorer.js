@@ -46,6 +46,10 @@ class MediaLibraryExplorer extends Component {
   componentWillMount(){
     this.api.getAllTracks();
     this.api.getAlbumList();
+    console.log('start caching album artwork');
+    this.api.cacheLibraryArtworks().then(results => {
+      console.log('all artwork cached to file nbr:',results.length,'images:',results);
+    },(err) => console.log('err',err));
   }
   loadTracks(){
     return this.api.getAllTracks();
@@ -80,7 +84,9 @@ class MediaLibraryExplorer extends Component {
   render() {
     return (
       <View style={styles.container}>
-       <AppText bold={true} style={[styles.heading]}>Music Library</AppText>
+        <View style={[styles.headingContainer]}>
+          <AppText bold={true} style={[styles.heading]}>Music Library</AppText>
+        </View>
       {this.state.sections.map( (section,key) => {
         return <TouchableOpacity style={styles.rowContainer} 
           onSelected={this.browseBy.bind(this,section.name)} key={key}>
@@ -94,7 +100,9 @@ class MediaLibraryExplorer extends Component {
             onPressed={this.browseBy.bind(this,section.name)} />
           </TouchableOpacity>
       })}
-      <AppText bold={true} style={[styles.heading]}>Saved Songs</AppText>
+        <View style={[styles.headingContainer]}>
+          <AppText bold={true} style={[styles.heading]}>Saved Songs</AppText>
+        </View>
       </View>
     );
   }
@@ -120,16 +128,20 @@ const styles = StyleSheet.create({
     paddingLeft:20,
     paddingVertical:20,
     flexDirection:'row',
-    backgroundColor:THEME.mainBgColor
   },
   sectionLabel:{
     fontSize:16
   },
+  headingContainer:{
+    backgroundColor:THEME.mainBgColor,
+    paddingLeft:10,
+    paddingVertical:20,
+    borderBottomWidth:1,
+    borderBottomColor:THEME.contentBorderColor
+  },
   heading:{
     color: THEME.mainHighlightColor,
     fontSize: 18,
-    paddingLeft:20,
-    paddingVertical:20,
   }
 });
 
