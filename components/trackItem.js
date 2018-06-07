@@ -1,6 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity, Text } from 'react-native';
 import THEME from '../styles/variables';
+import { getArtworkImagePath , isLocalTrack} from '../helpers/formatters';
 import AppText from './appText';
 
 const ARTIST_TRACK_DELIMITER = ' - ';
@@ -27,7 +28,10 @@ export default function TrackItem(props){
       trackTitle = trackAuthor;
       trackAuthor = rowData.username;
     }
-    artworkImage = {url: getSmallArtworkUrl(rowData.artwork)};
+    artworkImage = isLocalTrack(rowData) ? 
+     {url: getArtworkImagePath(rowData.artwork)}:
+     {url: getSmallArtworkUrl(rowData.artwork)};
+
     if(props.currentTrack && rowData.id == props.currentTrack.id){
       rowTextStyle.push(styles.hightlightText);
     }

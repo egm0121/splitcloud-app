@@ -64,12 +64,16 @@ class TrackListContainer extends Component {
   }
   onTrackSelected(...args){
     if(args[0].type == 'playlist'){
+      if(this.props.onPlaylistSelected){
+        return this.props.onPlaylistSelected(...args);
+      }
       this.onPlaylistSelected(...args);
     } else {
       this.props.onTrackSelected(...args);
     }
   }
   onPlaylistSelected(playlist){
+    
     this.props.navigator.push({
       title : 'PlaylistContainer - playlist.name - ' + this.props.side,
       name : 'PlaylistContainer' + this.props.side,
@@ -104,6 +108,7 @@ class TrackListContainer extends Component {
           onEndThreshold={this.props.onEndThreshold}
           resetToTop={this.props.resetToTop}
           scrollToCurrentTrack={this.props.scrollToCurrentTrack}
+          emptyLabel={this.props.emptyLabel}
         ></TrackList>
       </View>
     );

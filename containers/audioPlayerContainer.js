@@ -11,7 +11,7 @@ import {
   playlistType,
   NOW_PLAYING_ASSET_NAME
 } from '../helpers/constants';
-import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
+import HybridPlayer from '../modules/HybridPlayer';
 import AudioPlayer from '../components/audioPlayer';
 import SongPickerContainer from './songPickerContainer';
 import UploaderProfileContainer from './uploaderProfileContainer';
@@ -28,6 +28,8 @@ import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
 import FileDownloadManager from '../modules/FileDownloadManager';
+import { isLocalTrack } from '../helpers/formatters';
+import MediaLibraryPlaylist from './mediaLibraryPlaylist';
 
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -60,7 +62,7 @@ class AudioPlayerContainer extends Component {
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
     this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
-    this.musicPlayer = new ReactNativeStreamingPlayer();
+    this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
     this.state = {
       volume:1,
@@ -220,6 +222,21 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onUploaderProfileOpen(){
+    if( isLocalTrack(this._getCurrentTrackObj()) ){
+      return this.props.navigator.push({
+        title : 'MediaLibraryPlaylist - ' + this.props.side,
+        name : 'MediaLibraryPlaylist.' + this.props.side,
+        component: MediaLibraryPlaylist,
+        passProps : {
+          side : this.props.side,
+          browseCategory: 'artist',
+          playlist: {
+            label : this._getCurrentTrackObj().username
+          },
+          onClose: () => this.props.navigator.pop()
+        }
+      });
+    }
     if(!this.props.isOnline) return false;
     this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
     let prevPickerRoute = this.findRouteByName(

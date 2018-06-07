@@ -18,7 +18,7 @@ import Button from '../components/button';
 import AppText from '../components/appText';
 import ToggleFavoriteTrackContainer from '../containers/toggleFavoriteTrackContainer';
 import MultiSlider from 'react-native-multi-slider';
-import { formatDurationExtended } from '../helpers/formatters';
+import { formatDurationExtended, getArtworkImagePath, isLocalTrack } from '../helpers/formatters';
 
 const isBufferingLabel = 'Buffering - ';
 
@@ -55,6 +55,10 @@ class AudioPlayer extends Component {
     return this._getCurrentTrackObj().username;
   }
   _getCurrentTrackArtwork(){
+    if( isLocalTrack(this._getCurrentTrackObj()) 
+      && this._getCurrentTrackObj().artwork){
+      return getArtworkImagePath(this._getCurrentTrackObj().artwork);
+    }
     const scArtwork = this._getCurrentTrackObj().artwork ?
       this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
     return scArtwork || false;
@@ -95,7 +99,8 @@ class AudioPlayer extends Component {
       styles.pauseToggleButton : styles.playToggleButton);
 
     let {width} = Dimensions.get('window');
-    let progressTrackLength = width - 140;
+    let progressTrackLength = width - 160;
+    let volumeSliderWidth = width - 160;
     let showBgArtCover = this._getCurrentTrackArtwork();
     let artworkSource = showBgArtCover ?
       {uri:this._getCurrentTrackArtwork()} :
@@ -223,7 +228,8 @@ class AudioPlayer extends Component {
                           size={'small'}/>
                 </View>
                 <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
-                  <View style={styles.volumeSlider}>
+                  <View style={styles.volumePad}></View>
+                  <View style={[styles.volumeSlider]}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
                       minimumTrackTintColor={sliderTrackStyles.min}
@@ -231,6 +237,7 @@ class AudioPlayer extends Component {
                       onValueChange={this.props.onVolumeValueChange}
                       value={this.props.volumeSliderValue} />
                   </View>
+                  <View style={styles.volumePad}></View>
                 </View>
                 <TouchableOpacity onPress={this.props.openScUploaderLink} style={[styles.scCopyContainer]}>
                   <Image
@@ -356,23 +363,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: mainFgColor,
     height:30,
+    fontSize:16,
+    fontWeight: 'bold',
     lineHeight: 22,
     width:50
   },
   playbackTimeSmall:{
-    fontSize:12,
+    fontSize:14,
     width:60
   },
   playbackTimeInitial:{
-    marginLeft:10
+    marginLeft:20
   },
   playbackTrackContainer:{
     marginHorizontal: playbackHorizontalMargin
   },
+  volumePad:{
+    flex:2,
+  },
   volumeSlider:{
-    flex:1,
+    flex:3,
     justifyContent: 'center',
-    marginHorizontal: volumeMarginSide
   },
   welcome: Object.assign({
     fontSize: 20,

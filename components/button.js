@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {ucFirst} from '../helpers/formatters';
 function Button(props){
-  let sizes = ['small','big','bigger','huge'];
+  let sizes = ['tiny','small','big','bigger','huge'];
   let buttonContainerStyle = [styles.buttonContainer];
   let buttonIconStyle = [styles.buttonIcon];
   if(props.style) buttonContainerStyle.push(props.style);
@@ -44,6 +44,10 @@ const styles = StyleSheet.create({
   buttonIcon:{
     width:30,
     height:30
+  },
+  buttonSizeTiny:{
+    width:20,
+    height:20
   },
   buttonSizeSmall:{
     width:25,

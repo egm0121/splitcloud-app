@@ -54,6 +54,7 @@ const initialState = {
     side : playbackModeTypes.RIGHT
   }],
   playlistStore:[
+    //saved user playlist
     {
       id : 'default_' + playbackModeTypes.LEFT,
       currentTrackIndex: 0,
@@ -64,6 +65,7 @@ const initialState = {
       currentTrackIndex: 0,
       tracks :[]
     },
+    //current queue playlist
     {
       id : 'playbackQueue_' + playbackModeTypes.LEFT,
       currentTrackIndex: 0,

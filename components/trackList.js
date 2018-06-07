@@ -16,6 +16,7 @@ import THEME from '../styles/variables';
 import AppText from './appText';
 import PlaylistItem from './playlistItem';
 import TrackItem from './trackItem';
+import UserItem from './userItem';
 
 const LIST_ITEM_HEIGHT = 82;
 
@@ -113,6 +114,9 @@ class TrackList extends Component {
         </View>
       </View>
       );
+    }
+    if(rowData.type == 'playlist' && rowData.isArtist){
+      return <UserItem user={rowData} onSelected={this._onSongSelected} />;
     }
     if(rowData.type == 'playlist'){
       return <PlaylistItem item={rowData} onSelected={this._onSongSelected} />;

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  Image,
   ListView,
   ActivityIndicator,
   View,
@@ -27,7 +28,7 @@ import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
-import {formatDuration, formatGenreLabel} from '../helpers/formatters';
+import {formatGenreLabel} from '../helpers/formatters';
 import AppText from './appText';
 class TopList extends Component {
 
@@ -47,36 +48,45 @@ class TopList extends Component {
       sectionList:[{
         name:'TOP',
         scChartType: SoundCloudApi.chartType.TOP,
-        label:'Top Music',
+        label:'Popular',
+        icon: require('../assets/section_top_chart.png'),
         enabled:props.isOnline,
-        visible:true
+        visible:true,
+        offlineAvailable:false
       },
       {
         name:'TRENDING',
         label:'Trending',
+        icon: require('../assets/section_trending_up.png'),
         scChartType: SoundCloudApi.chartType.TRENDING,
         enabled:props.isOnline,
-        visible:true
+        visible:true,
+        offlineAvailable:false
       },
       {
         name:'SELECTION',
         label:'Discover',
+        icon: require('../assets/section_playlist_discover.png'),
         enabled:props.isOnline,
-        visible:true
+        visible:true,
+        offlineAvailable:false
       },
       {
         name:'LOCAL',
-        label:'Saved',
+        label:'Library',
+        icon: require('../assets/section_local_music.png'),
         enabled:true,
-        visible:true
+        visible:true,
+        offlineAvailable:true
       },
       {
         name:'PLS',
         label:'Explore',
         enabled:props.isOnline,
-        visilble:false
+        visible:false,
+        offlineAvailable:false
       }],
-      section :'TOP',
+      section : props.isOnline ? 'TOP' : 'LOCAL',
       selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
       selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
@@ -93,8 +103,10 @@ class TopList extends Component {
   componentWillMount(){
     this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
     this.showStreamableOnly = this.props.showStreamableOnly;
-    //fetch inial genre list
-    this.loadTopSoundCloudTracks().then(this.updateResultList);
+    //fetch initial section list only if online
+    if(this.props.isOnline){
+      this.loadTopSoundCloudTracks().then(this.updateResultList);
+    }
   }
   componentWillReceiveProps(newProps){
     console.log('props changed for topList',newProps.networkType);
@@ -102,7 +114,7 @@ class TopList extends Component {
       console.log('isOnline changed for topList')
       this.setState((state) => {
         let sectionList = state.sectionList.map(s => {
-          if(s.name !== 'LOCAL') s.enabled = newProps.isOnline;
+          if(!s.offlineAvailable) s.enabled = newProps.isOnline;
           return s;
         });
         return {
@@ -227,35 +239,39 @@ class TopList extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <SectionTabBar active={this.state.section} onSelected={this.onSectionChange}>
+        <SectionTabBar disableScroll 
+         style={styles.sectionContainer}
+         active={this.state.section} 
+         onSelected={this.onSectionChange}>
           {
             this.state.sectionList
-            .filter(s => s.visible)
-            .map(({name,label,enabled},key) => enabled && <SectionItem key={key} name={name} label={label}/>)
+            .filter(s => s.visible && s.enabled)
+            .map(({name,label,enabled,icon},key,arr) => {
+              let itemStyle = arr.length > 1 ?
+              styles.sectionItemContainer: styles.sectionSingleItem;
+              return <SectionItem key={key} name={name} label={label} style={itemStyle}>{
+              isActive => {
+                let activeStyle = isActive ? styles.activeSectionIcon : null;
+                return <Image source={icon} resizeMode={'contain'} style={[styles.sectionIcon,activeStyle]} />
+              }
+              }</SectionItem>
+            })
           }
         </SectionTabBar>
         {this.getCurrSectionObj().scChartType &&
           <View style={{flex:1}}>
             <View style={styles.listDescription}>
               <View style={styles.genreSelectionBtn}>
-                <TouchableHighlight onPress={this.openRegionPicker}>
-                  <View>
-                    <AppText style={styles.listDetailText} >Region</AppText>
-                    <AppText style={styles.genreSelectionText}>{
-                      this.getLabelForRegion(this.state.selectedRegion)
-                    }</AppText>
-                  </View>
-                </TouchableHighlight>
-              </View>
-              <View style={styles.genreSelectionBtn}>
-                  <TouchableHighlight onPress={this.openGenrePicker}>
-                    <View>
-                      <AppText style={styles.listDetailText}>Genre</AppText>
-                      <AppText style={styles.genreSelectionText}>{
-                        this.getLabelForGenre(this.state.selectedGenre)
-                      }</AppText>
+                  <TouchableOpacity onPress={this.openGenrePicker}>
+                    <View style={{flexDirection:'row'}}>                    
+                      <AppText bold style={styles.listDetailText}>
+                        {`${this.getCurrSectionObj().label} tracks`}
+                      </AppText>                     
+                      <AppText bold style={styles.genreSelectionText}>{
+                          this.getLabelForGenre(this.state.selectedGenre)
+                      }</AppText>                      
                     </View>
-                  </TouchableHighlight>
+                  </TouchableOpacity>
               </View>
             </View>
             <TrackListContainer {...this.props}
@@ -275,12 +291,6 @@ class TopList extends Component {
             selected={this.state.selectedGenre}
             onClose={this.onClosePicker}
             onValueChange={this._onGenreChange}/>
-          <ModalPicker
-           overlayStyle={this.getPickerOverlayDisplay('region')}
-           options={this.state.regionOptions}
-           selected={this.state.selectedRegion}
-           onClose={this.onClosePicker}
-           onValueChange={this._onRegionChange}/>
       </View>
     );
   }
@@ -303,34 +313,48 @@ const styles = StyleSheet.create({
     flex:1,
     paddingRight: 10,
     paddingVertical:10,
-    alignItems:'center'
+ 
   },
   genreSelectionText : {
     color : THEME.mainActiveColor,
-    fontSize : 16,
-    lineHeight:23,
-    textAlign: 'center',
-    fontWeight:'600'
+    fontSize : 18,
+    textAlign: 'right',
+    fontWeight:'600',
+    flex:1
   },
   listDescription : {
-    backgroundColor: THEME.contentBgColor,
+    backgroundColor: THEME.mainBgColor,
     paddingLeft:10,
+    paddingVertical:10,
     borderBottomWidth:1,
     borderColor: THEME.contentBorderColor,
     justifyContent:'space-between',
     flexDirection:'row'
   },
-  listDescriptionText :{
-    paddingRight:20,
+  listDetailText :{
     fontSize : 18,
-    paddingVertical:10,
-    fontWeight:'600',
     color: THEME.mainHighlightColor
   },
-  listDetailText :{
-    fontSize : 16,
-    textAlign: 'center',
-    color: THEME.mainColor
+  sectionContainer:{
+    paddingLeft:0,
+    alignItems:'flex-start',
+    paddingVertical:10
+  },
+  sectionItemContainer:{
+    flex:1,
+    alignItems:'center'
+  },
+  sectionSingleItem:{
+    width:80,
+    alignItems:'center'
+  },
+  sectionIcon:{
+    width:35,
+    height:35,
+    opacity:0.5
+  },
+  activeSectionIcon:{
+    opacity:1
   },
   openModalStyle : {
     height: 250

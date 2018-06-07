@@ -7,7 +7,7 @@ import {
 import THEME from '../styles/variables';
 import SelectionHeaderItem from './selectionHeaderItem';
 import SelectionHorizontalListing from './selectionHorizontalListing';
-import PlaylistContainer from '../containers/playlistContainer';
+import SoundcloudPlaylist from '../containers/soundcloudPlaylist';
 class SelectionExplorer extends Component {
 
   constructor(props){
@@ -45,9 +45,9 @@ class SelectionExplorer extends Component {
   }
   onPlaylistSelected(playlist){
     this.props.navigator.push({
-      title : 'PlaylistContainer - playlist.name - ' + this.props.side,
-      name : 'PlaylistContainer' + this.props.side,
-      component: PlaylistContainer,
+      title : 'SoundcloudPlaylist - '+ playlist.label + ' - ' + this.props.side,
+      name : 'SoundcloudPlaylist' + this.props.side,
+      component: SoundcloudPlaylist,
       passProps : {
         playlist: playlist,
         side : this.props.side,
@@ -56,7 +56,7 @@ class SelectionExplorer extends Component {
     });
   }
   
-  renderRowWithData(rowData,sectionId) {
+  renderRowWithData(rowData) {
     if(!rowData)return null;
     return <View style={{flexDirection:'row'}} >
           <View style={{flexDirection:'column',flex:1}}>
@@ -64,7 +64,6 @@ class SelectionExplorer extends Component {
             <SelectionHorizontalListing items={rowData.playlists} onSelected={this.onPlaylistSelected}/>
         </View>
       </View>;
-   // return <PlaylistItem item={rowData} onSelected={this.onPlaylistSelected} />;
   }
   
   render(){

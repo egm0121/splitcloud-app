@@ -1,6 +1,8 @@
 import {
   LayoutAnimation
 } from 'react-native';
+import RNFS from 'react-native-fs';
+
 export const playbackModeTypes = {
   SPLIT : 'S',
   LEFT : 'L',
@@ -16,7 +18,8 @@ export const audioPlayerStates = {
   PLAYING :'PLAYING',
   STOPPED :'STOPPED',
   PAUSED : 'PAUSED',
-  BUFFERING : 'BUFFERING'
+  BUFFERING : 'BUFFERING',
+  LOADING : 'LOADING'
 };
 export const playlistType = {
   UP_NEXT : 'UP_NEXT_PLAYLIST',
@@ -24,7 +27,8 @@ export const playlistType = {
   REGULAR : 'REGULAR' 
 }
 export const messages = {
-  SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control'
+  SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control',
+  EMPTY_LIBRARY_PLAYLIST : 'No tracks found! \n\n Please make sure the album is\n downloaded to your device.'
 }
 
 export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';
@@ -38,4 +42,11 @@ export const animationPresets = {
     ...LayoutAnimation.Presets.easeInEaseOut,
     duration:100
   }
+}
+export const APP_DOCUMENTS_FOLDER = RNFS.DocumentDirectoryPath;
+export const APP_ARTWORK_CACHE_FOLDER = APP_DOCUMENTS_FOLDER + '/' + 'artwork_cache';
+
+export const musicProviderType = {
+  SOUNDCLOUD: 'soudcloud',
+  LIBRARY: 'library'
 }

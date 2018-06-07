@@ -16,19 +16,25 @@ const actionTypeWhitelist = [
   actionTypes.FILTER_PLAYLIST,
   actionTypes.SET_REVIEW_COMPLETED
 ];
+const actionScreenChangeList = [
+  actionTypes.CHANGE_PLAYBACK_MODE
+]
 const getCategoryFromAction = (action) => {
   return action.side ? 'side-'+action.side : 'app-wide';
 };
 const AnalyticsMiddleware = store => {
   return next => {
     return action => {
-      if( actionTypeWhitelist.indexOf(action.type) > -1 ){
+      if( actionTypeWhitelist.includes(action.type) ){
         AnalyticsService.sendEvent({
           category :getCategoryFromAction(action),
           action : action.type,
           label :'redux-action',
           value : 1
         });
+      }
+      if( actionScreenChangeList.includes(action.type)){
+        AnalyticsService.sendScreenView('MainSceneContainer | mode: '+action.mode);
       }
       let result = next(action);
       return result;
