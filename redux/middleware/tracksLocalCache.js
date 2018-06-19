@@ -2,6 +2,7 @@ import { actionTypes } from '../constants/actions';
 import { globalSettings } from '../../helpers/constants';
 import FileDownloadManager from '../../modules/FileDownloadManager';
 import { isLocalTrack } from '../../helpers/formatters';
+import { getCurrentTrackBySide, getCurrentPlaylistBySide } from '../selectors/playlistSelector';
 let trackManager = new FileDownloadManager({extension:'mp3'});
 
 trackManager.initCacheDir().then(
@@ -37,7 +38,6 @@ const storeLocalTrack = (track) => {
   }).catch((err) =>{
     console.info('download failed with error',err);
   });
-
 }
 const deleteLocalAsset = (track,store) =>{
   console.log('findTrackInAnyPlaylist',store.getState().playlistStore,track);
@@ -52,13 +52,6 @@ const deleteAllLocalAssets = () => {
 const isDefaultPlaylist = (action) => {
   return action.playlistId && action.playlistId.indexOf('default_') == 0;
 }
-const getPlaylistStore = (action,store) => {
-  let currPlaylist = store.getState().playlist
-      .find(curr => curr.side == action.side);
-  let currPlaylistStore = store.getState().playlistStore
-    .find(playlistData => playlistData.id == currPlaylist.currentPlaylistId);
-  return currPlaylistStore;
-}
 const trackCacheMiddleware = store => {
   return next => {
     return action => {
@@ -67,7 +60,7 @@ const trackCacheMiddleware = store => {
       if(isDefaultPlaylist(action) && action.type == actionTypes.SET_PLAYLIST &&
        action.tracks.length == 0){
         console.info('get the deletable tracks assets')
-        prevPlaylistTracks = getPlaylistStore(action, store).tracks.map(t => ({...t})); //deep copy
+        prevPlaylistTracks = getCurrentPlaylistBySide(store, action.side).tracks.map(t => ({...t})); //deep copy
       }
       // dispatch next action middleware and reducers for action
       let result = next(action);
@@ -88,8 +81,7 @@ const trackCacheMiddleware = store => {
           actionTypes.INCREMENT_CURR_PLAY_INDEX,
           actionTypes.DECREMENT_CURR_PLAY_INDEX].includes(action.type)
         ){
-          let currPlaylistStore = getPlaylistStore(action, store);
-          let currPlayingTrack = currPlaylistStore.tracks[currPlaylistStore.currentTrackIndex];
+          let currPlayingTrack = getCurrentTrackBySide(store, action.side);
           console.info('new currently playing track, attempt download',currPlayingTrack);
           if(currPlayingTrack){
             storeLocalTrack(currPlayingTrack);

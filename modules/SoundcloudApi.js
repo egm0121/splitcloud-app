@@ -238,7 +238,8 @@ class SoundCloudApi {
         artwork : t.artwork_url,
         scUploaderLink : t.user.permalink_url,
         duration: t.duration,
-        playbackCount: t.playback_count
+        playbackCount: t.playback_count,
+        provider : 'soundcloud'
       });
   }
   transformUserPayload(user){

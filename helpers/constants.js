@@ -50,3 +50,6 @@ export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
   LIBRARY: 'library'
 }
+// min seconds to flag a song as played in stats.
+export const PLAYBACK_MIN_TIME = 30; 
+export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
