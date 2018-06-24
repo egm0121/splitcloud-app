@@ -10,6 +10,8 @@ import {
   LayoutAnimation,
   Alert
 } from 'react-native';
+import config from '../helpers/config';
+import AnalyticsService from '../modules/Analytics';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
 import BackButton from  '../components/backButton';
@@ -18,6 +20,7 @@ import FilterInput from '../components/filterInput';
 import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
+import SoundCloudApi from '../modules/SoundcloudApi';
 import {globalSettings,animationPresets} from '../helpers/constants';
 import {
    setPlaylist,
@@ -29,7 +32,7 @@ import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 import NavigationStateNotifier from '../modules/NavigationStateNotifier';
-import {playlistType} from '../helpers/constants';
+import {playlistType , RESERVED_PLAYLIST_NAME} from '../helpers/constants';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
@@ -39,8 +42,14 @@ class CurrentPlaylistContainer extends Component {
     this.onOverlayClosed = this.onOverlayClosed.bind(this);
     this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
     this.onOfflineModeToggle = this.onOfflineModeToggle.bind(this);
+    this.onExportToScPlaylist = this.onExportToScPlaylist.bind(this);
     this.componentDidFocus = this.componentDidFocus.bind(this);
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
+    this.scApi = new SoundCloudApi({ 
+      clientId: config.SC_CLIENT_ID,
+      clientSecret: config.SC_CLIENT_SECRET,
+      redirectUri: config.SC_OAUTH_REDIRECT_URI
+    });
     this.focusSub = NavigationStateNotifier.addListener(
       this.props.routeName,
       this.componentDidFocus
@@ -67,6 +76,41 @@ class CurrentPlaylistContainer extends Component {
       ]
     )
   }
+  onExportToScPlaylist(){
+    console.log('export to soundcloud playlist');
+    this.scApi.authenticate().then(() => {
+      let idList = this.props.queue.filter(t => t.provider !== 'library').map(({id}) => id);
+      this.scApi.getOwnPlaylists().then((playlists) => {
+        const hasSplitcloudSet = playlists
+          .filter(t => t.label == RESERVED_PLAYLIST_NAME)[0];
+        console.log('found a splitcloud playlist',hasSplitcloudSet);
+        return hasSplitcloudSet;
+      }).then( playlist => {
+        return playlist ? 
+          this.scApi.updatePlaylist(playlist.id,idList) :
+          this.scApi.createPlaylist(RESERVED_PLAYLIST_NAME,idList)
+      }).then(resp => {
+        this.props.pushNotification({
+          type:'success',
+          message:'Favorites saved on SoundCloud'
+        });
+        AnalyticsService.sendEvent({
+          category: 'side-'+this.props.side,
+          action: 'export-saved-to-soundcloud',
+          label: 'ui-action',
+          value:1
+        })
+      })
+      .catch(err => {
+        this.props.pushNotification({
+          type:'error',
+          message:'There was an error :('
+        });
+      });
+    });
+    this.onOverlayClosed();
+  }
+  
   onPlaylistMenuOpen(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
@@ -149,6 +193,9 @@ class CurrentPlaylistContainer extends Component {
               'Disable Offline Mode':
               'Enable Offline Mode'
             }
+          </MenuOverlayItem>
+          <MenuOverlayItem onPress={this.onExportToScPlaylist}>
+            Save playlist to SoundCloud
           </MenuOverlayItem>
         </MenuOverlay>
       </View>

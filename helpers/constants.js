@@ -46,6 +46,8 @@ export const animationPresets = {
 export const APP_DOCUMENTS_FOLDER = RNFS.DocumentDirectoryPath;
 export const APP_ARTWORK_CACHE_FOLDER = APP_DOCUMENTS_FOLDER + '/' + 'artwork_cache';
 
+export const RESERVED_PLAYLIST_NAME = 'SplitCloud-Favorites';
+
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
   LIBRARY: 'library'

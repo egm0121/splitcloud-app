@@ -1,19 +1,26 @@
 import axios from 'axios';
 import CacheDecorator from '../helpers/cacheDecorator';
-import {stripSSL } from '../helpers/utils';
+import { stripSSL } from '../helpers/utils';
+import { Linking } from 'react-native';
+import querystring from 'query-string';
 class SoundCloudApi {
 
-  constructor({endpoints,clientId}){
+  constructor({endpoints,clientId,redirectUri,clientSecret}){
     this.endpoints = endpoints || {
       v1: 'api.soundcloud.com',
       v2: 'api-v2.soundcloud.com'
     };
     this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.redirectUri = redirectUri;
+    
     this.timeout = 4*1e3;
     this.extendedTimeout = 10*1e3;
     this.transformTrackPayload = this.transformTrackPayload.bind(this);
     this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
     this.transformSelectionPayload = this.transformSelectionPayload.bind(this);
+    this.handleAuthCode = this.handleAuthCode.bind(this);
+
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
@@ -56,13 +63,20 @@ class SoundCloudApi {
       .join('&');
   }
   _buildRequestObject(version,route,params = {},method = SoundCloudApi.methods.GET,cancelToken,timeout){
-    let urlParams = this._toQueryString(params);
-    return {
+    let urlParams = method === SoundCloudApi.methods.GET ?
+       '&' + this._toQueryString(params) : '';
+    let secure =  method === SoundCloudApi.methods.GET ? '' : 's';
+    let accessToken = this.accessToken ? `&oauth_token=${this.accessToken}` :'';
+    let reqObj = {
       method : method ,
-      url : `http://${this.endpoints[version]}/${route}?client_id=${this.clientId}&${urlParams}`,
+      url : `http${secure}://${this.endpoints[version]}/${route}?client_id=${this.clientId}${accessToken}${urlParams}`,
       timeout : timeout || this.timeout,
       cancelToken
+    };
+    if (method !== SoundCloudApi.methods.GET) {
+      reqObj.data = params;
     }
+    return reqObj;
   }
   _extractCancelToken(opts){
     opts = {...opts};
@@ -76,7 +90,82 @@ class SoundCloudApi {
     }
     return [cancelToken,opts];
   }
-
+  subscribeProtocolCallback(cb){
+    Linking.addEventListener('url', cb);
+  }
+  unsubscribeProtocolCallback(cb){
+    Linking.removeEventListener('url', cb);
+  }
+  handleAuthCode({url}){
+    let fragment = url.split('#')[1];
+    if (fragment) {
+      let params = querystring.parse(fragment);
+      this.accessToken = params.access_token;
+      return this.accessToken;
+    }
+    return false;
+  }
+  authenticate(){
+    return new Promise((res, rej) => {
+      if(this.accessToken) res(this.accessToken);
+      let onAuthCallback = (args)  => {
+        let authorized = this.handleAuthCode(args);
+        authorized ? res(authorized) : rej(new Error('auth failed'));
+        this.unsubscribeProtocolCallback(onAuthCallback);
+      };
+      this.subscribeProtocolCallback(onAuthCallback);
+      const connectUrl = [
+        'https://soundcloud.com/connect',
+        '?response_type=token',
+        '&scope=non-expiring',
+        '&client_id=' + this.clientId,
+        '&display=popup',
+        '&redirect_uri=' + this.redirectUri,
+        '&state=testing'
+      ].join('');
+      Linking.openURL(connectUrl);
+      console.log('opening auth url for soundcloud', connectUrl);
+    });
+  }
+  getAccessToken(code){
+    return this.request(SoundCloudApi.api.v1,'oauth2/token',{      
+      client_secret: this.clientSecret,
+      redirect_uri: this.redirectUri,
+      grant_type: 'authorization_code',
+      code
+    },SoundCloudApi.methods.POST);
+  }
+  getOwnPlaylists(){
+    return this.request(SoundCloudApi.api.v1,'me/playlists').then(resp => {
+      return resp.data.filter( p => p.streamable)
+        .map(this.transformPlaylistPayload)
+        .filter( p => p.tracks.length);
+    });
+  }
+  deleteUserPlaylist(playlistId){
+    return this.request(SoundCloudApi.api.v1,`playlists/${playlistId}`,
+      undefined,SoundCloudApi.methods.DELETE);
+  }
+  createPlaylist(playlistName, tracksArray, sharing = 'public'){
+    let prom = this.request(SoundCloudApi.api.v2,'playlists',{
+      playlist: {
+        sharing,
+        title: playlistName,
+        tracks: tracksArray
+      }
+    },SoundCloudApi.methods.POST);
+    prom.then(() => CacheDecorator.delCache('getScUserPlaylists'))
+    return prom;
+  }
+  updatePlaylist(playlistId, tracksArray){
+    let prom = this.request(SoundCloudApi.api.v2,`playlists/${playlistId}`,{
+      playlist: {
+        tracks: tracksArray
+      }
+    },SoundCloudApi.methods.PUT);
+    prom.then(() => CacheDecorator.delCache('getScUserPlaylists'))
+    return prom;
+  }
   searchPublicTracks(terms,limit=100,offset=0,opts = {}){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     return this.request(SoundCloudApi.api.v1,'tracks',{

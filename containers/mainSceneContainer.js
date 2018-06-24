@@ -6,21 +6,15 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
-  TextInput,
   View,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
   TouchableHighlight,
   LayoutAnimation,
   Linking,
-  Image
 } from 'react-native';
 import config from '../helpers/config';
 import { isIphoneX,ifIphoneX } from 'react-native-iphone-x-helper';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
-import NotificationOverlay from '../components/notificationOverlay';
 import Button from '../components/button';
 import { playbackModeTypes } from '../helpers/constants';
 import { connect } from 'react-redux';
@@ -35,7 +29,6 @@ const {
 class MainSceneContainer extends Component {
   constructor(props){
     super(props);
-    this.handleOpenURL = this.handleOpenURL.bind(this);
     this.onLoginStart = this.onLoginStart.bind(this);
     this.purgeStore = this.purgeStore.bind(this);
     this.renderPlaybackModeTabBar = this.renderPlaybackModeTabBar.bind(this);
@@ -56,15 +49,7 @@ class MainSceneContainer extends Component {
       {...this.initialButtonsState}
     );
   }
-  componentDidMount(){
-    Linking.addEventListener('url', this.handleOpenURL);
-  }
-  componentWillUnmount(){
-    Linking.removeEventListener('url', this.handleOpenURL);
-  }
-  handleOpenURL(){
-    console.log('handle openURL called',arguments)
-  }
+  
   onLoginStart(){
     Linking.openURL([
       'https://soundcloud.com/connect',
