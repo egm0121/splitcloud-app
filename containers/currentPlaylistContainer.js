@@ -32,7 +32,9 @@ import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 import NavigationStateNotifier from '../modules/NavigationStateNotifier';
-import {playlistType , RESERVED_PLAYLIST_NAME} from '../helpers/constants';
+import {playlistType , RESERVED_PLAYLIST_NAME, FEATURE_SC_EXPORT} from '../helpers/constants';
+import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
+import { markFeatureDiscovery } from '../redux/actions/featureDiscoveryActions';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
@@ -77,9 +79,14 @@ class CurrentPlaylistContainer extends Component {
     )
   }
   onExportToScPlaylist(){
-    console.log('export to soundcloud playlist');
+    let idList = this.props.queue
+      .filter(t => t.provider !== 'library').map(({id}) => id);
+    if( !idList.length ) return this.props.pushNotification({
+      type: 'info',
+      message: 'Playlist is empty'
+    });
     this.scApi.authenticate().then(() => {
-      let idList = this.props.queue.filter(t => t.provider !== 'library').map(({id}) => id);
+      this.props.pushNotification({type: 'info', message: 'Connecting to SoundCloud...'});
       this.scApi.getOwnPlaylists().then((playlists) => {
         const hasSplitcloudSet = playlists
           .filter(t => t.label == RESERVED_PLAYLIST_NAME)[0];
@@ -92,11 +99,11 @@ class CurrentPlaylistContainer extends Component {
       }).then(resp => {
         this.props.pushNotification({
           type:'success',
-          message:'Favorites saved on SoundCloud'
+          message: `${idList.length} tracks saved on SoundCloud`
         });
         AnalyticsService.sendEvent({
           category: 'side-'+this.props.side,
-          action: 'export-saved-to-soundcloud',
+          action: FEATURE_SC_EXPORT,
           label: 'ui-action',
           value:1
         })
@@ -104,7 +111,7 @@ class CurrentPlaylistContainer extends Component {
       .catch(err => {
         this.props.pushNotification({
           type:'error',
-          message:'There was an error :('
+          message:'There was a login error :('
         });
       });
     });
@@ -114,6 +121,7 @@ class CurrentPlaylistContainer extends Component {
   onPlaylistMenuOpen(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
+    this.props.markFeatureDiscovery(FEATURE_SC_EXPORT);
   }
   onFilterTextChange(text){
     this.props.onFilterChange(text);
@@ -158,11 +166,12 @@ class CurrentPlaylistContainer extends Component {
       <View style={styles.container}>
         <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
-          {this.props.showMenu && <Button
-            size="small"
-            style={styles.playlistMenuButton}
-            image={require('../assets/menu_dots_vertical.png')}
-            onPressed={this.onPlaylistMenuOpen} ></Button>
+          {this.props.showMenu && 
+            <FeatureDiscoveryContainer featureName={FEATURE_SC_EXPORT} style={styles.playlistMenuButton}>
+              <Button size="small" 
+                image={require('../assets/menu_dots_vertical.png')}
+                onPressed={this.onPlaylistMenuOpen} />
+            </FeatureDiscoveryContainer>
           }
         </HeaderBar>
         <View style={styles.filterContainerView}>
@@ -282,6 +291,9 @@ const mapDispatchToProps = (dispatch,props) => {
     },
     pushNotification(notification){
       dispatch(pushNotification(notification));
+    },
+    markFeatureDiscovery(name){
+      dispatch(markFeatureDiscovery(name));
     }
   };
 };

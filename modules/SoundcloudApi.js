@@ -301,16 +301,18 @@ class SoundCloudApi {
   }
   transformPlaylistPayload(t){
     let tracks = undefined;
+    let artwork = t.artwork_url;
     if(t.tracks){
       tracks = t.tracks.map(this.normalizeStreamUrlProperty)
         .map(this.transformTrackPayload);
+      if(!artwork && tracks[0]) artwork = tracks[0].artwork;
     }
     return {
       type: 'playlist',
       id: t.id,
       label : t.title,
       username: t.user.username,
-      artwork : t.artwork_url,
+      artwork : artwork,
       duration : t.duration,
       trackCount: t.track_count,
       tracks
