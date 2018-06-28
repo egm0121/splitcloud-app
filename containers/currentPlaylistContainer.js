@@ -126,7 +126,6 @@ class CurrentPlaylistContainer extends Component {
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
     this.props.markFeatureDiscovery(FEATURE_SC_EXPORT);
-    //this.not.exist(); test for crash reporter
   }
   onFilterTextChange(text){
     this.props.onFilterChange(text);
