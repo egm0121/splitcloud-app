@@ -11,6 +11,7 @@ import {
   Alert
 } from 'react-native';
 import config from '../helpers/config';
+import errorReporter from '../modules/Bugsnag';
 import AnalyticsService from '../modules/Analytics';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
@@ -81,10 +82,13 @@ class CurrentPlaylistContainer extends Component {
   onExportToScPlaylist(){
     let idList = this.props.queue
       .filter(t => t.provider !== 'library').map(({id}) => id);
-    if( !idList.length ) return this.props.pushNotification({
-      type: 'info',
-      message: 'Playlist is empty'
-    });
+    if( !idList.length ){ 
+      this.props.pushNotification({
+        type: 'info',
+        message: 'Playlist is empty'
+      });
+      return;
+    }
     this.scApi.authenticate().then(() => {
       this.props.pushNotification({type: 'info', message: 'Connecting to SoundCloud...'});
       this.scApi.getOwnPlaylists().then((playlists) => {
@@ -122,6 +126,7 @@ class CurrentPlaylistContainer extends Component {
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
     this.props.markFeatureDiscovery(FEATURE_SC_EXPORT);
+    //this.not.exist(); test for crash reporter
   }
   onFilterTextChange(text){
     this.props.onFilterChange(text);
