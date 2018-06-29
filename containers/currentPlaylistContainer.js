@@ -22,7 +22,7 @@ import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
 import SoundCloudApi from '../modules/SoundcloudApi';
-import {globalSettings,animationPresets} from '../helpers/constants';
+import { globalSettings, animationPresets } from '../helpers/constants';
 import {
    setPlaylist,
    filterPlaylist,
