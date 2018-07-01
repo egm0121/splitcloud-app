@@ -3,3 +3,4 @@ node_modules/
 *.xcuserstate
 config.js
 assets/cache/
+ios-release.*
