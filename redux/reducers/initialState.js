@@ -1,5 +1,5 @@
 import { playbackModeTypes } from '../constants/actions';
-
+import { FEATURE_SC_EXPORT } from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
@@ -8,6 +8,9 @@ const initialState = {
   },
   settings : {
     offlineMode : true
+  },
+  featureDiscovery : { 
+    [FEATURE_SC_EXPORT] : true
   },
   notifications : {
     list : []

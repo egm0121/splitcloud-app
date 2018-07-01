@@ -10,6 +10,9 @@ import {
   LayoutAnimation,
   Alert
 } from 'react-native';
+import config from '../helpers/config';
+import errorReporter from '../modules/Bugsnag';
+import AnalyticsService from '../modules/Analytics';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
 import BackButton from  '../components/backButton';
@@ -18,7 +21,8 @@ import FilterInput from '../components/filterInput';
 import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
-import {globalSettings,animationPresets} from '../helpers/constants';
+import SoundCloudApi from '../modules/SoundcloudApi';
+import { globalSettings, animationPresets } from '../helpers/constants';
 import {
    setPlaylist,
    filterPlaylist,
@@ -29,7 +33,9 @@ import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 import NavigationStateNotifier from '../modules/NavigationStateNotifier';
-import {playlistType} from '../helpers/constants';
+import {playlistType , RESERVED_PLAYLIST_NAME, FEATURE_SC_EXPORT} from '../helpers/constants';
+import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
+import { markFeatureDiscovery } from '../redux/actions/featureDiscoveryActions';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
@@ -39,8 +45,14 @@ class CurrentPlaylistContainer extends Component {
     this.onOverlayClosed = this.onOverlayClosed.bind(this);
     this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
     this.onOfflineModeToggle = this.onOfflineModeToggle.bind(this);
+    this.onExportToScPlaylist = this.onExportToScPlaylist.bind(this);
     this.componentDidFocus = this.componentDidFocus.bind(this);
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
+    this.scApi = new SoundCloudApi({ 
+      clientId: config.SC_CLIENT_ID,
+      clientSecret: config.SC_CLIENT_SECRET,
+      redirectUri: config.SC_OAUTH_REDIRECT_URI
+    });
     this.focusSub = NavigationStateNotifier.addListener(
       this.props.routeName,
       this.componentDidFocus
@@ -67,9 +79,53 @@ class CurrentPlaylistContainer extends Component {
       ]
     )
   }
+  onExportToScPlaylist(){
+    let idList = this.props.queue
+      .filter(t => t.provider !== 'library').map(({id}) => id);
+    if( !idList.length ){ 
+      this.props.pushNotification({
+        type: 'info',
+        message: 'Playlist is empty'
+      });
+      return;
+    }
+    this.scApi.authenticate().then(() => {
+      this.props.pushNotification({type: 'info', message: 'Connecting to SoundCloud...'});
+      this.scApi.getOwnPlaylists().then((playlists) => {
+        const hasSplitcloudSet = playlists
+          .filter(t => t.label == RESERVED_PLAYLIST_NAME)[0];
+        console.log('found a splitcloud playlist',hasSplitcloudSet);
+        return hasSplitcloudSet;
+      }).then( playlist => {
+        return playlist ? 
+          this.scApi.updatePlaylist(playlist.id,idList) :
+          this.scApi.createPlaylist(RESERVED_PLAYLIST_NAME,idList)
+      }).then(resp => {
+        this.props.pushNotification({
+          type:'success',
+          message: `${idList.length} tracks saved on SoundCloud`
+        });
+        AnalyticsService.sendEvent({
+          category: 'side-'+this.props.side,
+          action: FEATURE_SC_EXPORT,
+          label: 'ui-action',
+          value:1
+        })
+      })
+      .catch(err => {
+        this.props.pushNotification({
+          type:'error',
+          message:'There was a login error :('
+        });
+      });
+    });
+    this.onOverlayClosed();
+  }
+  
   onPlaylistMenuOpen(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
+    this.props.markFeatureDiscovery(FEATURE_SC_EXPORT);
   }
   onFilterTextChange(text){
     this.props.onFilterChange(text);
@@ -114,11 +170,12 @@ class CurrentPlaylistContainer extends Component {
       <View style={styles.container}>
         <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
-          {this.props.showMenu && <Button
-            size="small"
-            style={styles.playlistMenuButton}
-            image={require('../assets/menu_dots_vertical.png')}
-            onPressed={this.onPlaylistMenuOpen} ></Button>
+          {this.props.showMenu && 
+            <FeatureDiscoveryContainer featureName={FEATURE_SC_EXPORT} style={styles.playlistMenuButton}>
+              <Button size="small" 
+                image={require('../assets/menu_dots_vertical.png')}
+                onPressed={this.onPlaylistMenuOpen} />
+            </FeatureDiscoveryContainer>
           }
         </HeaderBar>
         <View style={styles.filterContainerView}>
@@ -149,6 +206,9 @@ class CurrentPlaylistContainer extends Component {
               'Disable Offline Mode':
               'Enable Offline Mode'
             }
+          </MenuOverlayItem>
+          <MenuOverlayItem onPress={this.onExportToScPlaylist}>
+            Save playlist to SoundCloud
           </MenuOverlayItem>
         </MenuOverlay>
       </View>
@@ -235,6 +295,9 @@ const mapDispatchToProps = (dispatch,props) => {
     },
     pushNotification(notification){
       dispatch(pushNotification(notification));
+    },
+    markFeatureDiscovery(name){
+      dispatch(markFeatureDiscovery(name));
     }
   };
 };

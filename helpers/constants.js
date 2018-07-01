@@ -46,7 +46,13 @@ export const animationPresets = {
 export const APP_DOCUMENTS_FOLDER = RNFS.DocumentDirectoryPath;
 export const APP_ARTWORK_CACHE_FOLDER = APP_DOCUMENTS_FOLDER + '/' + 'artwork_cache';
 
+export const RESERVED_PLAYLIST_NAME = 'SplitCloud-Favorites';
+export const FEATURE_SC_EXPORT = 'feature-export-sc';
+
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
   LIBRARY: 'library'
 }
+// min seconds to flag a song as played in stats.
+export const PLAYBACK_MIN_TIME = 30; 
+export const PLAYBACK_COMPLETE_HIT = 'playback-completed';

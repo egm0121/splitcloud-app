@@ -14,6 +14,7 @@ const styles = {
   notifyBgColor : 'rgba(41,41,46,0.9)',
   listBorderColor : '#39393a',
   viewportBorderRadius : 3,
+  discoveryColor : 'blue',
   appContentFontFamily: 'Lato-Regular',
   appContentBoldFontFamily: 'Lato-Bold'
 };

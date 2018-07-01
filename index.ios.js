@@ -10,6 +10,7 @@ import {
   View,
   Text
 } from 'react-native';
+import './modules/Bugsnag';
 import { Provider } from 'react-redux';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import MainSceneContainer from './containers/mainSceneContainer';
@@ -21,6 +22,8 @@ import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
 import THEME from './styles/variables';
+
+
 //decorate navigator to add a method to push at the bottom of the routeStack
 Navigator.prototype.pushToBottom = function (route) {
   var activeStack = this.state.routeStack;
@@ -102,7 +105,6 @@ class SplitCloudApp extends Component {
                               <NotificationContainer />
                               <OfflineModeBanner isOnline={isOnline} />
                             </View>
-
                         }
                   }</NetworkAvailability>
                 }}

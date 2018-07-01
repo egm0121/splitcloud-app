@@ -63,5 +63,8 @@ export default {
   },
   13: (state) => {
     return {...state, reviewState: initialState.reviewState};
+  },
+  16: (state) => {
+    return {...state, featureDiscovery: initialState.featureDiscovery };
   }
 }

@@ -145,7 +145,7 @@ class TrackList extends Component {
 }
 
 TrackList.defaultProps = {
-  emptyLabel : 'No items :(',
+  emptyLabel : 'No songs found...',
   isLoading: false,
   onEndThreshold: 150,
   listRef : () => {}

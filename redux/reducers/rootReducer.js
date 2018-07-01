@@ -10,6 +10,7 @@ import { uploaderProfileReducer } from './uploaderProfileReducer';
 import { storeVersionReducer } from './storeVersionReducer';
 import { playlistStoreReducer } from './playlistStoreReducer';
 import { reviewStateReducer } from './reviewStateReducer';
+import { featureDiscoveryReducer } from './featureDiscoveryReducer';
 
 const appReducer = combineReducers({
   [VERSION_REDUCER_KEY] : storeVersionReducer,
@@ -22,7 +23,8 @@ const appReducer = combineReducers({
   'uploaderProfile': uploaderProfileReducer,
   'playlistStore':playlistStoreReducer,
   'backup': (state = {}) => state,
-  'reviewState': reviewStateReducer
+  'reviewState': reviewStateReducer,
+  'featureDiscovery': featureDiscoveryReducer
 });
 
 export default appReducer;

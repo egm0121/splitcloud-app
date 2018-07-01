@@ -11,6 +11,7 @@
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 #import "RCTLinkingManager.h"
+#import <BugsnagReactNative/BugsnagReactNative.h>
 
 @implementation AppDelegate
 
@@ -35,6 +36,7 @@
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
+  [BugsnagReactNative start];
   return YES;
 }
 
