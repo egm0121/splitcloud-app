@@ -87,15 +87,15 @@ class TopList extends Component {
         offlineAvailable:false
       }],
       section : props.isOnline ? 'TOP' : 'LOCAL',
-      selectedGenre : this.props.selectedGenre || SoundCloudApi.genre.ALL,
-      selectedRegion : this.props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
+      selectedGenre : props.selectedGenre || SoundCloudApi.genre.ALL,
+      selectedRegion : props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
       regionOptions: this.getOptionsListByType('region'),
       pickerModalType: 'genre',
       trackList : []
     };
 
-    console.log('genreOptions',this.getOptionsListByType('genre'))
+    console.log('topList loaded constructor::isOnline',props.isOnline,'section',this.state.section);
   }
   getCurrSectionObj(){
     return this.state.sectionList.filter(s => s.name === this.state.section ).pop();

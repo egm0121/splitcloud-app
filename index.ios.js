@@ -105,7 +105,6 @@ class SplitCloudApp extends Component {
                               <NotificationContainer />
                               <OfflineModeBanner isOnline={isOnline} />
                             </View>
-
                         }
                   }</NetworkAvailability>
                 }}

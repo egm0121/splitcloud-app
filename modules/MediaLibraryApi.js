@@ -192,6 +192,7 @@ MediaLibraryApi.TRACK_FIELDS = MediaLibraryApi.prototype.TRACK_FIELDS = [
 ];
 let requestLibAcces = false;
 if(!requestLibAcces){
+  console.log('requesting media access');
   //call an api just to ask for confirmation to access lib on first start
   (new MediaLibraryApi).requestMediaAccess();
   requestLibAcces = true;
