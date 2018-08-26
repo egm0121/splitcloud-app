@@ -1,4 +1,4 @@
-import {ReactNativeStreamingPlayer} from 'react-native-audio-streaming';
+import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import {audioPlayerStates} from '../helpers/constants';
 import SoundPlayer from 'react-native-sound';
 const {
