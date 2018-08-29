@@ -15,6 +15,7 @@ import errorReporter from '../modules/Bugsnag';
 import AnalyticsService from '../modules/Analytics';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
+import ShareAppScreen from '../components/shareAppScreen';
 import BackButton from  '../components/backButton';
 import Button from '../components/button';
 import FilterInput from '../components/filterInput';
@@ -46,6 +47,7 @@ class CurrentPlaylistContainer extends Component {
     this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
     this.onOfflineModeToggle = this.onOfflineModeToggle.bind(this);
     this.onExportToScPlaylist = this.onExportToScPlaylist.bind(this);
+    this.onShareScreen = this.onShareScreen.bind(this);
     this.componentDidFocus = this.componentDidFocus.bind(this);
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
     this.scApi = new SoundCloudApi({ 
@@ -121,7 +123,6 @@ class CurrentPlaylistContainer extends Component {
     });
     this.onOverlayClosed();
   }
-  
   onPlaylistMenuOpen(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
@@ -157,11 +158,21 @@ class CurrentPlaylistContainer extends Component {
       ]
     );
   }
+  onShareScreen(){
+    this.props.navigator.push({
+      title : 'ShareAppScreen',
+      name : 'ShareAppScreen',
+      component: ShareAppScreen,
+      passProps : {
+        onClose: () => this.props.navigator.pop()
+      }
+    });
+  }
   componentWillUnmount(){
     this.focusSub.off();
   }
   render() {
-    const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
+    const overlayStyle = this.state.isOverlayMenuOpen ? {} : {height:0};
     console.log('currentPlaylistContainer unfiltered track',this.props.queue )
     const playlistFilteredList = this.props.queue
       .filter((track) => 'isVisible' in track ? track.isVisible : true);
@@ -209,6 +220,9 @@ class CurrentPlaylistContainer extends Component {
           </MenuOverlayItem>
           <MenuOverlayItem onPress={this.onExportToScPlaylist}>
             Save playlist to SoundCloud
+          </MenuOverlayItem>
+          <MenuOverlayItem onPress={this.onShareScreen}>
+            Share SplitCloud with friends
           </MenuOverlayItem>
         </MenuOverlay>
       </View>
