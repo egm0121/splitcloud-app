@@ -31,7 +31,7 @@ class ShareAppScreen extends Component {
           <View style={styles.infoTextContainer}>
             <AppText bold={true} style={styles.infoTitle}>Help your friends discover SplitCloud!</AppText>
             <AppText style={styles.infoDesc}>{
-            'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and invite a friend to try it!'}
+            'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and by inviting your friends to try it!'}
             </AppText>
           </View>
         </View>
