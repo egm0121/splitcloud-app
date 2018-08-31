@@ -25,20 +25,14 @@ class ShareAppScreen extends Component {
   constructor(props){
     super(props);
     console.log('ShareAppScreen mounted');
-    this.shareOptions = {
-      title: 'Try Splitcloud for iOS',
-      message: 'With Splitcloud you can listen two different songs at the same time with one phone! get it for free here:',
-      url: 'https://itunes.apple.com/app/splitcloud-double-music-player/id1244515007?mt=8',
-      subject: 'Checkout this music app - Splitcloud' //  for email
-    };
   }
   openShareApp(platformName){
     if(platformName == 'clipboard') {
-      Clipboard.setString(this.shareOptions.url);
+      Clipboard.setString(this.props.shareOptions.url);
       this.props.onPushNotification('Link Copied')
       return true;
     }
-    return Share.shareSingle({...this.shareOptions, social: platformName});
+    return Share.shareSingle({...this.props.shareOptions, social: platformName});
   }
   render() {
     return (
@@ -51,7 +45,7 @@ class ShareAppScreen extends Component {
           <View style={styles.infoTextContainer}>
             <AppText bold={true} style={styles.infoTitle}>Help your friends discover SplitCloud!</AppText>
             <AppText style={styles.infoDesc}>{
-            'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and by inviting your friends to try it!'}
+            'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and inviting your friends to try it!'}
             </AppText>
             
           </View>
@@ -67,7 +61,14 @@ class ShareAppScreen extends Component {
     );
   }
 }
-
+ShareAppScreen.defaultProps = {
+  shareOptions : {
+    title: 'Try Splitcloud for iOS',
+    message: 'With Splitcloud you can listen two different songs at the same time with one phone! get it for free here:',
+    url: 'https://itunes.apple.com/app/splitcloud-double-music-player/id1244515007?mt=8',
+    subject: 'Checkout this music app - Splitcloud' //  for email
+  }
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
