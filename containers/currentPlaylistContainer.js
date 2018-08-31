@@ -167,6 +167,7 @@ class CurrentPlaylistContainer extends Component {
         onClose: () => this.props.navigator.pop()
       }
     });
+    this.onOverlayClosed();
   }
   componentWillUnmount(){
     this.focusSub.off();
@@ -222,7 +223,7 @@ class CurrentPlaylistContainer extends Component {
             Save playlist to SoundCloud
           </MenuOverlayItem>
           <MenuOverlayItem onPress={this.onShareScreen}>
-            Share SplitCloud with friends
+            Share app with friends
           </MenuOverlayItem>
         </MenuOverlay>
       </View>

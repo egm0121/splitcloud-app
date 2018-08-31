@@ -37,17 +37,14 @@ class ShareAppScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <HeaderBar title={'Share SplitCloud App!'}>
+        <HeaderBar title={this.props.screenTitle}>
           <BackButton style={styles.backButton} onPressed={this.props.onClose} />
         </HeaderBar>
         <View style={styles.infoContainer}>
           <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/splitcloud_round_logo.png')} />
           <View style={styles.infoTextContainer}>
-            <AppText bold={true} style={styles.infoTitle}>Help your friends discover SplitCloud!</AppText>
-            <AppText style={styles.infoDesc}>{
-            'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and inviting your friends to try it!'}
-            </AppText>
-            
+            <AppText bold={true} style={styles.infoTitle}>{this.props.infoTitle}</AppText>
+            <AppText style={styles.infoDesc}>{this.props.infoText}</AppText>
           </View>
         </View>
         <View style={styles.socialIconsContainer}>
@@ -67,7 +64,10 @@ ShareAppScreen.defaultProps = {
     message: 'With Splitcloud you can listen two different songs at the same time with one phone! get it for free here:',
     url: 'https://itunes.apple.com/app/splitcloud-double-music-player/id1244515007?mt=8',
     subject: 'Checkout this music app - Splitcloud' //  for email
-  }
+  },
+  screenTitle: 'Share SplitCloud App!',
+  infoTitle: 'Help your friends discover SplitCloud!',
+  infoText: 'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and inviting your friends to try it!'
 };
 const styles = StyleSheet.create({
   container: {
