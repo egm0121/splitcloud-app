@@ -47,21 +47,22 @@ class ShareAppScreen extends Component {
           <BackButton style={styles.backButton} onPressed={this.props.onClose} />
         </HeaderBar>
         <View style={styles.infoContainer}>
-          <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/badge_with_text.png')} />
+          <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/splitcloud_round_logo.png')} />
           <View style={styles.infoTextContainer}>
             <AppText bold={true} style={styles.infoTitle}>Help your friends discover SplitCloud!</AppText>
             <AppText style={styles.infoDesc}>{
             'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and by inviting your friends to try it!'}
             </AppText>
-            <View style={styles.socialIconsContainer}>
+            
+          </View>
+        </View>
+        <View style={styles.socialIconsContainer}>
               <Button style={styles.socialIcon} image={{uri: TWITTER_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'twitter')}/>
               <Button style={styles.socialIcon} image={{uri: FACEBOOK_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'facebook')}/>
               <Button style={styles.socialIcon} image={{uri: WHATSAPP_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'whatsapp')}/>
               <Button style={styles.socialIcon} image={{uri: EMAIL_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'email')} />
-              <Button style={styles.socialIcon} image={{uri: CLIPBOARD_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'clipboard')} />
-            </View> 
-          </View>
-        </View>
+              <Button style={styles.socialIcon} image={{uri: CLIPBOARD_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'clipboard')} />    
+        </View> 
       </View>
     );
   }
@@ -82,17 +83,17 @@ const styles = StyleSheet.create({
     zIndex:20
   },
   heroImg:{
-    flex:1,
+    flex:3,
     width:null,
     height:null,
+  },
+  infoTextContainer:{
+    flex:4,
   },
   infoContainer:{
     flex:1,
     paddingTop:40,
     backgroundColor: THEME.mainBgColor,
-  },
-  infoTextContainer:{
-    flex:1,
   },
   infoTitle:{
     color: THEME.mainHighlightColor,
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     textAlign:'center',
     paddingVertical:20,
+    paddingHorizontal:20,
   },
   infoDesc:{
     color: THEME.mainHighlightColor,
@@ -109,8 +111,14 @@ const styles = StyleSheet.create({
     paddingHorizontal:20,
   },
   socialIconsContainer:{
+    position:'relative',
+    bottom:20,
     flexDirection: 'row',
-    paddingVertical:20
+    marginTop: 40,
+    marginHorizontal:20,
+    padding:20,
+    backgroundColor:THEME.notifyBgColor,
+    borderRadius:20,
   },
   socialIcon:{
     flex:1,
@@ -135,7 +143,7 @@ const EMAIL_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAA
 
 //  clipboard icon
 const CLIPBOARD_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAMAAAANIilAAAAB5lBMVEUAAAA8PDw+Pj4/Pz8/Pz8/Pz8/Pz8+Pj47OzsAAAA5OTk+Pj4/Pz8/Pz8+Pj49PT0/Pz8/Pz85OTlAQEA/Pz87Ozs+Pj4+Pj4/Pz8/Pz8/Pz8zMzNBQUE/Pz8/Pz8/Pz9AQEA7Ozs9PT0/Pz9AQEA+Pj4/Pz8+Pj4AAABAQEA/Pz87OztBQUE/Pz8+Pj4zMzNDQ0M/Pz89PT03Nzc/Pz8/Pz8/Pz8/Pz88PDw8PDwAAABCQkI7Ozs9PT0/Pz9AQEA/Pz8uLi4rKytAQEA/Pz89PT0+Pj4/Pz8/Pz8/Pz9CQkJAQEA/Pz9CQkI/Pz8/Pz8/Pz8+Pj49PT0/Pz8yMjI/Pz88PDw/Pz9BQUE8PDw/Pz9AQEA/Pz8/Pz8/Pz89PT0/Pz9CQkI9PT1EREQ9PT08PDw4ODg+Pj6AgIA/Pz8/Pz82NjZVVVU7Ozs/Pz81NTVAQEA/Pz8+Pj49PT1BQUE/Pz8/Pz8/Pz8vLy8/Pz87OztAQEA3Nzc9PT0+Pj4/Pz89PT0/Pz8/Pz89PT1AQEA9PT04ODgzMzM/Pz8/Pz9AQEA/Pz9AQEA/Pz83Nzc9PT0/Pz9AQEA/Pz8+Pj4+Pj5AQEA/Pz89PT1FRUU5OTk/Pz8/Pz8+Pj47Ozs/Pz89PT08PDw+Pj6z1Mg0AAAAonRSTlMAEXTG8/7pslICKMn//J0u2LcSLNu9Y0523KoKL9b7hggauZsEOuJ/ARS7VifkiwUX0bEq1f1p6KGQAz4NpnpY8AsGtMIyb46NbSOMcRuh+fGTFc0z1yKFKy/dpKff1CqKMoYPp+lAgAKd6kIDhdorJJExNjflktMr3nkQDoXbvaCe2d2EijIUn3JsbjDDF1jjOOdWvIDhmhoJfWrAK7bYnMgx8fGWAAACNUlEQVRIx+2W6V8SURSGBxEVeydMbVER1DCwRNTCEhMNsywqExXcUrNVU9NK2wy1fd9sMyvrP+1cmYH5eK5f5f3APef85hnuvfPeM6MoaaW1dWXKMGdasrJzrJtgc7dhQ+p2kzRry4OuHfmSbEEhUTt37d5TRGNxiRRrLwUczjKKyiuI3uuSYCv3ARa3ZyOu2k/xAT5b7aXra3xaVlsH1LPZg4cAvzM10wbgMBs+QqtsDKTyJroXGz7a7AgandECtPLXfKzFY8hCbcBxFudpP3Gy49RpQ8UXtgBnOOzZc53CU+e7Ism7uYnt5ji0p1e3pDmqzTnmAEr7GGz/AGEDg0MXaBgeERXrKIWFBQz2IvlYHbtEh/EycOUqVQLXVCDPxvGz+MPYdRGWjE/coGFyyg9M32SwM8PkydlQIim7JX6DxHpvM9g7c+SjoLESmqd9vjvDYO9NEzs1aahYY7SK+3Zm31Ddmp8jDx4qysIj2qt4O6dviH4xqvk5soj40vJjqjzh7HOf6BtPtb1SnulG6X3O6bHdqb5BejHbKtDOl+UcQ78iNuwzFKKvwx1v3npYJ+kd0BYynqz3Eu2OZvnB+IyCRVE+TD5qSmWBRuDjJzb8GWhIJq4xv36kWKoH6mr1vlFDnvRW86e9Qtd/qUrs1VeKv1VKbJjrOz3Wih8UrTpF37ArMlotFmfg58raLxrjvyXfifl/ku/TdZsiK9NfNcH+y93Ed4A1JzvLkmnOMClppbV19R+iQFSQ2tNASwAAAABJRU5ErkJggg==";
-const mapDispatchToProps = (dispatch,props) => {
+const mapDispatchToProps = (dispatch) => {
   return {
     onPushNotification(message){ dispatch(pushNotification({type:'success',message})); } 
   }
