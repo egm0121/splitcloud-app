@@ -4,7 +4,8 @@ const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
     actionCounter : 0,
-    done: false
+    done: false,
+    shared: false,
   },
   settings : {
     offlineMode : true
