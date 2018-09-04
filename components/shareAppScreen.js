@@ -86,7 +86,7 @@ ShareAppScreen.defaultProps = {
   },
   screenTitle: 'Share SplitCloud App!',
   infoTitle: 'Help your friends discover SplitCloud!',
-  infoText: 'If you enjoy using SplitCloud please support it by sharing the app link on your social platforms and inviting your friends to try it!'
+  infoText: 'Thanks for using SplitCloud! Please support it by sharing the app link on your social networks and invite your friends to try it!'
 };
 const mapDispatchToProps = (dispatch) => {
   return {
