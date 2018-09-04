@@ -34,7 +34,12 @@ import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 import NavigationStateNotifier from '../modules/NavigationStateNotifier';
-import {playlistType , RESERVED_PLAYLIST_NAME, FEATURE_SC_EXPORT} from '../helpers/constants';
+import {
+  playlistType,
+  RESERVED_PLAYLIST_NAME,
+  FEATURE_SC_EXPORT,
+  FEATURE_SOCIAL_SHARE,
+} from '../helpers/constants';
 import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
 import { markFeatureDiscovery } from '../redux/actions/featureDiscoveryActions';
 class CurrentPlaylistContainer extends Component {
@@ -167,6 +172,7 @@ class CurrentPlaylistContainer extends Component {
         onClose: () => this.props.navigator.pop()
       }
     });
+    this.props.markFeatureDiscovery(FEATURE_SOCIAL_SHARE);
     this.onOverlayClosed();
   }
   componentWillUnmount(){
@@ -183,7 +189,7 @@ class CurrentPlaylistContainer extends Component {
         <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
           {this.props.showMenu && 
-            <FeatureDiscoveryContainer featureName={FEATURE_SC_EXPORT} style={styles.playlistMenuButton}>
+            <FeatureDiscoveryContainer featureName={FEATURE_SOCIAL_SHARE} style={styles.playlistMenuButton}>
               <Button size="small" 
                 image={require('../assets/menu_dots_vertical.png')}
                 onPressed={this.onPlaylistMenuOpen} />
@@ -222,8 +228,9 @@ class CurrentPlaylistContainer extends Component {
           <MenuOverlayItem onPress={this.onExportToScPlaylist}>
             Save playlist to SoundCloud
           </MenuOverlayItem>
+          <FeatureDiscoveryContainer featureName={FEATURE_SOCIAL_SHARE} style={styles.featureMenuMark} />
           <MenuOverlayItem onPress={this.onShareScreen}>
-            Share app with friends
+              Share app with friends
           </MenuOverlayItem>
         </MenuOverlay>
       </View>
@@ -274,6 +281,11 @@ const styles = StyleSheet.create({
   },
   playlistMenuOverlay: {
     height:300
+  },
+  featureMenuMark:{
+    position:'relative',
+    top:25,
+    left:20
   }
 });
 const mapStateToProps = (state,props) => {
