@@ -58,7 +58,10 @@ const AnalyticsMiddleware = store => {
       let result = next(action);
       if(action.side){
         let currPlayingTrack = getCurrentTrackBySide(store,action.side);
-        if(lastPlayingTrack[action.side] !== currPlayingTrack) {
+        if(
+          currPlayingTrack &&
+          lastPlayingTrack[action.side] !== currPlayingTrack
+        ) {
           if(lastPlayRef[action.side]) clearTimeout(lastPlayRef[action.side]);
           lastPlayRef[action.side] = schedulePlaybackHit(currPlayingTrack,action);
           lastPlayingTrack[action.side] = currPlayingTrack;
