@@ -160,18 +160,28 @@ class AudioPlayerContainer extends Component {
     }
     if(evt.type === 'pauseCommand'){
       this.musicPlayer.getStatus((err,data) => {
+        console.log('remote pauseCommand should pause',data.status);
         if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
+        console.log('remote pauseCommand did pause')
         this.musicPlayer.pause();
         this.setState({prevRemoteStatus : data.status});
       });
     }
     if(evt.type === 'playCommand'){
       this.musicPlayer.getStatus((err,data) => {
-        if(!(data.status in PLAYBACK_DISABLED_STATES) ||
-           !(this.state.prevRemoteStatus in PLAYBACK_ENABLED_STATES)){
+        console.log('remote playCommand should play',data.status,this.state.prevRemoteStatus);
+        if( data.status in PLAYBACK_ENABLED_STATES ||
+            this.state.prevRemoteStatus in PLAYBACK_DISABLED_STATES
+          ){
           return false;
         }
-        data.status === 'PAUSED' ? this.musicPlayer.resume() : this.musicPlayer.play();
+        if( data.status === 'PAUSED' ){
+          console.log('remote playCommand did resume');
+          this.musicPlayer.resume()
+        } else {
+          console.log('remote playCommand did play');
+          this.musicPlayer.play();
+        }
       });
     }
   }
@@ -204,18 +214,21 @@ class AudioPlayerContainer extends Component {
   }
   _onPlayTogglePress(){
     if(this._isCurrentMutedSide() || !this._getCurrentTrackUrl()){
-      console.log('toggle playback attempted on muted player');
+      console.log('toggle playback attempted on muted or empty player');
       return false;
     }
     console.log('_onPlayToggle checks passed');
     this.musicPlayer.getStatus((err,playbackStatus) => {
       if(playbackStatus.status in PLAYBACK_ENABLED_STATES ){
+        console.log('_onPlayToggle status PLAYBACK_ENABLED call .pause()')
         this.musicPlayer.pause();
       }
       if(playbackStatus.status === audioPlayerStates.PAUSED ){
+        console.log('_onPlayToggle status PAUSED call .resume()')
         this.musicPlayer.resume()
       }
       if(playbackStatus.status === audioPlayerStates.STOPPED){
+        console.log('_onPlayToggle status STOPPED call .play()')
         this.musicPlayer.play();
       }
       this._updateComponentPlayerState();
@@ -416,7 +429,10 @@ class AudioPlayerContainer extends Component {
     if(isSplit){
       description = messages.SPLIT_MODE_CONTROLS_DISABLED;
     }
-    this.musicPlayer.setNowPlayingInfo(description,NOW_PLAYING_ASSET_NAME);
+    this.musicPlayer.setNowPlayingInfo(
+      description,
+      NOW_PLAYING_ASSET_NAME,
+      this.state.status in PLAYBACK_ENABLED_STATES);
   }
   _hasCurrentTrackObj(){
     return this.props.queue[this.state.playbackIndex];
