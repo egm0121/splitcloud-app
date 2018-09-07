@@ -1,16 +1,18 @@
 import { playbackModeTypes } from '../constants/actions';
-import { FEATURE_SC_EXPORT } from '../../helpers/constants';
+import { FEATURE_SC_EXPORT, FEATURE_SOCIAL_SHARE } from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
     actionCounter : 0,
-    done: false
+    done: false,
+    shared: false,
   },
   settings : {
     offlineMode : true
   },
   featureDiscovery : { 
-    [FEATURE_SC_EXPORT] : true
+    [FEATURE_SC_EXPORT] : true,
+    [FEATURE_SOCIAL_SHARE] : true,
   },
   notifications : {
     list : []

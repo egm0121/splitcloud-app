@@ -16,6 +16,7 @@ import { isIphoneX } from 'react-native-iphone-x-helper';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
+import SocialShareContainer from './containers/socialShareContainer';
 import OfflineModeBanner from './components/offlineModeBanner';
 import AnalyticsService from './modules/Analytics';
 import NavigationStateNotifier from './modules/NavigationStateNotifier';
@@ -103,6 +104,7 @@ class SplitCloudApp extends Component {
                           return <View style={[styles.rootContainerView,fullScreenPlayerScene]}>
                               <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
                               <NotificationContainer />
+                              <SocialShareContainer navigator={navigator} />
                               <OfflineModeBanner isOnline={isOnline} />
                             </View>
                         }

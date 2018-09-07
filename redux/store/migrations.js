@@ -66,5 +66,14 @@ export default {
   },
   16: (state) => {
     return {...state, featureDiscovery: initialState.featureDiscovery };
+  },
+  17: (state) => {
+    return {
+      ...state,
+      featureDiscovery: {
+        ...initialState.featureDiscovery,
+        ...state.featureDiscovery,
+      }
+    }
   }
 }

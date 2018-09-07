@@ -3,6 +3,7 @@ package com.example;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import cl.json.RNSharePackage;
 import com.bugsnag.BugsnagReactNative;
 import com.zmxv.RNSound.RNSoundPackage;
 import com.rnfs.RNFSPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSharePackage(),
             BugsnagReactNative.getPackage(),
             new RNSoundPackage(),
             new RNFSPackage(),

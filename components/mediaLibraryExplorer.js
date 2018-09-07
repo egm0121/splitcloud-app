@@ -27,15 +27,15 @@ class MediaLibraryExplorer extends Component {
       trackList : [],
       sections : [
         {
-          label:'All Music',
+          label:'All Local Music',
           name:'all'
         },
         {
-          label:'Artists',
+          label:'All Artists',
           name:'artist'
         },
         {
-          label:'Albums',
+          label:'All Albums',
           name:'album'
         },
       ]
@@ -85,7 +85,7 @@ class MediaLibraryExplorer extends Component {
     return (
       <View style={styles.container}>
         <View style={[styles.headingContainer]}>
-          <AppText bold={true} style={[styles.heading]}>Music Library</AppText>
+          <AppText bold={true} style={[styles.heading]}>Local Music Library</AppText>
         </View>
       {this.state.sections.map( (section,key) => {
         return <TouchableOpacity style={styles.rowContainer} 
@@ -101,7 +101,7 @@ class MediaLibraryExplorer extends Component {
           </TouchableOpacity>
       })}
         <View style={[styles.headingContainer]}>
-          <AppText bold={true} style={[styles.heading]}>Saved Songs</AppText>
+          <AppText bold={true} style={[styles.heading]}>Saved from Splitcloud</AppText>
         </View>
       </View>
     );

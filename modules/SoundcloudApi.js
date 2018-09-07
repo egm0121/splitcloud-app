@@ -188,7 +188,7 @@ class SoundCloudApi {
       q : terms,
       ...queryOpts
     }, SoundCloudApi.methods.GET ,cancelToken).then(resp => {
-      return resp.data.map(this.transformUserPayload);
+      return (resp.data|| []).map(this.transformUserPayload);
     });
   }
   getPopularByGenre(chartType = SoundCloudApi.chartType.TOP , genre = SoundCloudApi.genre.ALL, region = SoundCloudApi.region.WORLDWIDE, opts = {} ){
@@ -205,6 +205,9 @@ class SoundCloudApi {
       ...queryOpts
     },SoundCloudApi.methods.GET,cancelToken)
     .then(resp => {
+      if(!resp.data || !resp.data.collection || !Array.isArray(resp.data.collection)){
+        throw new Error('getPopularByGenre invalid data.collection received');
+      }
       let retValue = resp.data.collection
         .map(t => t.track)
         .map(this.normalizeStreamUrlProperty)
@@ -220,6 +223,9 @@ class SoundCloudApi {
       ...queryOpts
     },SoundCloudApi.methods.GET,cancelToken)
     .then(resp => {
+      if(!Array.isArray(resp.data.collection)) {
+        throw new Error('empty sc selection response payload');
+      }
       let retValue = resp.data.collection
         .map(this.transformSelectionPayload)
         .filter(s => !Object.values(SoundCloudApi.selectionChart).includes(s.urn) );
@@ -250,7 +256,7 @@ class SoundCloudApi {
     return this.resolveResourceId(scIdOrUrl).then((resp) => {
       return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/tracks`)
     }).then(resp => {
-      return resp.data
+      return (resp.data || [])
         .map(this.normalizeStreamUrlProperty)
         .map(this.transformTrackPayload);
     });
@@ -259,7 +265,7 @@ class SoundCloudApi {
     return this.resolveResourceId(scIdOrUrl).then((resp) => {
       return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/favorites`)
     }).then(resp => {
-      return resp.data
+      return (resp.data || [])
         .map(this.normalizeStreamUrlProperty)
         .map(this.transformTrackPayload);
     });

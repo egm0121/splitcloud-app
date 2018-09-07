@@ -16,7 +16,9 @@ const actionTypeWhitelist = [
   actionTypes.SET_GLOBAL_SETTING,
   actionTypes.INCREMENT_POSITIVE_ACTION,
   actionTypes.FILTER_PLAYLIST,
-  actionTypes.SET_REVIEW_COMPLETED
+  actionTypes.SET_REVIEW_COMPLETED,
+  actionTypes.SET_SOCIAL_SHARE_COMPLETED,
+  actionTypes.HIT_SOCIAL_SHARE_ABORTED,
 ];
 const actionScreenChangeList = [
   actionTypes.CHANGE_PLAYBACK_MODE
@@ -56,7 +58,10 @@ const AnalyticsMiddleware = store => {
       let result = next(action);
       if(action.side){
         let currPlayingTrack = getCurrentTrackBySide(store,action.side);
-        if(lastPlayingTrack[action.side] !== currPlayingTrack) {
+        if(
+          currPlayingTrack &&
+          lastPlayingTrack[action.side] !== currPlayingTrack
+        ) {
           if(lastPlayRef[action.side]) clearTimeout(lastPlayRef[action.side]);
           lastPlayRef[action.side] = schedulePlaybackHit(currPlayingTrack,action);
           lastPlayingTrack[action.side] = currPlayingTrack;

@@ -15,6 +15,7 @@ import errorReporter from '../modules/Bugsnag';
 import AnalyticsService from '../modules/Analytics';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
+import ShareAppScreen from '../components/shareAppScreen';
 import BackButton from  '../components/backButton';
 import Button from '../components/button';
 import FilterInput from '../components/filterInput';
@@ -33,7 +34,12 @@ import {pushNotification} from  '../redux/actions/notificationActions';
 import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
 import THEME from '../styles/variables';
 import NavigationStateNotifier from '../modules/NavigationStateNotifier';
-import {playlistType , RESERVED_PLAYLIST_NAME, FEATURE_SC_EXPORT} from '../helpers/constants';
+import {
+  playlistType,
+  RESERVED_PLAYLIST_NAME,
+  FEATURE_SC_EXPORT,
+  FEATURE_SOCIAL_SHARE,
+} from '../helpers/constants';
 import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
 import { markFeatureDiscovery } from '../redux/actions/featureDiscoveryActions';
 class CurrentPlaylistContainer extends Component {
@@ -46,6 +52,7 @@ class CurrentPlaylistContainer extends Component {
     this.onPlaylistMenuOpen  = this.onPlaylistMenuOpen.bind(this);
     this.onOfflineModeToggle = this.onOfflineModeToggle.bind(this);
     this.onExportToScPlaylist = this.onExportToScPlaylist.bind(this);
+    this.onShareScreen = this.onShareScreen.bind(this);
     this.componentDidFocus = this.componentDidFocus.bind(this);
     this.toggleOfflineModeSetting = this.toggleOfflineModeSetting.bind(this);
     this.scApi = new SoundCloudApi({ 
@@ -121,7 +128,6 @@ class CurrentPlaylistContainer extends Component {
     });
     this.onOverlayClosed();
   }
-  
   onPlaylistMenuOpen(){
     LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
     this.setState({isOverlayMenuOpen :true});
@@ -157,11 +163,23 @@ class CurrentPlaylistContainer extends Component {
       ]
     );
   }
+  onShareScreen(){
+    this.props.navigator.push({
+      title : 'ShareAppScreen',
+      name : 'ShareAppScreen',
+      component: ShareAppScreen,
+      passProps : {
+        onClose: () => this.props.navigator.pop()
+      }
+    });
+    this.props.markFeatureDiscovery(FEATURE_SOCIAL_SHARE);
+    this.onOverlayClosed();
+  }
   componentWillUnmount(){
     this.focusSub.off();
   }
   render() {
-    const overlayStyle = this.state.isOverlayMenuOpen ? {height:250} : {height:0};
+    const overlayStyle = this.state.isOverlayMenuOpen ? {} : {height:0};
     console.log('currentPlaylistContainer unfiltered track',this.props.queue )
     const playlistFilteredList = this.props.queue
       .filter((track) => 'isVisible' in track ? track.isVisible : true);
@@ -171,7 +189,7 @@ class CurrentPlaylistContainer extends Component {
         <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
           {this.props.showMenu && 
-            <FeatureDiscoveryContainer featureName={FEATURE_SC_EXPORT} style={styles.playlistMenuButton}>
+            <FeatureDiscoveryContainer featureName={FEATURE_SOCIAL_SHARE} style={styles.playlistMenuButton}>
               <Button size="small" 
                 image={require('../assets/menu_dots_vertical.png')}
                 onPressed={this.onPlaylistMenuOpen} />
@@ -209,6 +227,10 @@ class CurrentPlaylistContainer extends Component {
           </MenuOverlayItem>
           <MenuOverlayItem onPress={this.onExportToScPlaylist}>
             Save playlist to SoundCloud
+          </MenuOverlayItem>
+          <FeatureDiscoveryContainer featureName={FEATURE_SOCIAL_SHARE} style={styles.featureMenuMark} />
+          <MenuOverlayItem onPress={this.onShareScreen}>
+              Share app with friends
           </MenuOverlayItem>
         </MenuOverlay>
       </View>
@@ -259,6 +281,11 @@ const styles = StyleSheet.create({
   },
   playlistMenuOverlay: {
     height:300
+  },
+  featureMenuMark:{
+    position:'relative',
+    top:25,
+    left:20
   }
 });
 const mapStateToProps = (state,props) => {

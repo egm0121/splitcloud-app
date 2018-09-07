@@ -14,6 +14,11 @@ export function reviewStateReducer(state = initialState.reviewState, currAction)
       ...state,
       done : true
     }
+  case actionTypes.SET_SOCIAL_SHARE_COMPLETED:
+    return {
+      ...state,
+      shared : true
+    }
   default:
     return state;
   }
