@@ -53,10 +53,12 @@ class ShareAppScreen extends Component {
     })
   }
   render() {
+    const {interactionCount,didShareOnce} = this.props;
+    const allowDismiss = interactionCount < 60 || didShareOnce;
     return (
       <View style={styles.container}>
         <HeaderBar title={this.props.screenTitle}>
-          <BackButton style={styles.backButton} onPressed={this.props.onClose} />
+          {allowDismiss && <BackButton style={styles.backButton} onPressed={this.props.onClose} />}
         </HeaderBar>
         <View style={styles.infoContainer}>
           <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/splitcloud_round_logo.png')} />
@@ -86,8 +88,14 @@ ShareAppScreen.defaultProps = {
   },
   screenTitle: 'Share SplitCloud App!',
   infoTitle: 'Help your friends discover SplitCloud!',
-  infoText: 'Thanks for using SplitCloud! Please support it by sharing the app link on your social networks and invite your friends to try it!'
+  infoText: 'Thanks for using SplitCloud!\n Please support it by sharing the app link on your social networks and invite your friends to try it!'
 };
+const mapStateToProps = (state, props) => {
+  return {
+    didShareOnce: state.reviewState.shared,
+    interactionCount: state.reviewState.actionCounter,
+  };
+}
 const mapDispatchToProps = (dispatch) => {
   return {
     onPushNotification(message){ dispatch(pushNotification({type:'success',message})); },
@@ -170,4 +178,4 @@ const CLIPBOARD_ICON = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CA
 
 const LINE_ICON = "data:image/png;base64,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";
 
-export default connect(undefined,mapDispatchToProps)(ShareAppScreen);
+export default connect(mapStateToProps,mapDispatchToProps)(ShareAppScreen);

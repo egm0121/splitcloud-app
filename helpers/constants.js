@@ -28,7 +28,7 @@ export const playlistType = {
 }
 export const messages = {
   SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control',
-  EMPTY_LIBRARY_PLAYLIST : 'No tracks found! \n\n Please make sure the album is\n downloaded to your device.'
+  EMPTY_LIBRARY_PLAYLIST : 'No tracks found! \n\n Please make sure the music is\n downloaded to your device.\nApple Music tracks not supported.'
 }
 
 export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';

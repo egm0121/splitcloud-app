@@ -21,7 +21,7 @@ class SocialShareContainer extends Component {
         name : 'ShareAppScreen',
         component: ShareAppScreen,
         passProps : {
-          onClose: () => navigator.pop()
+          onClose:() => navigator.pop()
         }
       });
     }

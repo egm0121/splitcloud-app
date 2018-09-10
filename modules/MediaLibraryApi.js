@@ -139,7 +139,7 @@ class MediaLibraryApi {
     });
   }
   isDeviceTrack(t){
-    return t.isCloudItem === false;
+    return t.isCloudItem === false && t.assetUrl;
   }
   transformAlbumPayload(t,i,isAlbum = true){
     let tracks = undefined;
