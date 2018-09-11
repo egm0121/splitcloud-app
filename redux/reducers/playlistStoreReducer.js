@@ -41,6 +41,24 @@ function getPrevVisibleIndex(index,queue){
   }
   return foundIndex;
 }
+function getRandMax(max){
+  return Math.floor(Math.random() * max)
+}
+function didPlayAllTracks(queue,history){
+  var result = (queue.filter(e => e.isVisible).length - history.length) === 1; 
+  if( result ) console.log('didPlayAllTracks',true);
+  return result;
+}
+function getRandomVisibleIndex(queue,excludeArr){
+  // TODO: filter out items already in the queue + currently playing item
+  let filteredQueue = queue
+  .filter((e,idx) => !excludeArr.includes(idx))
+  .filter(e => e.isVisible);
+  const randIndex = getRandMax(filteredQueue.length);
+  const randTrack = filteredQueue[randIndex];
+  console.log('get random index complete list',randTrack,'all',queue,'excludeArr',excludeArr,'filtered',filteredQueue); 
+  return queue.findIndex(findTrackById(randTrack.id));
+}
 function currentPlaylistReducer(state , currAction){
   let toIndex;
   switch(currAction.type){
@@ -72,7 +90,8 @@ function currentPlaylistReducer(state , currAction){
       tracks : [...currAction.tracks].map(applyFilterVisibility(false)),
       currentTrackIndex:0,
       autoplay : true,
-      filterTracks : ''
+      filterTracks : '',
+      history : []
     };
   case actionTypes.REMOVE_PLAYLIST_ITEM:
     let toRemoveIdx = state.tracks.findIndex(findTrackById(currAction.track.id));
@@ -89,14 +108,35 @@ function currentPlaylistReducer(state , currAction){
     };
   case actionTypes.INCREMENT_CURR_PLAY_INDEX:
     if(state.tracks.length == 0) return state;
-    let nextIndex = getNextVisibleIndex(state.currentTrackIndex, state.tracks);
+    let nextIndex;
+    let history;
+    if(currAction.shuffle) {
+      let resetHistory = didPlayAllTracks(state.tracks,state.history);
+      history = resetHistory ? 
+        [state.currentTrackIndex] : [state.currentTrackIndex, ...state.history];
+      nextIndex = getRandomVisibleIndex(state.tracks,history);
+    } else {
+      nextIndex = getNextVisibleIndex(state.currentTrackIndex, state.tracks);
+      history = [];
+    }
     return {
       ...state,
+      history,
       currentTrackIndex:nextIndex,
       autoplay : true
     };
   case actionTypes.DECREMENT_CURR_PLAY_INDEX:
     if(state.tracks.length == 0) return state;
+    if(currAction.shuffle && state.history.length) {
+      const history = [...state.history];
+      const shiftIndex = history.shift();
+      return {
+        ...state,
+        currentTrackIndex: shiftIndex,
+        history,
+        autoplay : true
+      };
+    }
     let prevIndex = getPrevVisibleIndex(state.currentTrackIndex, state.tracks);
     return {
       ...state,

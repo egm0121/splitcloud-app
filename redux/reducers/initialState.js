@@ -51,11 +51,13 @@ const initialState = {
   playlist : [{
     filterTracks:'',//deprecated
     currentPlaylistId: 'default_' + playbackModeTypes.LEFT,
+    shuffle:false,
     side : playbackModeTypes.LEFT
   },
   {
     filterTracks:'',//deprecated
     currentPlaylistId: 'default_' + playbackModeTypes.RIGHT,
+    shuffle:false,
     side : playbackModeTypes.RIGHT
   }],
   playlistStore:[
@@ -63,23 +65,27 @@ const initialState = {
     {
       id : 'default_' + playbackModeTypes.LEFT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     },
     {
       id : 'default_' + playbackModeTypes.RIGHT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     },
     //current queue playlist
     {
       id : 'playbackQueue_' + playbackModeTypes.LEFT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     },
     {
       id : 'playbackQueue_' + playbackModeTypes.RIGHT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     }
   ]
 };

@@ -228,7 +228,7 @@ class AudioPlayer extends Component {
                           size={'small'}/>
                 </View>
                 <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
-                  <View style={styles.volumePad}></View>
+                  {this.renderShuffleButton()}
                   <View style={[styles.volumeSlider]}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
@@ -271,6 +271,15 @@ class AudioPlayer extends Component {
             </Image>
           </TouchableOpacity>
       </Image>
+  }
+  renderShuffleButton(){
+    const image = this.props.playlist.shuffle ? 
+      require('../assets/flat_rand.png') :
+      require('../assets/flat_rand_off.png');
+    return <View style={styles.volumePad}>
+      <Button style={styles.shuffleBtn} image={image} onPressed={this.props.onShuffleModeToggle} />
+      <View style={styles.shuffleBtn}></View>
+    </View>;
   }
 }
 
@@ -380,6 +389,11 @@ const styles = StyleSheet.create({
   },
   volumePad:{
     flex:2,
+    flexDirection:'row'
+  },
+  shuffleBtn:{
+    flex:1,
+    alignItems:'flex-end'
   },
   volumeSlider:{
     flex:3,
