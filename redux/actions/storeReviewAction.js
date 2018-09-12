@@ -20,3 +20,8 @@ export function abortedSocialShareAction(){
     type : actionTypes.HIT_SOCIAL_SHARE_ABORTED
   }
 }
+export function socialShareRequiredAction() {
+  return {
+    type: actionTypes.HIT_SOCIAL_SHARE_REQUIRED
+  }
+}

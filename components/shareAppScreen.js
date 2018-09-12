@@ -23,7 +23,10 @@ import {
 import {
   completedSocialShareAction,
   abortedSocialShareAction,
+  socialShareRequiredAction,
 } from '../redux/actions/storeReviewAction';
+
+const MAX_INTERACTION_COUNT = 60;
 
 class ShareAppScreen extends Component {
   constructor(props){
@@ -47,14 +50,26 @@ class ShareAppScreen extends Component {
     .then(data => {
       console.log('social share completed');
       this.props.onSocialShareCompleted();
+      this.props.onClose();
     }).catch(err => {
       console.log('social share failed',err);
       this.props.onSocialShareAborted();
-    })
+    });
+  }
+  componentDidUpdate(){
+    const { interactionCount, didShareOnce, onSocialShareRequired } = this.props;
+    if(interactionCount >= MAX_INTERACTION_COUNT && !didShareOnce){
+      onSocialShareRequired();
+    }
   }
   render() {
-    const {interactionCount,didShareOnce} = this.props;
-    const allowDismiss = interactionCount < 60 || didShareOnce;
+    const {
+      interactionCount ,didShareOnce, infoText, 
+      infoTitle, lockedText, lockedTitle
+    } = this.props;
+    const allowDismiss = interactionCount < MAX_INTERACTION_COUNT || didShareOnce;
+    const displayTitle =  allowDismiss ? infoTitle : lockedTitle;
+    const displayInfo =  allowDismiss ? infoText : lockedText;
     return (
       <View style={styles.container}>
         <HeaderBar title={this.props.screenTitle}>
@@ -63,8 +78,8 @@ class ShareAppScreen extends Component {
         <View style={styles.infoContainer}>
           <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/splitcloud_round_logo.png')} />
           <View style={styles.infoTextContainer}>
-            <AppText bold={true} style={styles.infoTitle}>{this.props.infoTitle}</AppText>
-            <AppText style={styles.infoDesc}>{this.props.infoText}</AppText>
+            <AppText bold={true} style={styles.infoTitle}>{displayTitle}</AppText>
+            <AppText style={styles.infoDesc}>{displayInfo}</AppText>
           </View>
         </View>
         <View style={styles.socialIconsContainer}>
@@ -87,8 +102,10 @@ ShareAppScreen.defaultProps = {
     subject: 'Checkout this music app - Splitcloud' //  for email
   },
   screenTitle: 'Share SplitCloud App!',
-  infoTitle: 'Help your friends discover SplitCloud!',
-  infoText: 'Thanks for using SplitCloud!\n Please support it by sharing the app link on your social networks and invite your friends to try it!'
+  infoTitle: 'Help your friends discover SplitCloud',
+  infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and invite your friends to try it!',
+  lockedTitle: 'Thanks for using SplitCloud',
+  lockedText : 'We need your support to keep SplitCloud free!\nTo continue using the app share the link on your social platforms. Thank you!',
 };
 const mapStateToProps = (state, props) => {
   return {
@@ -100,7 +117,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onPushNotification(message){ dispatch(pushNotification({type:'success',message})); },
     onSocialShareCompleted(){ dispatch(completedSocialShareAction());},
-    onSocialShareAborted(){ dispatch(abortedSocialShareAction());}
+    onSocialShareAborted(){ dispatch(abortedSocialShareAction());},
+    onSocialShareRequired(){ dispatch(socialShareRequiredAction())}
   }
 };
 const styles = StyleSheet.create({

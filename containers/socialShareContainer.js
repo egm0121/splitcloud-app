@@ -13,18 +13,24 @@ class SocialShareContainer extends Component {
   constructor(props){
     super(props);
   }
-  componentWillReceiveProps(newProps){
-    const {interactionCount, didShareOnce, navigator} = this.props;
+  componentDidUpdate(){
+    this.checkInteractionCount();
+  }
+  checkInteractionCount(){
+    const {interactionCount, didShareOnce} = this.props;
     if(interactionCount && (interactionCount % 20 == 0) && !didShareOnce){
-      navigator.push({
-        title : 'ShareAppScreen',
-        name : 'ShareAppScreen',
-        component: ShareAppScreen,
-        passProps : {
-          onClose:() => navigator.pop()
-        }
-      });
+      this.pushShareScreen();
     }
+  } 
+  pushShareScreen(){
+    this.props.navigator.push({
+      title : 'ShareAppScreen',
+      name : 'ShareAppScreen',
+      component: ShareAppScreen,
+      passProps : {
+        onClose:() => this.props.navigator.pop()
+      }
+    });
   }
   render() {
     return null;
