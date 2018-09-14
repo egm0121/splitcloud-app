@@ -237,14 +237,16 @@ class AudioPlayer extends Component {
                       onValueChange={this.props.onVolumeValueChange}
                       value={this.props.volumeSliderValue} />
                   </View>
-                  <View style={styles.volumePad}></View>
+                  <View style={styles.volumePad}>
+                    <View style={styles.shuffleBtn}></View>
+                    <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
+                      <Image
+                      style={[styles.scCopyImage]}
+                      source={require('../assets/powered_by_large_white.png')}
+                      resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <TouchableOpacity onPress={this.props.openScUploaderLink} style={[styles.scCopyContainer]}>
-                  <Image
-                  style={[styles.scCopyImage]}
-                  source={require('../assets/powered_by_large_white.png')}
-                  resizeMode={'contain'} />
-                </TouchableOpacity>
               </View>
             </Image>
          </View>
@@ -425,14 +427,11 @@ const styles = StyleSheet.create({
   searchButton:{
   },
   scCopyContainer :{
-    position:'absolute',
-    bottom:10,
-    right:10,
-    zIndex :10
+    flex:1
   },
   scCopyImage:{
-    width:45,
-    height:45
+    width:40,
+    height:40
   },
   playlistButton:{
   },

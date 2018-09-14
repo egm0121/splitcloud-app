@@ -17,6 +17,7 @@ import HeaderBar from '../components/headerBar';
 import Button from '../components/button';
 import AppText from '../components/appText';
 import Share from 'react-native-share';
+import { MAX_INTERACTION_COUNT } from '../helpers/constants';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
@@ -25,8 +26,6 @@ import {
   abortedSocialShareAction,
   socialShareRequiredAction,
 } from '../redux/actions/storeReviewAction';
-
-const MAX_INTERACTION_COUNT = 60;
 
 class ShareAppScreen extends Component {
   constructor(props){
@@ -44,6 +43,7 @@ class ShareAppScreen extends Component {
       Clipboard.setString(shareOptions.url);
       this.props.onPushNotification('Link Copied');
       this.props.onSocialShareCompleted();
+      this.props.onClose();
       return true;
     }
     return Share.shareSingle({...shareOptions, social: platformName})
