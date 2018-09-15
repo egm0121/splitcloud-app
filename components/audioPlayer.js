@@ -238,11 +238,10 @@ class AudioPlayer extends Component {
                       value={this.props.volumeSliderValue} />
                   </View>
                   <View style={styles.volumePad}>
-                    <View style={styles.shuffleBtn}></View>
                     <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
                       <Image
                       style={[styles.scCopyImage]}
-                      source={require('../assets/powered_by_large_white.png')}
+                      source={require('../assets/soundcloud_gray_logo.png')}
                       resizeMode={'contain'} />
                     </TouchableOpacity>
                   </View>
@@ -279,8 +278,7 @@ class AudioPlayer extends Component {
       require('../assets/flat_rand.png') :
       require('../assets/flat_rand_off.png');
     return <View style={styles.volumePad}>
-      <Button style={styles.shuffleBtn} image={image} onPressed={this.props.onShuffleModeToggle} />
-      <View style={styles.shuffleBtn}></View>
+      <Button style={styles.shuffleBtn} size={'tiny'} image={image} onPressed={this.props.onShuffleModeToggle} />
     </View>;
   }
 }
@@ -393,10 +391,6 @@ const styles = StyleSheet.create({
     flex:2,
     flexDirection:'row'
   },
-  shuffleBtn:{
-    flex:1,
-    alignItems:'flex-end'
-  },
   volumeSlider:{
     flex:3,
     justifyContent: 'center',
@@ -425,15 +419,26 @@ const styles = StyleSheet.create({
     left:-1
   },
   searchButton:{
+    alignItems:'flex-end',
+    paddingRight:20
   },
   scCopyContainer :{
-    flex:1
+    flex:1,
+    alignItems:'flex-end',
+    paddingRight:20
   },
   scCopyImage:{
-    width:40,
-    height:40
+    width:35,
+    height:35
+  },
+  shuffleBtn:{
+    flex:1,
+    alignItems:'flex-start',
+    paddingLeft:22
   },
   playlistButton:{
+    alignItems:'flex-start',
+    paddingLeft:20
   },
   trackInfoContainer:{
     flex:2,

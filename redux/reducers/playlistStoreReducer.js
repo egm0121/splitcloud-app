@@ -5,6 +5,9 @@ import { REHYDRATE } from 'redux-persist/constants';
 function findTrackById(searchId){
   return track => track.id == searchId;
 }
+function getTrackAtIndex(queue,idx){
+  return queue[idx];
+}
 function applyFilterVisibility(value){
   return (track) => {
     if(!value || value == '') return {...track,isVisible:true};
@@ -50,13 +53,12 @@ function didPlayAllTracks(queue,history){
   return result;
 }
 function getRandomVisibleIndex(queue,excludeArr){
-  // TODO: filter out items already in the queue + currently playing item
+  
   let filteredQueue = queue
   .filter((e,idx) => !excludeArr.includes(idx))
   .filter(e => e.isVisible);
   const randIndex = getRandMax(filteredQueue.length);
-  const randTrack = filteredQueue[randIndex];
-  console.log('get random index complete list',randTrack,'all',queue,'excludeArr',excludeArr,'filtered',filteredQueue); 
+  const randTrack = filteredQueue[randIndex]; 
   return queue.findIndex(findTrackById(randTrack.id));
 }
 function currentPlaylistReducer(state , currAction){
@@ -99,11 +101,13 @@ function currentPlaylistReducer(state , currAction){
     if( toRemoveIdx < state.currentTrackIndex && state.currentTrackIndex > 0){
       toTrackIdx = state.currentTrackIndex - 1;
     }
+    let newHistory = state.history.filter(tId => tId !== currAction.track.id);
     return {
       ...state,
       tracks : toRemoveIdx > -1 ?
         state.tracks.filter( (t,idx) => idx !== toRemoveIdx) : state.tracks,
       currentTrackIndex: toTrackIdx,
+      history: newHistory,
       autoplay : false
     };
   case actionTypes.INCREMENT_CURR_PLAY_INDEX:
@@ -112,8 +116,10 @@ function currentPlaylistReducer(state , currAction){
     let history;
     if(currAction.shuffle) {
       let resetHistory = didPlayAllTracks(state.tracks,state.history);
+      let currentTrack = getTrackAtIndex(state.tracks,state.currentTrackIndex);
+      let currentTrackId = currentTrack && currentTrack.id;
       history = resetHistory ? 
-        [state.currentTrackIndex] : [state.currentTrackIndex, ...state.history];
+        [currentTrackId] : [currentTrackId, ...state.history];
       nextIndex = getRandomVisibleIndex(state.tracks,history);
     } else {
       nextIndex = getNextVisibleIndex(state.currentTrackIndex, state.tracks);
@@ -129,10 +135,11 @@ function currentPlaylistReducer(state , currAction){
     if(state.tracks.length == 0) return state;
     if(currAction.shuffle && state.history.length) {
       const history = [...state.history];
-      const shiftIndex = history.shift();
+      const shiftId = history.shift(); 
+      const historyIndex = state.tracks.findIndex(findTrackById(shiftId))
       return {
         ...state,
-        currentTrackIndex: shiftIndex,
+        currentTrackIndex: historyIndex > -1 ? historyIndex : state.currentTrackIndex,
         history,
         autoplay : true
       };
