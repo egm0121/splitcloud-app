@@ -10,13 +10,15 @@ import {
 import THEME from '../styles/variables';
 import {
   audioPlayerStates,
-  playbackModeTypes 
+  playbackModeTypes, 
+  FEATURE_SHUFFLE
 } from '../helpers/constants';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 
 import Button from '../components/button';
 import AppText from '../components/appText';
 import ToggleFavoriteTrackContainer from '../containers/toggleFavoriteTrackContainer';
+import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
 import MultiSlider from 'react-native-multi-slider';
 import { formatDurationExtended, getArtworkImagePath, isLocalTrack } from '../helpers/formatters';
 
@@ -278,6 +280,7 @@ class AudioPlayer extends Component {
       require('../assets/flat_rand.png') :
       require('../assets/flat_rand_off.png');
     return <View style={styles.volumePad}>
+      <FeatureDiscoveryContainer featureName={FEATURE_SHUFFLE} style={styles.featureShuffleDot} />
       <Button style={styles.shuffleBtn} size={'tiny'} image={image} onPressed={this.props.onShuffleModeToggle} />
     </View>;
   }
@@ -435,6 +438,9 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems:'flex-start',
     paddingLeft:22
+  },
+  featureShuffleDot:{
+    top:4,
   },
   playlistButton:{
     alignItems:'flex-start',

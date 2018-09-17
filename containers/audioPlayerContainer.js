@@ -9,7 +9,8 @@ import {
   playbackModeTypes,
   messages,
   playlistType,
-  NOW_PLAYING_ASSET_NAME
+  NOW_PLAYING_ASSET_NAME,
+  FEATURE_SHUFFLE,
 } from '../helpers/constants';
 import HybridPlayer from '../modules/HybridPlayer';
 import AudioPlayer from '../components/audioPlayer';
@@ -25,6 +26,9 @@ import {
 import{
   updateLastUploaderProfile
 } from '../redux/actions/uploaderProfileActions';
+import { 
+  markFeatureDiscovery,
+} from '../redux/actions/featureDiscoveryActions';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
@@ -372,8 +376,9 @@ class AudioPlayerContainer extends Component {
     }
   }
   _onShuffle(){
-    const { playlist, onSetPlaylistShuffleMode } = this.props;
+    const { playlist, onSetPlaylistShuffleMode, onMarkShuffleFeatureDiscovery } = this.props;
     onSetPlaylistShuffleMode(!playlist.shuffle);
+    onMarkShuffleFeatureDiscovery();
   }
   findRouteByName(name){
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
@@ -542,7 +547,8 @@ const mapDispatchToProps = (dispatch, props) => {
       dispatch(decrementCurrentPlayIndex(props.side,playlistId,isShuffle))
     },
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url)),
-    onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive))
+    onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
+    onMarkShuffleFeatureDiscovery: (url) => dispatch(markFeatureDiscovery(FEATURE_SHUFFLE)),
   };
 };
 let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);

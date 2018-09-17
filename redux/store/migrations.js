@@ -94,5 +94,15 @@ export default {
     }));
     
     return newState;
-  }
+  },
+  19:(state) => {
+    //added discovery flag for feature shuffle
+    return {
+      ...state,
+      featureDiscovery: {
+        ...initialState.featureDiscovery,
+        ...state.featureDiscovery,
+      }
+    }
+  },
 }

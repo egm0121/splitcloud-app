@@ -49,6 +49,7 @@ export const APP_ARTWORK_CACHE_FOLDER = APP_DOCUMENTS_FOLDER + '/' + 'artwork_ca
 export const RESERVED_PLAYLIST_NAME = 'SplitCloud-Favorites';
 export const FEATURE_SC_EXPORT = 'feature-export-sc';
 export const FEATURE_SOCIAL_SHARE = 'feature-social-share';
+export const FEATURE_SHUFFLE = 'feature-shuffle';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
