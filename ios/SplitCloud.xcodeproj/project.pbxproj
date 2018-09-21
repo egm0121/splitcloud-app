@@ -27,8 +27,8 @@
 		5ECACD3E8D084CF996D15503 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */; };
 		600393DBC17B45BE9AB8EDCC /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2410903D6A76436B927629F1 /* Lato-Regular.ttf */; };
 		75F3EE6A0614429F8A2CE166 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FABDF32E10F04BEA839F5E83 /* libRNShare.a */; };
-		785BC3D42069B35D00CCD765 /* libReactNativeAudioStreaming.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3CA2069B31D00CCD765 /* libReactNativeAudioStreaming.a */; };
 		785BC3D52069B35D00CCD765 /* libStreamingKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3D32069B33000CCD765 /* libStreamingKit.a */; };
+		78DA9D342154D293003019B4 /* libReactNativeAudioStreaming.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3CA2069B31D00CCD765 /* libReactNativeAudioStreaming.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		88EA680DF2B14F08882CADCB /* libRNSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA3C8D91E53A4E189B40367D /* libRNSound.a */; };
 		9FAB352B4B204D7EA5135968 /* libRNiTunes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A455F4EB97994CA18994FCB2 /* libRNiTunes.a */; };
@@ -267,7 +267,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				785BC3D42069B35D00CCD765 /* libReactNativeAudioStreaming.a in Frameworks */,
+				78DA9D342154D293003019B4 /* libReactNativeAudioStreaming.a in Frameworks */,
 				785BC3D52069B35D00CCD765 /* libStreamingKit.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
@@ -1049,7 +1049,7 @@
 					"$(SRCROOT)/../node_modules/react-native-multi-slider/iOS/Slider",
 					"$(SRCROOT)/../node_modules/react-native-store-review/ios",
 					"$(SRCROOT)/../node_modules/react-native-itunes/RNiTunes/**",
-					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
+					"$(SRCROOT)/../node_modules/react-native-sound/RNSound/**",
 					"$(SRCROOT)/../node_modules/bugsnag-react-native/cocoa/**",
 					"$(SRCROOT)/../node_modules/react-native-share/ios",
 				);
