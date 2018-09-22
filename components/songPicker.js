@@ -145,7 +145,7 @@ class SongPicker extends Component {
           <FilterInput
             inputViewStyle={styles.searchInput}
             inputStyle={styles.searchInputText}
-            placeholder="Search on SoundCloudⓒ"
+            placeholder="Search song or artist"
             value={this.state.searchInput}
             placeholderTextColor={THEME.mainColor}
             onChangeText={this._onSearchChange}

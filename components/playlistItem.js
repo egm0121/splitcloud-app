@@ -10,27 +10,27 @@ function getSmallArtworkUrl(url){
 }
 
 export default function PlaylistItem(props){
-  const rowTextStyle = [],
+  const rowTextStyle = [styles['rowText'+ucFirst(props.layout)]],
     artworkImage = {url:getSmallArtworkUrl(props.item.artwork)};
   
   const containerLayout = [styles.row,styles['row'+ucFirst(props.layout)]];
   return <View style={containerLayout}>
       <TouchableOpacity onPress={props.onSelected.bind(false,props.item)}>
-        <View style={styles.rowArtworkContainer}>
+        <View style={[styles.rowArtworkContainer,styles['rowArtworkContainer'+ucFirst(props.layout)]]}>
           <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.rowLabel} onPress={props.onSelected.bind(false,props.item)}>
+      <TouchableOpacity style={[styles.rowLabel,styles['rowLabel'+ucFirst(props.layout)]]} onPress={props.onSelected.bind(false,props.item)}>
           {props.item.username && props.item.label ?
           <View>
-          <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
+          <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText,styles['rowLabelText'+ucFirst(props.layout)]].concat(rowTextStyle)} >
             {props.item.label}
           </AppText>
-          <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText].concat(rowTextStyle)} >
+          <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText,styles['rowAuthorText'+ucFirst(props.layout)]].concat(rowTextStyle)} >
             {props.item.username}
           </AppText>
           <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
-            {props.onDescRender(props.item)}
+            {props.onDescRender(props.item,props)}
           </AppText>
           </View>:
           <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText,styles.singleLineTitle]} >
@@ -44,9 +44,12 @@ export default function PlaylistItem(props){
 PlaylistItem.defaultProps = {
   layout:'default',
   emptyLabel : 'No items :(',
-  onDescRender: (item) => {
+  onDescRender: (item,props) => {
     const tracksCount = item.trackCount ? `${item.trackCount} songs` : '';
     const duration = `${formatDurationExtended(item.duration,{milli:true})}`;
+    if(props.layout == 'horizontal'){
+      return tracksCount;
+    }
     if(tracksCount){
       return `${tracksCount} • ${duration}`
     }
@@ -69,8 +72,19 @@ const styles = StyleSheet.create({
     paddingRight:20
   },
   rowHorizontal:{
-    marginBottom:20,
-    marginTop:20,
+    marginBottom:15,
+    marginTop:15,
+    flex:0,
+    flexDirection:'column',
+    width:130,
+    marginLeft: 10,
+    marginRight: 10,
+    padding: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: THEME.mainBgColor,
+    borderBottomWidth:1,
+    borderBottomColor: THEME.listBorderColor,
   },
   rowDefault:{
     marginBottom:15,
@@ -90,6 +104,27 @@ const styles = StyleSheet.create({
   },
   rowArtworkContainer:{
     width:60
+  },
+  rowArtworkContainerHorizontal:{
+    width:110,
+    paddingHorizontal:20,
+    paddingBottom:10,
+    alignItems:'center',
+  },
+  rowLabelHorizontal:{
+  },
+  rowTextHorizontal:{
+    textAlign:'center'
+  },
+  rowLabelTextHorizontal:{
+    lineHeight:17,
+    fontSize: 14,
+    fontWeight:'700'
+  },
+  rowAuthorTextHorizontal:{
+    lineHeight:17,
+    fontSize: 13,
+    fontWeight:'500'
   },
   rowLabel : {
     flex: 10,
