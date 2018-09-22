@@ -1,5 +1,5 @@
 import { playbackModeTypes } from '../constants/actions';
-import { FEATURE_SC_EXPORT, FEATURE_SOCIAL_SHARE } from '../../helpers/constants';
+import { FEATURE_SC_EXPORT, FEATURE_SOCIAL_SHARE, FEATURE_SHUFFLE } from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
@@ -13,6 +13,7 @@ const initialState = {
   featureDiscovery : { 
     [FEATURE_SC_EXPORT] : true,
     [FEATURE_SOCIAL_SHARE] : true,
+    [FEATURE_SHUFFLE] : true,
   },
   notifications : {
     list : []
@@ -51,11 +52,13 @@ const initialState = {
   playlist : [{
     filterTracks:'',//deprecated
     currentPlaylistId: 'default_' + playbackModeTypes.LEFT,
+    shuffle:false,
     side : playbackModeTypes.LEFT
   },
   {
     filterTracks:'',//deprecated
     currentPlaylistId: 'default_' + playbackModeTypes.RIGHT,
+    shuffle:false,
     side : playbackModeTypes.RIGHT
   }],
   playlistStore:[
@@ -63,23 +66,27 @@ const initialState = {
     {
       id : 'default_' + playbackModeTypes.LEFT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     },
     {
       id : 'default_' + playbackModeTypes.RIGHT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     },
     //current queue playlist
     {
       id : 'playbackQueue_' + playbackModeTypes.LEFT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     },
     {
       id : 'playbackQueue_' + playbackModeTypes.RIGHT,
       currentTrackIndex: 0,
-      tracks :[]
+      tracks :[],
+      history:[],
     }
   ]
 };

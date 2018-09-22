@@ -1,5 +1,12 @@
 import { actionTypes } from '../constants/actions';
 
+export function setPlaylistShuffleMode(side,isActive){
+  return {
+    type: actionTypes.SET_PLAYLIST_SHUFFLE,
+    side,
+    value: isActive
+  }
+}
 export function removePlaylistItem(side,track,playlistId){
   return {
     type : actionTypes.REMOVE_PLAYLIST_ITEM,
@@ -24,18 +31,20 @@ export function addPlaylistItem(side,track,playlistId) {
     playlistId
   };
 }
-export function incrementCurrentPlayIndex(side,playlistId){
+export function incrementCurrentPlayIndex(side,playlistId,shuffle){
   return {
     type: actionTypes.INCREMENT_CURR_PLAY_INDEX,
     side,
-    playlistId
+    playlistId,
+    shuffle
   };
 }
-export function decrementCurrentPlayIndex(side,playlistId){
+export function decrementCurrentPlayIndex(side,playlistId,shuffle){
   return {
     type: actionTypes.DECREMENT_CURR_PLAY_INDEX,
     side,
-    playlistId
+    playlistId,
+    shuffle
   }
 }
 export function changeCurrentPlayIndex(side,track,playlistId){

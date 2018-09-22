@@ -10,6 +10,6 @@ const MediaLibraryPlaylist = withPlaylistProvider((props) => {
   let mediaPlayerApi = new MediaLibraryApi();
   let methodName = playlistMap[props.browseCategory];
   return mediaPlayerApi[methodName](props.playlist.label);
-},messages.EMPTY_LIBRARY_PLAYLIST)(PlaylistContainer);
+},{emptyLabel:messages.EMPTY_LIBRARY_PLAYLIST})(PlaylistContainer);
 
 export default MediaLibraryPlaylist;

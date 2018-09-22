@@ -28,7 +28,7 @@ export const playlistType = {
 }
 export const messages = {
   SPLIT_MODE_CONTROLS_DISABLED : 'Split Mode On - Tap to control',
-  EMPTY_LIBRARY_PLAYLIST : 'No tracks found! \n\n Please make sure the album is\n downloaded to your device.'
+  EMPTY_LIBRARY_PLAYLIST : 'No tracks found! \n\n Please make sure the music is\n downloaded to your device.\nApple Music tracks not supported.'
 }
 
 export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';
@@ -49,6 +49,7 @@ export const APP_ARTWORK_CACHE_FOLDER = APP_DOCUMENTS_FOLDER + '/' + 'artwork_ca
 export const RESERVED_PLAYLIST_NAME = 'SplitCloud-Favorites';
 export const FEATURE_SC_EXPORT = 'feature-export-sc';
 export const FEATURE_SOCIAL_SHARE = 'feature-social-share';
+export const FEATURE_SHUFFLE = 'feature-shuffle';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
@@ -57,3 +58,4 @@ export const musicProviderType = {
 // min seconds to flag a song as played in stats.
 export const PLAYBACK_MIN_TIME = 30; 
 export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
+export const MAX_INTERACTION_COUNT = 40;

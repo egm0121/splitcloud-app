@@ -10,13 +10,15 @@ import {
 import THEME from '../styles/variables';
 import {
   audioPlayerStates,
-  playbackModeTypes 
+  playbackModeTypes, 
+  FEATURE_SHUFFLE
 } from '../helpers/constants';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 
 import Button from '../components/button';
 import AppText from '../components/appText';
 import ToggleFavoriteTrackContainer from '../containers/toggleFavoriteTrackContainer';
+import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
 import MultiSlider from 'react-native-multi-slider';
 import { formatDurationExtended, getArtworkImagePath, isLocalTrack } from '../helpers/formatters';
 
@@ -228,7 +230,7 @@ class AudioPlayer extends Component {
                           size={'small'}/>
                 </View>
                 <View style={playbackControlsContainer.concat([styles.verticalCenterContainer])}>
-                  <View style={styles.volumePad}></View>
+                  {this.renderShuffleButton()}
                   <View style={[styles.volumeSlider]}>
                     <Slider step={0.05}
                       thumbImage={require('../assets/flat_dot.png')}
@@ -237,14 +239,15 @@ class AudioPlayer extends Component {
                       onValueChange={this.props.onVolumeValueChange}
                       value={this.props.volumeSliderValue} />
                   </View>
-                  <View style={styles.volumePad}></View>
+                  <View style={styles.volumePad}>
+                    <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
+                      <Image
+                      style={[styles.scCopyImage]}
+                      source={require('../assets/soundcloud_gray_logo.png')}
+                      resizeMode={'contain'} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <TouchableOpacity onPress={this.props.openScUploaderLink} style={[styles.scCopyContainer]}>
-                  <Image
-                  style={[styles.scCopyImage]}
-                  source={require('../assets/powered_by_large_white.png')}
-                  resizeMode={'contain'} />
-                </TouchableOpacity>
               </View>
             </Image>
          </View>
@@ -271,6 +274,15 @@ class AudioPlayer extends Component {
             </Image>
           </TouchableOpacity>
       </Image>
+  }
+  renderShuffleButton(){
+    const image = this.props.playlist.shuffle ? 
+      require('../assets/flat_rand.png') :
+      require('../assets/flat_rand_off.png');
+    return <View style={styles.volumePad}>
+      <FeatureDiscoveryContainer featureName={FEATURE_SHUFFLE} style={styles.featureShuffleDot} />
+      <Button style={styles.shuffleBtn} size={'tiny'} image={image} onPressed={this.props.onShuffleModeToggle} />
+    </View>;
   }
 }
 
@@ -380,6 +392,7 @@ const styles = StyleSheet.create({
   },
   volumePad:{
     flex:2,
+    flexDirection:'row'
   },
   volumeSlider:{
     flex:3,
@@ -409,18 +422,29 @@ const styles = StyleSheet.create({
     left:-1
   },
   searchButton:{
+    alignItems:'flex-end',
+    paddingRight:20
   },
   scCopyContainer :{
-    position:'absolute',
-    bottom:10,
-    right:10,
-    zIndex :10
+    flex:1,
+    alignItems:'flex-end',
+    paddingRight:20
   },
   scCopyImage:{
-    width:45,
-    height:45
+    width:35,
+    height:35
+  },
+  shuffleBtn:{
+    flex:1,
+    alignItems:'flex-start',
+    paddingLeft:22
+  },
+  featureShuffleDot:{
+    top:4,
   },
   playlistButton:{
+    alignItems:'flex-start',
+    paddingLeft:20
   },
   trackInfoContainer:{
     flex:2,

@@ -75,5 +75,34 @@ export default {
         ...state.featureDiscovery,
       }
     }
-  }
+  },
+  18: (state) => {
+    const newState = {...state};
+    if( !state.playlist || !state.playlistStore) {
+      console.log('migration 18 failed no playlist of playlistStore found');
+      return newState;
+    }
+    //set new state prop 'shuffle' in each playlist
+    newState.playlist = state.playlist.map(playlist => ({
+      ...playlist,
+      shuffle:false,
+    }));
+    //set history in each playlistStore
+    newState.playlistStore = state.playlistStore.map(playlistStore => ({
+      ...playlistStore,
+      history:[],
+    }));
+    
+    return newState;
+  },
+  19:(state) => {
+    //added discovery flag for feature shuffle
+    return {
+      ...state,
+      featureDiscovery: {
+        ...initialState.featureDiscovery,
+        ...state.featureDiscovery,
+      }
+    }
+  },
 }

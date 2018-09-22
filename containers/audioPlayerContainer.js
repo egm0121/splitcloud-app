@@ -9,7 +9,8 @@ import {
   playbackModeTypes,
   messages,
   playlistType,
-  NOW_PLAYING_ASSET_NAME
+  NOW_PLAYING_ASSET_NAME,
+  FEATURE_SHUFFLE,
 } from '../helpers/constants';
 import HybridPlayer from '../modules/HybridPlayer';
 import AudioPlayer from '../components/audioPlayer';
@@ -19,11 +20,15 @@ import CurrentPlaylistContainer from './currentPlaylistContainer';
 import Config from '../helpers/config';
 import {
   incrementCurrentPlayIndex,
-  decrementCurrentPlayIndex
+  decrementCurrentPlayIndex,
+  setPlaylistShuffleMode,
 } from '../redux/actions/currentPlaylistActions';
 import{
   updateLastUploaderProfile
 } from '../redux/actions/uploaderProfileActions';
+import { 
+  markFeatureDiscovery,
+} from '../redux/actions/featureDiscoveryActions';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
@@ -61,6 +66,7 @@ class AudioPlayerContainer extends Component {
     this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
     this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
+    this._onShuffle = this._onShuffle.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
     this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
@@ -186,10 +192,12 @@ class AudioPlayerContainer extends Component {
     }
   }
   _goToNextTrack(){
-    this.props.goToNextTrack(this.props.currentPlaylistId);
+    const {goToNextTrack,playlist,currentPlaylistId} = this.props;
+    goToNextTrack(currentPlaylistId,playlist.shuffle);
   }
   _goToPrevTrack(){
-    this.props.goToPrevTrack(this.props.currentPlaylistId);
+    const {goToPrevTrack,playlist,currentPlaylistId} = this.props;
+    goToPrevTrack(currentPlaylistId,playlist.shuffle);
   }
   _prepareCurrentTrack(shouldAutoPlay){
     this._getCurrentTrackStream().then((streamUrl) => {
@@ -367,6 +375,11 @@ class AudioPlayerContainer extends Component {
       this.musicPlayer.setVolume(this._linearToLogVolume(this.state.userVolume));
     }
   }
+  _onShuffle(){
+    const { playlist, onSetPlaylistShuffleMode, onMarkShuffleFeatureDiscovery } = this.props;
+    onSetPlaylistShuffleMode(!playlist.shuffle);
+    onMarkShuffleFeatureDiscovery();
+  }
   findRouteByName(name){
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
   }
@@ -487,6 +500,7 @@ class AudioPlayerContainer extends Component {
         volumeSliderValue={this.state.volumeSliderValue}
         playbackProgressValue={this.state.playbackProgressValue}
         onPickerToggle={this._onPickerToggle}
+        onShuffleModeToggle={this._onShuffle}
         onTrackLabelPress={this._onTrackLabelPressed}
         onUploaderProfileOpen={this._onUploaderProfileOpen}
         openScUploaderLink={this._openScUploaderLink}
@@ -526,11 +540,15 @@ const mapStateToProps = (state, props) => {
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    goToNextTrack: (playlistId) => {
-      dispatch(incrementCurrentPlayIndex(props.side,playlistId))
+    goToNextTrack: (playlistId,isShuffle) => {
+      dispatch(incrementCurrentPlayIndex(props.side,playlistId,isShuffle))
     },
-    goToPrevTrack: (playlistId) => dispatch(decrementCurrentPlayIndex(props.side,playlistId)),
-    onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url))
+    goToPrevTrack: (playlistId,isShuffle) => {
+      dispatch(decrementCurrentPlayIndex(props.side,playlistId,isShuffle))
+    },
+    onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url)),
+    onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
+    onMarkShuffleFeatureDiscovery: (url) => dispatch(markFeatureDiscovery(FEATURE_SHUFFLE)),
   };
 };
 let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
