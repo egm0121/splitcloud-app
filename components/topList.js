@@ -260,20 +260,16 @@ class TopList extends Component {
         </SectionTabBar>
         {this.getCurrSectionObj().scChartType &&
           <View style={{flex:1}}>
-            <View style={styles.listDescription}>
-              <View style={styles.genreSelectionBtn}>
-                  <TouchableOpacity onPress={this.openGenrePicker}>
-                    <View style={{flexDirection:'row'}}>                    
-                      <AppText bold style={styles.listDetailText}>
-                        {`${this.getCurrSectionObj().label} tracks`}
-                      </AppText>                     
-                      <AppText bold style={styles.genreSelectionText}>{
-                          this.getLabelForGenre(this.state.selectedGenre)
-                      }</AppText>                      
-                    </View>
-                  </TouchableOpacity>
-              </View>
-            </View>
+            <SectionTabBar  
+              style={styles.sectionContainer}
+              active={this.state.selectedGenre} 
+              onSelected={this._onGenreChange}>
+              {
+                this.state.genreOptions.map( ({label,value,key}) => 
+                  <SectionItem key={key} label={label} name={value} style={[styles.genreItemContainer]} textStyle={[styles.genreItemText]} />
+                )
+              }
+            </SectionTabBar>
             <TrackListContainer {...this.props}
               trackList={this.state.trackList}
               side={this.props.side}
@@ -313,7 +309,6 @@ const styles = StyleSheet.create({
     flex:1,
     paddingRight: 10,
     paddingVertical:10,
- 
   },
   genreSelectionText : {
     color : THEME.mainActiveColor,
@@ -321,6 +316,18 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     fontWeight:'600',
     flex:1
+  },
+  genreItemContainer: {
+    padding:10,
+    marginRight:10,
+    borderRadius:5,
+    backgroundColor:THEME.mainBgColor,
+    borderWidth:1,
+    borderColor: THEME.contentBorderColor,
+  },
+  genreItemText:{
+    paddingRight:0,
+    fontSize:15
   },
   listDescription : {
     backgroundColor: THEME.mainBgColor,
