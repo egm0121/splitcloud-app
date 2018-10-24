@@ -44,6 +44,8 @@ class TopList extends Component {
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
     this.getPickerOverlayDisplay = this.getPickerOverlayDisplay.bind(this);
     this.onSectionChange = this.onSectionChange.bind(this);
+    this.renderSoundCloudChart = this.renderSoundCloudChart.bind(this);
+    
     this.state = {
       sectionList:[{
         name:'TOP',
@@ -236,6 +238,27 @@ class TopList extends Component {
     return this.state.pickerModalOpen && this.state.pickerModalType == type
       ? styles.openModalStyle: styles.closedModalStyle;
   }
+  renderSoundCloudChart(){
+    const renderSelectionGenre = this.getCurrSectionObj().scChartType;
+    return <View style={[renderSelectionGenre ? {flex:1} : {flex:0,height:0}]}>
+      <SectionTabBar  
+        style={styles.sectionContainer}
+        active={this.state.selectedGenre} 
+        onSelected={this._onGenreChange}>
+        {
+          this.state.genreOptions.map( ({label,value,key}) => 
+            <SectionItem key={key} label={label} name={value} style={[styles.genreItemContainer]} textStyle={[styles.genreItemText]} />
+          )
+        }
+      </SectionTabBar>
+      {this.getCurrSectionObj().scChartType && 
+        <TrackListContainer {...this.props}
+        trackList={this.state.trackList}
+        side={this.props.side}
+        resetToTop={true}
+        />}
+    </View>
+  }
   render() {
     return (
       <View style={styles.container}>
@@ -258,24 +281,7 @@ class TopList extends Component {
             })
           }
         </SectionTabBar>
-        {this.getCurrSectionObj().scChartType &&
-          <View style={{flex:1}}>
-            <SectionTabBar  
-              style={styles.sectionContainer}
-              active={this.state.selectedGenre} 
-              onSelected={this._onGenreChange}>
-              {
-                this.state.genreOptions.map( ({label,value,key}) => 
-                  <SectionItem key={key} label={label} name={value} style={[styles.genreItemContainer]} textStyle={[styles.genreItemText]} />
-                )
-              }
-            </SectionTabBar>
-            <TrackListContainer {...this.props}
-              trackList={this.state.trackList}
-              side={this.props.side}
-              resetToTop={true}
-              />
-          </View>}
+          {this.renderSoundCloudChart()}
           {this.getCurrSectionObj().name == 'PLS' && <DiscoverProviderContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'LOCAL' && <OfflineTracksContainer {...this.props}/>}
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
