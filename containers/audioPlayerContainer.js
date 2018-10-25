@@ -29,6 +29,9 @@ import{
 import { 
   markFeatureDiscovery,
 } from '../redux/actions/featureDiscoveryActions';
+import {
+  togglePlayerRepeat
+} from '../redux/actions/playbackModeActions';
 import { connect } from 'react-redux';
 import throttle from 'lodash.throttle';
 import LogSlider from '../helpers/LogSlider';
@@ -67,6 +70,7 @@ class AudioPlayerContainer extends Component {
     this._openScUploaderLink = this._openScUploaderLink.bind(this);
     this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
     this._onShuffle = this._onShuffle.bind(this);
+    this._onRepeatToggle = this._onRepeatToggle.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
     this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
@@ -130,7 +134,12 @@ class AudioPlayerContainer extends Component {
     console.log('_onPlayerStopped Debounced',evt);
     if(evt.progress == 0 && evt.duration == 0 && evt.prevStatus in PLAYBACK_ENABLED_STATES){
       console.log('track end detected. go to next track');
-      this._goToNextTrack();
+      if (this.props.repeat) {
+        this.musicPlayer.seekToTime(0);
+        this.musicPlayer.play();
+      } else {
+        this._goToNextTrack();
+      }
     }
   }
   _onAudioRouteInterruption(evt){
@@ -213,6 +222,7 @@ class AudioPlayerContainer extends Component {
           if( !shouldAutoPlay ){
             console.log('pause playback no autoplay');
             setTimeout(() => this.musicPlayer.pause(),50);
+            setTimeout(() => this.musicPlayer.pause(),100);
           }
         } else {
           this.musicPlayer.stop();
@@ -380,6 +390,10 @@ class AudioPlayerContainer extends Component {
     onSetPlaylistShuffleMode(!playlist.shuffle);
     onMarkShuffleFeatureDiscovery();
   }
+  _onRepeatToggle(){
+    const { repeat, onSetRepeatMode } = this.props;
+    onSetRepeatMode(!repeat);
+  }
   findRouteByName(name){
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
   }
@@ -512,6 +526,7 @@ class AudioPlayerContainer extends Component {
         onPlayTogglePress={this._onPlayTogglePress}
         goToNextTrack={this._goToNextTrack}
         onVolumeValueChange={this._onVolumeValueChange}
+        onRepeatToggle={this._onRepeatToggle}
     />
   }
 }
@@ -529,6 +544,7 @@ const mapStateToProps = (state, props) => {
     player,
     pan : player.pan,
     muted : player.muted,
+    repeat : player.repeat,
     isFullscreen,
     playlist,
     queue,
@@ -548,6 +564,7 @@ const mapDispatchToProps = (dispatch, props) => {
     },
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url)),
     onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
+    onSetRepeatMode : (isActive) => dispatch(togglePlayerRepeat(props.side,isActive)),
     onMarkShuffleFeatureDiscovery: (url) => dispatch(markFeatureDiscovery(FEATURE_SHUFFLE)),
   };
 };
