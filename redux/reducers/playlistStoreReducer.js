@@ -57,7 +57,7 @@ function getRandomVisibleIndex(queue,excludeArr){
   let filteredQueue = queue
   .filter((e,idx) => !excludeArr.includes(idx))
   .filter(e => e.isVisible);
-  const randIndex = getRandMax(filteredQueue.length);
+  const randIndex = getRandMax(filteredQueue.length - 1);
   const randTrack = filteredQueue[randIndex]; 
   return queue.findIndex(findTrackById(randTrack.id));
 }
