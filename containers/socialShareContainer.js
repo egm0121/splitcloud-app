@@ -18,7 +18,7 @@ class SocialShareContainer extends Component {
   }
   checkInteractionCount(){
     const {interactionCount, didShareOnce} = this.props;
-    if(interactionCount && (interactionCount % 20 == 0) && !didShareOnce){
+    if(interactionCount && (interactionCount % 15 == 0) && !didShareOnce){
       this.pushShareScreen();
     }
   } 

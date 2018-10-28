@@ -42,11 +42,13 @@ const initialState = {
     side: playbackModeTypes.LEFT,
     pan :-1,
     muted : 0,
+    repeat : false,
     inverted : false
   },{
     side: playbackModeTypes.RIGHT,
     pan : 1,
     muted : 0,
+    repeat : false,
     inverted : false
   }],
   playlist : [{

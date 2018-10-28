@@ -170,6 +170,12 @@ class AudioPlayer extends Component {
                            { trackDescription }
                          </AppText>
                        </TouchableOpacity>
+                       <TouchableOpacity onPress={this.props.openScUploaderLink}>
+                          <Image
+                          style={[styles.scCopyInlineImage]}
+                          source={require('../assets/soundcloud_gray_logo.png')}
+                          resizeMode={'contain'} />
+                      </TouchableOpacity>
                      </View>
                     </View>
                   </View>
@@ -263,16 +269,21 @@ class AudioPlayer extends Component {
           <TouchableOpacity onPress={this.props.toggleCurrentPlaylist}>
             <Image style={[styles.fgArtCoverImage,resizeStyle]}
               source={artworkSource} >
-              <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
-                  <Image
-                  style={[styles.scCopyImage]}
-                  source={require('../assets/soundcloud_gray_logo.png')}
-                  resizeMode={'contain'} />
-              </TouchableOpacity>
-              <ToggleFavoriteTrackContainer 
-                side={this.props.side} 
-                track={this._getCurrentTrackObj()} 
-              />
+              <View style={styles.scCopyContainerWrapper}>
+                <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
+                    <Image
+                    style={[styles.scCopyImage]}
+                    source={require('../assets/soundcloud_white_logo.png')}
+                    resizeMode={'contain'} />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.toggleFavoriteBtnContainer} >
+                <ToggleFavoriteTrackContainer 
+                  side={this.props.side} 
+                  track={this._getCurrentTrackObj()}
+                  style={[styles.toggleFavoriteBtn]} 
+                />
+              </View>
             </Image>
           </TouchableOpacity>
       </Image>
@@ -439,12 +450,34 @@ const styles = StyleSheet.create({
     alignItems:'flex-end',
     paddingRight:20
   },
-  scCopyContainer :{
-    
+  toggleFavoriteBtnContainer:{
+    flex:1,
+    flexDirection:'row',
+    alignItems:'flex-end'
+  },
+  toggleFavoriteBtn: {
+    flex:0,
+  },
+  scCopyContainerWrapper: {
+    flex:1,
+  },
+  scCopyContainer:{
+    borderRadius:22,
+    borderTopLeftRadius:0,
+    borderTopRightRadius:0,
+    padding:5,
+    paddingTop:4,
+    alignItems:'center',
+    width:45,
+    height:35,
+    backgroundColor:THEME.imageTextOverlayBgColor,
   },
   scCopyImage:{
-    width:35,
-    height:35
+    height:18,
+  },
+  scCopyInlineImage:{
+    width:30,
+    height:20
   },
   shuffleBtn:{
     flex:1,
@@ -519,8 +552,8 @@ const styles = StyleSheet.create({
     flex:1,
     width:null,
     height:null,
+    flexDirection:'column',
     alignItems:'center',
-    justifyContent:'flex-end',
     borderRadius:8,
   },
   miniArtCoverImage:{

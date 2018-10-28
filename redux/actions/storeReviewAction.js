@@ -10,14 +10,16 @@ export function reviewCountDoneAction(){
     type : actionTypes.SET_REVIEW_COMPLETED
   }
 }
-export function completedSocialShareAction(){
+export function completedSocialShareAction(platformName){
   return {
-    type : actionTypes.SET_SOCIAL_SHARE_COMPLETED
+    type : actionTypes.SET_SOCIAL_SHARE_COMPLETED,
+    gaLabel : platformName
   }
 }
-export function abortedSocialShareAction(){
+export function abortedSocialShareAction(platformName){
   return {
-    type : actionTypes.HIT_SOCIAL_SHARE_ABORTED
+    type : actionTypes.HIT_SOCIAL_SHARE_ABORTED,
+    gaLabel : platformName
   }
 }
 export function socialShareRequiredAction() {

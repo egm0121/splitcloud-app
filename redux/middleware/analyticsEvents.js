@@ -48,9 +48,9 @@ const AnalyticsMiddleware = store => {
     return action => {
       if( actionTypeWhitelist.includes(action.type) ){
         AnalyticsService.sendEvent({
-          category :getCategoryFromAction(action),
+          category : action.gaCategory || getCategoryFromAction(action),
           action : action.type,
-          label :'redux-action',
+          label : action.gaLabel || 'redux-action',
           value : 1
         });
       }

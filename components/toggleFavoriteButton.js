@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     textAlign : 'right'
   },
   textLabel:{
-    marginTop:-12,
+    marginTop:-9,
     marginLeft:2,
     textAlign:'center',
-    fontSize : 50,
+    fontSize : 40,
     fontWeight: '300',
     color: THEME.mainHighlightColor,
   },
@@ -77,12 +77,12 @@ const styles = StyleSheet.create({
     flex:1
   },
   buttonIcon:{
-    borderRadius:20,
+    borderRadius:22,
     borderBottomLeftRadius:0,
     borderBottomRightRadius:0,
     backgroundColor:THEME.imageTextOverlayBgColor,
-    width:40,
-    height:40
+    width:45,
+    height:35
   },
   buttonNormal:{
   },
