@@ -7,12 +7,12 @@ export default function SectionItem(props){
   let isActiveStyle;
   const isF = (f) => typeof f === 'function';
   let isIconLabel;
-  let itemSelectedContainer = props.active == props.name ? styles.itemSelectedContainer:null;
+  let itemSelectedContainer = props.active == props.name ? [styles.itemSelectedContainer,props.activeStyle]:[];
   if(props.forceActive || isActive) isActiveStyle = styles.itemSelected;
   if(props.children) isIconLabel = styles.iconLabel;
   return <TouchableOpacity
     key={props.key}
-    style={[props.style,itemSelectedContainer]}
+    style={[props.style,...itemSelectedContainer]}
     onPress={() => { props.onSelected(props.name)}}>
     { isF(props.children) && props.children(isActive)}
     <AppText bold={!isIconLabel} style={[styles.itemText,isActiveStyle,props.textStyle,isIconLabel]}>{props.label}</AppText>

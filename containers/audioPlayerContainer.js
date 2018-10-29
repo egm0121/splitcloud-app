@@ -11,6 +11,7 @@ import {
   playlistType,
   NOW_PLAYING_ASSET_NAME,
   FEATURE_SHUFFLE,
+  FEATURE_REPEAT,
 } from '../helpers/constants';
 import HybridPlayer from '../modules/HybridPlayer';
 import AudioPlayer from '../components/audioPlayer';
@@ -391,8 +392,9 @@ class AudioPlayerContainer extends Component {
     onMarkShuffleFeatureDiscovery();
   }
   _onRepeatToggle(){
-    const { repeat, onSetRepeatMode } = this.props;
+    const { repeat, onSetRepeatMode, onMarkRepeatFeatureDiscovery } = this.props;
     onSetRepeatMode(!repeat);
+    onMarkRepeatFeatureDiscovery();
   }
   findRouteByName(name){
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
@@ -565,7 +567,8 @@ const mapDispatchToProps = (dispatch, props) => {
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url)),
     onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
     onSetRepeatMode : (isActive) => dispatch(togglePlayerRepeat(props.side,isActive)),
-    onMarkShuffleFeatureDiscovery: (url) => dispatch(markFeatureDiscovery(FEATURE_SHUFFLE)),
+    onMarkShuffleFeatureDiscovery: () => dispatch(markFeatureDiscovery(FEATURE_SHUFFLE)),
+    onMarkRepeatFeatureDiscovery: () => dispatch(markFeatureDiscovery(FEATURE_REPEAT))
   };
 };
 let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);

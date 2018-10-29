@@ -35,14 +35,8 @@ class TopList extends Component {
   constructor(props){
     super(props);
     this._onGenreChange = this._onGenreChange.bind(this);
-    this.onClosePicker = this.onClosePicker.bind(this);
     this.updateResultList = this.updateResultList.bind(this);
-    this.openGenrePicker = this.openGenrePicker.bind(this);
-    this._onRegionChange = this._onRegionChange.bind(this);
-    this.openRegionPicker = this.openRegionPicker.bind(this);
-    this.getLabelForRegion = this.getLabelForRegion.bind(this);
     this.getLabelForGenre = this.getLabelForGenre.bind(this);
-    this.getPickerOverlayDisplay = this.getPickerOverlayDisplay.bind(this);
     this.onSectionChange = this.onSectionChange.bind(this);
     this.renderSoundCloudChart = this.renderSoundCloudChart.bind(this);
     
@@ -156,14 +150,8 @@ class TopList extends Component {
   getLabelForGenre(genreValue){
     return formatGenreLabel(this.getKeyByValue(SoundCloudApi.genre,genreValue));
   }
-  getLabelForRegion(regionValue){
-    return formatGenreLabel(this.getKeyByValue(SoundCloudApi.region,regionValue));
-  }
   _onGenreChange(genre){
     this.setState({selectedGenre:genre});
-  }
-  _onRegionChange(region){
-    this.setState({selectedRegion:region});
   }
   _invalidatePrevRequest(){
     if(this.prevQueryCancelToken){
@@ -217,26 +205,10 @@ class TopList extends Component {
     }
     this.setState({ trackList : resp });
   }
-  onClosePicker(){
-    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
-    this.setState({pickerModalOpen:false});
-  }
-  openGenrePicker(){
-    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
-    this.setState({pickerModalOpen:true,pickerModalType:'genre'});
-  }
-  openRegionPicker(){
-    LayoutAnimation.configureNext(animationPresets.overlaySlideInOut);
-    this.setState({pickerModalOpen:true,pickerModalType:'region'});
-  }
   onSectionChange(sectionName){
     this.setState({
       section:sectionName
     });
-  }
-  getPickerOverlayDisplay(type){
-    return this.state.pickerModalOpen && this.state.pickerModalType == type
-      ? styles.openModalStyle: styles.closedModalStyle;
   }
   renderSoundCloudChart(){
     const renderSelectionGenre = this.getCurrSectionObj().scChartType;
@@ -247,7 +219,7 @@ class TopList extends Component {
         onSelected={this._onGenreChange}>
         {
           this.state.genreOptions.map( ({label,value,key}) => 
-            <SectionItem key={key} label={label} name={value} style={[styles.genreItemContainer]} textStyle={[styles.genreItemText]} />
+            <SectionItem key={key} label={label} name={value} style={[styles.genreItemContainer]} activeStyle={styles.activeGenreContainer} textStyle={[styles.genreItemText]} />
           )
         }
       </SectionTabBar>
@@ -287,12 +259,6 @@ class TopList extends Component {
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
             {...this.props} selectionList={this.state.trackList}
             />}
-          <ModalPicker
-            overlayStyle={this.getPickerOverlayDisplay('genre')}
-            options={this.state.genreOptions}
-            selected={this.state.selectedGenre}
-            onClose={this.onClosePicker}
-            onValueChange={this._onGenreChange}/>
       </View>
     );
   }
@@ -330,6 +296,10 @@ const styles = StyleSheet.create({
     backgroundColor:THEME.mainBgColor,
     borderWidth:1,
     borderColor: THEME.contentBorderColor,
+  },
+  activeGenreContainer:{
+    backgroundColor: THEME.contentBorderColor,
+    borderColor: THEME.mainHighlightColor
   },
   genreItemText:{
     paddingRight:0,
