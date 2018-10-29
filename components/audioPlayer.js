@@ -82,6 +82,9 @@ class AudioPlayer extends Component {
   _isPlayerStopped(){
     return this.props.status === audioPlayerStates.STOPPED;
   }
+  _isSoundCloudTrack(){
+    return !!this._getCurrentTrackObj().scUploaderLink;
+  }
   renderInFullscreen(children){
     return this.props.isFullscreen ? children :null;
   }
@@ -170,12 +173,12 @@ class AudioPlayer extends Component {
                            { trackDescription }
                          </AppText>
                        </TouchableOpacity>
-                       <TouchableOpacity onPress={this.props.openScUploaderLink}>
+                       {this._isSoundCloudTrack() && <TouchableOpacity onPress={this.props.openScUploaderLink}>
                           <Image
                           style={[styles.scCopyInlineImage]}
                           source={require('../assets/soundcloud_gray_logo.png')}
                           resizeMode={'contain'} />
-                      </TouchableOpacity>
+                      </TouchableOpacity>}
                      </View>
                     </View>
                   </View>
@@ -269,14 +272,14 @@ class AudioPlayer extends Component {
           <TouchableOpacity onPress={this.props.toggleCurrentPlaylist}>
             <Image style={[styles.fgArtCoverImage,resizeStyle]}
               source={artworkSource} >
-              <View style={styles.scCopyContainerWrapper}>
+              {this._isSoundCloudTrack() && <View style={styles.scCopyContainerWrapper}>
                 <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
                     <Image
                     style={[styles.scCopyImage]}
                     source={require('../assets/soundcloud_white_logo.png')}
                     resizeMode={'contain'} />
                 </TouchableOpacity>
-              </View>
+              </View>}
               <View style={styles.toggleFavoriteBtnContainer} >
                 <ToggleFavoriteTrackContainer 
                   side={this.props.side} 

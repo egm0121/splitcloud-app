@@ -21,6 +21,7 @@ const actionTypeWhitelist = [
   actionTypes.HIT_SOCIAL_SHARE_ABORTED,
   actionTypes.HIT_SOCIAL_SHARE_REQUIRED,
   actionTypes.SET_PLAYLIST_SHUFFLE,
+  actionTypes.TOGGLE_PLAYER_REPEAT,
 ];
 const actionScreenChangeList = [
   actionTypes.CHANGE_PLAYBACK_MODE
