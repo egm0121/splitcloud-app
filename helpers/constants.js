@@ -35,7 +35,6 @@ export const  NOW_PLAYING_ASSET_NAME = 'IconHighRes';
 
 export const VERSION_REDUCER_KEY='app';
 
-export const MAX_REVIEW_POSITIVE_ACTIONS=15;
 export const animationPresets = {
 
   overlaySlideInOut : {
@@ -50,6 +49,7 @@ export const RESERVED_PLAYLIST_NAME = 'SplitCloud-Favorites';
 export const FEATURE_SC_EXPORT = 'feature-export-sc';
 export const FEATURE_SOCIAL_SHARE = 'feature-social-share';
 export const FEATURE_SHUFFLE = 'feature-shuffle';
+export const FEATURE_REPEAT = 'feature-repeat';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
@@ -58,4 +58,5 @@ export const musicProviderType = {
 // min seconds to flag a song as played in stats.
 export const PLAYBACK_MIN_TIME = 30; 
 export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
-export const MAX_INTERACTION_COUNT = 40;
+export const MAX_INTERACTION_COUNT = 30;
+export const MAX_REVIEW_POSITIVE_ACTIONS = 40;

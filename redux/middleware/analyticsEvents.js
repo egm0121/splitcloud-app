@@ -21,6 +21,7 @@ const actionTypeWhitelist = [
   actionTypes.HIT_SOCIAL_SHARE_ABORTED,
   actionTypes.HIT_SOCIAL_SHARE_REQUIRED,
   actionTypes.SET_PLAYLIST_SHUFFLE,
+  actionTypes.TOGGLE_PLAYER_REPEAT,
 ];
 const actionScreenChangeList = [
   actionTypes.CHANGE_PLAYBACK_MODE
@@ -48,9 +49,9 @@ const AnalyticsMiddleware = store => {
     return action => {
       if( actionTypeWhitelist.includes(action.type) ){
         AnalyticsService.sendEvent({
-          category :getCategoryFromAction(action),
+          category : action.gaCategory || getCategoryFromAction(action),
           action : action.type,
-          label :'redux-action',
+          label : action.gaLabel || 'redux-action',
           value : 1
         });
       }

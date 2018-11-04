@@ -36,24 +36,24 @@ class ShareAppScreen extends Component {
     if(platformName == 'line') {
       const bodyURI = encodeURIComponent(`${shareOptions.message} ${shareOptions.url}`);
       Linking.openURL(`line://msg/text/?${bodyURI}`)
-      .then(() => this.props.onSocialShareCompleted())
+      .then(() => this.props.onSocialShareCompleted(platformName))
       .catch(() => this.props.onSocialShareAborted())
     }
     if(platformName == 'clipboard') {
       Clipboard.setString(shareOptions.url);
       this.props.onPushNotification('Link Copied');
-      this.props.onSocialShareCompleted();
+      this.props.onSocialShareCompleted(platformName);
       this.props.onClose();
       return true;
     }
     return Share.shareSingle({...shareOptions, social: platformName})
     .then(data => {
       console.log('social share completed');
-      this.props.onSocialShareCompleted();
+      this.props.onSocialShareCompleted(platformName);
       this.props.onClose();
     }).catch(err => {
       console.log('social share failed',err);
-      this.props.onSocialShareAborted();
+      this.props.onSocialShareAborted(platformName);
     });
   }
   componentDidUpdate(){
@@ -116,8 +116,8 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onPushNotification(message){ dispatch(pushNotification({type:'success',message})); },
-    onSocialShareCompleted(){ dispatch(completedSocialShareAction());},
-    onSocialShareAborted(){ dispatch(abortedSocialShareAction());},
+    onSocialShareCompleted(platformName){ dispatch(completedSocialShareAction(platformName));},
+    onSocialShareAborted(platformName){ dispatch(abortedSocialShareAction(platformName));},
     onSocialShareRequired(){ dispatch(socialShareRequiredAction())}
   }
 };

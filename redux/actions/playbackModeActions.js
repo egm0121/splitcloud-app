@@ -29,3 +29,11 @@ export function togglePlayerPan(side,pan){
     side
   };
 }
+
+export function togglePlayerRepeat(side, repeat){
+  return {
+    type : actionTypes.TOGGLE_PLAYER_REPEAT,
+    side,
+    repeat
+  }
+}

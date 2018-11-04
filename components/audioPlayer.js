@@ -11,7 +11,8 @@ import THEME from '../styles/variables';
 import {
   audioPlayerStates,
   playbackModeTypes, 
-  FEATURE_SHUFFLE
+  FEATURE_SHUFFLE,
+  FEATURE_REPEAT,
 } from '../helpers/constants';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 
@@ -81,6 +82,9 @@ class AudioPlayer extends Component {
   }
   _isPlayerStopped(){
     return this.props.status === audioPlayerStates.STOPPED;
+  }
+  _isSoundCloudTrack(){
+    return !!this._getCurrentTrackObj().scUploaderLink;
   }
   renderInFullscreen(children){
     return this.props.isFullscreen ? children :null;
@@ -170,6 +174,12 @@ class AudioPlayer extends Component {
                            { trackDescription }
                          </AppText>
                        </TouchableOpacity>
+                       {this._isSoundCloudTrack() && <TouchableOpacity onPress={this.props.openScUploaderLink}>
+                          <Image
+                          style={[styles.scCopyInlineImage]}
+                          source={require('../assets/soundcloud_gray_logo.png')}
+                          resizeMode={'contain'} />
+                      </TouchableOpacity>}
                      </View>
                     </View>
                   </View>
@@ -240,12 +250,7 @@ class AudioPlayer extends Component {
                       value={this.props.volumeSliderValue} />
                   </View>
                   <View style={styles.volumePad}>
-                    <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
-                      <Image
-                      style={[styles.scCopyImage]}
-                      source={require('../assets/soundcloud_gray_logo.png')}
-                      resizeMode={'contain'} />
-                    </TouchableOpacity>
+                    {this.renderRepeatButton()}
                   </View>
                 </View>
               </View>
@@ -261,16 +266,28 @@ class AudioPlayer extends Component {
       width: width - 60,
       height: width - 60
     };
+    
     return <Image style={[styles.controlsFadeImage]}
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
           <TouchableOpacity onPress={this.props.toggleCurrentPlaylist}>
             <Image style={[styles.fgArtCoverImage,resizeStyle]}
               source={artworkSource} >
-              <ToggleFavoriteTrackContainer 
-                side={this.props.side} 
-                track={this._getCurrentTrackObj()} 
-              />
+              {this._isSoundCloudTrack() && <View style={styles.scCopyContainerWrapper}>
+                <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
+                    <Image
+                    style={[styles.scCopyImage]}
+                    source={require('../assets/soundcloud_white_logo.png')}
+                    resizeMode={'contain'} />
+                </TouchableOpacity>
+              </View>}
+              <View style={styles.toggleFavoriteBtnContainer} >
+                <ToggleFavoriteTrackContainer 
+                  side={this.props.side} 
+                  track={this._getCurrentTrackObj()}
+                  style={[styles.toggleFavoriteBtn]} 
+                />
+              </View>
             </Image>
           </TouchableOpacity>
       </Image>
@@ -284,6 +301,15 @@ class AudioPlayer extends Component {
       <Button style={styles.shuffleBtn} size={'tiny'} image={image} onPressed={this.props.onShuffleModeToggle} />
     </View>;
   }
+  renderRepeatButton(){
+    const image = this.props.repeat ? 
+      require('../assets/flat_repeat.png') :
+      require('../assets/flat_repeat_off.png');
+    return <View style={styles.volumePad}>
+      <Button style={styles.repeatBtn} size={'tiny'} image={image} onPressed={this.props.onRepeatToggle} />
+      <FeatureDiscoveryContainer featureName={FEATURE_REPEAT} style={styles.featureRepeatDot} />
+    </View>
+  }
 }
 
 AudioPlayer.propTypes = {
@@ -295,6 +321,7 @@ AudioPlayer.propTypes = {
   duration : PropTypes.number,
   pan : PropTypes.number,
   muted : PropTypes.number,
+  repeat : PropTypes.bool,
   isFullscreen : PropTypes.bool,
   playbackProgressValue : PropTypes.array,
   volumeSliderValue : PropTypes.number,
@@ -308,7 +335,9 @@ AudioPlayer.propTypes = {
   onPlayTogglePress : PropTypes.func,
   goToNextTrack : PropTypes.func,
   onVolumeValueChange : PropTypes.func,
-  openScUploaderLink : PropTypes.func 
+  openScUploaderLink : PropTypes.func ,
+  onShuffleModeToggle : PropTypes.func,
+  onRepeatToggle : PropTypes.func
 };
 
 const volumeMarginSide = 80;
@@ -425,22 +454,51 @@ const styles = StyleSheet.create({
     alignItems:'flex-end',
     paddingRight:20
   },
-  scCopyContainer :{
+  toggleFavoriteBtnContainer:{
     flex:1,
-    alignItems:'flex-end',
-    paddingRight:20
+    flexDirection:'row',
+    alignItems:'flex-end'
+  },
+  toggleFavoriteBtn: {
+    flex:0,
+  },
+  scCopyContainerWrapper: {
+    flex:1,
+  },
+  scCopyContainer:{
+    borderRadius:22,
+    borderTopLeftRadius:0,
+    borderTopRightRadius:0,
+    padding:5,
+    paddingTop:4,
+    alignItems:'center',
+    width:45,
+    height:35,
+    backgroundColor:THEME.imageTextOverlayBgColor,
   },
   scCopyImage:{
-    width:35,
-    height:35
+    height:18,
+  },
+  scCopyInlineImage:{
+    width:30,
+    height:20
   },
   shuffleBtn:{
     flex:1,
     alignItems:'flex-start',
     paddingLeft:22
   },
+  repeatBtn: {
+    flex:1,
+    alignItems:'flex-end',
+    paddingRight:22
+  },
   featureShuffleDot:{
     top:4,
+  },
+  featureRepeatDot:{
+    left:-18,
+    top:4
   },
   playlistButton:{
     alignItems:'flex-start',
@@ -502,8 +560,8 @@ const styles = StyleSheet.create({
     flex:1,
     width:null,
     height:null,
+    flexDirection:'column',
     alignItems:'center',
-    justifyContent:'flex-end',
     borderRadius:8,
   },
   miniArtCoverImage:{

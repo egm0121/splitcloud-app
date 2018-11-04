@@ -275,11 +275,9 @@ class SoundCloudApi {
       return this.request(SoundCloudApi.api.v1,`users/${resp.data.id}/playlists`,
               undefined,undefined,undefined,this.extendedTimeout);
     }).then(resp => {
-      let playlistData = resp.data;
-
-      return playlistData.filter( p => p.streamable)
+      return toArray(resp.data).filter(p => p.streamable)
         .map(this.transformPlaylistPayload)
-        .filter( p => p.tracks.length);
+        .filter(p => p.tracks.length);
     });
   }
   getScPlaylist(scId){

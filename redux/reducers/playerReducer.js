@@ -16,9 +16,8 @@ export function playerReducer(state = initialState.players, currAction){
         panning = 0;
       }
       return {
-        side : player.side,
+        ...player,
         pan : panning,
-        muted : player.muted,
         inverted : currAction.inverted
       }
     });
@@ -33,19 +32,28 @@ export function playerReducer(state = initialState.players, currAction){
           panning = player.inverted ? -1 : 1
         }
         return {
-          side : player.side,
+          ...player,
           pan : panning,
           muted : 0,
-          inverted : player.inverted
         }
       }
       return {
-        side : player.side,
+        ...player,
         pan : 0,
         muted : mode == player.side ? 0 : 1,
-        inverted : player.inverted
       }
     });
+  case actionTypes.TOGGLE_PLAYER_REPEAT :
+    return state.map(player => {
+      if (player.side === currAction.side) {
+        return {
+          ...player,
+          repeat : currAction.repeat
+        }
+      } else {
+        return player;
+      }
+    })
   default:
     return state;
   }
