@@ -60,7 +60,7 @@ const AnalyticsMiddleware = store => {
       }
       let result = next(action);
       if(action.side){
-        let currPlayingTrack = getCurrentTrackBySide(store,action.side);
+        let currPlayingTrack = getCurrentTrackBySide(store.getState(),action.side);
         if(
           currPlayingTrack &&
           lastPlayingTrack[action.side] !== currPlayingTrack

@@ -23,6 +23,7 @@ import MenuOverlay from '../components/menuOverlay';
 import MenuOverlayItem from '../components/menuOverlayItem';
 import HeaderBar from '../components/headerBar';
 import SoundCloudApi from '../modules/SoundcloudApi';
+import RelatedTrackPreviewContainer from './relatedTrackPreviewContainer';
 import { globalSettings, animationPresets } from '../helpers/constants';
 import {
    setPlaylist,
@@ -42,6 +43,7 @@ import {
 } from '../helpers/constants';
 import FeatureDiscoveryContainer from '../containers/featureDiscoveryContainer';
 import { markFeatureDiscovery } from '../redux/actions/featureDiscoveryActions';
+import { getCurrentTrackBySide } from '../redux/selectors/playlistSelector';
 class CurrentPlaylistContainer extends Component {
   constructor(props){
     super(props);
@@ -212,6 +214,12 @@ class CurrentPlaylistContainer extends Component {
             trackActionStyles={[{fontSize:45}]}
             scrollToCurrentTrack={isUpNextPlaylist}
             />
+        <RelatedTrackPreviewContainer 
+          navigator={this.props.navigator}
+          layout='horizontal' 
+          side={this.props.side}
+          track={this.props.currentTrack}
+        />
         <MenuOverlay onClose={this.onOverlayClosed}
            closeLabel={'Close'}
            overlayStyle={[styles.playlistMenuOverlay,overlayStyle]}>
@@ -301,7 +309,8 @@ const mapStateToProps = (state,props) => {
     settings : state.settings,
     queue,
     playlistFilter,
-    playlistStore
+    playlistStore,
+    currentTrack: getCurrentTrackBySide(state,props.side)
   };
 }
 const mapDispatchToProps = (dispatch,props) => {

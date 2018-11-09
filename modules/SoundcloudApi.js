@@ -50,6 +50,11 @@ class SoundCloudApi {
       'getSoundcloudSelections',
       3600*1e3
     );
+    this.getRelatedTracks = CacheDecorator.withCache(
+      this.getRelatedTracks.bind(this),
+      'getRelatedTracks',
+      3600*1e3
+    )
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);
@@ -287,6 +292,14 @@ class SoundCloudApi {
         return this.transformPlaylistPayload(resp.data);
       })
   }
+  getRelatedTracks(scTrackId){
+    return this.request(SoundCloudApi.api.v1,`tracks/${scTrackId}/related`)
+    .then(resp => {
+      return this.transformPlaylistPayload(
+        this.tracklistToPlaylist(resp.data,`rel_${scTrackId}`)
+      );
+    })
+  }
   getClientId(){
     return this.clientId;
   }
@@ -301,6 +314,15 @@ class SoundCloudApi {
       label : selection.title,
       description : selection.description,
       playlists: toArray(selection.playlists).map(this.transformPlaylistPayload)
+    };
+  }
+  tracklistToPlaylist(data,id){
+    return {
+      id,
+      track_count: data.length,
+      user: { username: '' },
+      title: 'Related Tracks',
+      tracks: data
     };
   }
   transformPlaylistPayload(t){

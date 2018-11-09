@@ -9,7 +9,7 @@ export default function (
         super(props);
         this.loadMoreOnScroll = this.loadMoreOnScroll.bind(this);
         this.state = {
-          playlist: props.playlist,
+          playlist: props.playlist || {},
           isLoading: false,
           offset: props.offset || initOffset,
           limit: props.limit || limit,
