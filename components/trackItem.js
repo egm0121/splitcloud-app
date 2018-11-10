@@ -37,7 +37,7 @@ export default function TrackItem(props){
     }
   }
 
-  return <View style={styles.row}>
+  return <View style={[styles.row,props.style]}>
    {props.renderArtwork &&
     <TouchableOpacity onPress={props.onSelected.bind(null,rowData)}>
       <View style={styles.rowArtworkContainer}>
@@ -56,8 +56,8 @@ export default function TrackItem(props){
           {props.onTrackDescRender(rowData)}
         </AppText>
     </TouchableOpacity>
-    {!rowData.isEmpty ?
-      <View style={styles.rowAction} >
+    {!rowData.isEmpty && !props.hideAction ?
+      <View style={[styles.rowAction, props.rowActionStyle]} >
         {props.onTrackActionRender(rowData)}
       </View>: null
       }
@@ -68,6 +68,7 @@ TrackItem.defaultProps = {
   layout:'default',
   onTrackActionRender : () => null,
   renderArtwork: true,
+  style: null
 };
 TrackItem.propTypes = {
   layout: PropTypes.string,

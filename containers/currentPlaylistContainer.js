@@ -32,7 +32,7 @@ import {
 } from '../redux/actions/currentPlaylistActions';
 import {setGlobalSetting} from '../redux/actions/settingsActions';
 import {pushNotification} from  '../redux/actions/notificationActions';
-import {formatSidePlayerLabel,ucFirst} from '../helpers/formatters';
+import {formatSidePlayerLabel, ucFirst, isLocalTrack} from '../helpers/formatters';
 import THEME from '../styles/variables';
 import NavigationStateNotifier from '../modules/NavigationStateNotifier';
 import {
@@ -177,6 +177,10 @@ class CurrentPlaylistContainer extends Component {
     this.props.markFeatureDiscovery(FEATURE_SOCIAL_SHARE);
     this.onOverlayClosed();
   }
+  hasRelatedTracks(component){
+    if(!this.props.currentTrack || isLocalTrack(this.props.currentTrack)) return;
+    return component;
+  }
   componentWillUnmount(){
     this.focusSub.off();
   }
@@ -214,12 +218,12 @@ class CurrentPlaylistContainer extends Component {
             trackActionStyles={[{fontSize:45}]}
             scrollToCurrentTrack={isUpNextPlaylist}
             />
-        <RelatedTrackPreviewContainer 
+        {this.hasRelatedTracks(<RelatedTrackPreviewContainer 
           navigator={this.props.navigator}
           layout='horizontal' 
           side={this.props.side}
           track={this.props.currentTrack}
-        />
+        />)}
         <MenuOverlay onClose={this.onOverlayClosed}
            closeLabel={'Close'}
            overlayStyle={[styles.playlistMenuOverlay,overlayStyle]}>

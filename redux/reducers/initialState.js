@@ -1,5 +1,5 @@
 import { playbackModeTypes } from '../constants/actions';
-import { FEATURE_SC_EXPORT, FEATURE_SOCIAL_SHARE, FEATURE_SHUFFLE, FEATURE_REPEAT } from '../../helpers/constants';
+import { FEATURE_SC_EXPORT, FEATURE_SOCIAL_SHARE, FEATURE_SHUFFLE, FEATURE_REPEAT, FEATURE_SUGGESTED } from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
@@ -15,6 +15,7 @@ const initialState = {
     [FEATURE_SOCIAL_SHARE] : false,
     [FEATURE_SHUFFLE] : false,
     [FEATURE_REPEAT] : true,
+    [FEATURE_SUGGESTED] : true
   },
   notifications : {
     list : []

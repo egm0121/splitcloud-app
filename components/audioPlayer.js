@@ -13,6 +13,7 @@ import {
   playbackModeTypes, 
   FEATURE_SHUFFLE,
   FEATURE_REPEAT,
+  FEATURE_SUGGESTED,
 } from '../helpers/constants';
 import { ifIphoneX } from 'react-native-iphone-x-helper';
 
@@ -152,6 +153,7 @@ class AudioPlayer extends Component {
                       <TouchableOpacity  
                         style={[styles.fgArtCoverContainer,styles.miniFgArtworkContainer]}
                         onPress={this.props.toggleCurrentPlaylist}>
+                          <FeatureDiscoveryContainer featureName={FEATURE_SUGGESTED} style={styles.featureSuggestedDot} />
                           <Image style={[styles.fgArtCoverImage,styles.miniArtCoverImage]}
                             source={artworkSource}
                             resizeMode={'contain'}>
@@ -271,6 +273,7 @@ class AudioPlayer extends Component {
         source={require('../assets/fade_to_black.png')}
         resizeMode={'stretch'} >
           <TouchableOpacity onPress={this.props.toggleCurrentPlaylist}>
+            <FeatureDiscoveryContainer featureName={FEATURE_SUGGESTED} style={styles.featureSuggestedDot} />
             <Image style={[styles.fgArtCoverImage,resizeStyle]}
               source={artworkSource} >
               {this._isSoundCloudTrack() && <View style={styles.scCopyContainerWrapper}>
@@ -500,6 +503,10 @@ const styles = StyleSheet.create({
     left:-18,
     top:4
   },
+  featureSuggestedDot:{
+    left:-18,
+    top:-2  
+  },
   playlistButton:{
     alignItems:'flex-start',
     paddingLeft:20
@@ -562,7 +569,7 @@ const styles = StyleSheet.create({
     height:null,
     flexDirection:'column',
     alignItems:'center',
-    borderRadius:8,
+    borderRadius:8
   },
   miniArtCoverImage:{
     justifyContent:'center'

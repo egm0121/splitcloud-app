@@ -12,6 +12,7 @@ import {
   NOW_PLAYING_ASSET_NAME,
   FEATURE_SHUFFLE,
   FEATURE_REPEAT,
+  FEATURE_SUGGESTED,
 } from '../helpers/constants';
 import HybridPlayer from '../modules/HybridPlayer';
 import AudioPlayer from '../components/audioPlayer';
@@ -316,6 +317,7 @@ class AudioPlayerContainer extends Component {
     return this._onPickerToggle();
   }
   _toggleCurrentPlaylist(){
+    this.props.onMarkSuggestedFeatureDiscovery();
     this.props.navigator.push({
       title : 'CurrentPlaylistContainer -' + this.props.currentPlaylistId,
       name : 'CurrentPlaylistContainer' + this.props.currentPlaylistId,
@@ -568,7 +570,8 @@ const mapDispatchToProps = (dispatch, props) => {
     onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
     onSetRepeatMode : (isActive) => dispatch(togglePlayerRepeat(props.side,isActive)),
     onMarkShuffleFeatureDiscovery: () => dispatch(markFeatureDiscovery(FEATURE_SHUFFLE)),
-    onMarkRepeatFeatureDiscovery: () => dispatch(markFeatureDiscovery(FEATURE_REPEAT))
+    onMarkRepeatFeatureDiscovery: () => dispatch(markFeatureDiscovery(FEATURE_REPEAT)),
+    onMarkSuggestedFeatureDiscovery: () => dispatch(markFeatureDiscovery(FEATURE_SUGGESTED))
   };
 };
 let ConnectedAudioPlayerContainer = connect(mapStateToProps,mapDispatchToProps)(AudioPlayerContainer);
