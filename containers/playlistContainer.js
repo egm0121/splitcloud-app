@@ -23,6 +23,16 @@ class PlaylistContainer extends Component {
     const playlistFilteredList = tracks.filter(
       (track) => 'isVisible' in track ? track.isVisible : true
     );
+    if(this.props.layout == 'horizontal'){
+      return (
+        <TrackListContainer
+          {...this.props}
+          trackList={playlistFilteredList}
+          side={this.props.side}
+          trackActionStyles={[{fontSize:45}]}
+        />
+      );
+    }
     return (
       <View style={styles.container}>
         <HeaderBar title={this.props.playlist.label}>

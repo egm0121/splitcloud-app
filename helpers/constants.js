@@ -50,6 +50,7 @@ export const FEATURE_SC_EXPORT = 'feature-export-sc';
 export const FEATURE_SOCIAL_SHARE = 'feature-social-share';
 export const FEATURE_SHUFFLE = 'feature-shuffle';
 export const FEATURE_REPEAT = 'feature-repeat';
+export const FEATURE_SUGGESTED = 'feature-suggested';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',

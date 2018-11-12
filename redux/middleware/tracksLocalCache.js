@@ -81,7 +81,7 @@ const trackCacheMiddleware = store => {
           actionTypes.INCREMENT_CURR_PLAY_INDEX,
           actionTypes.DECREMENT_CURR_PLAY_INDEX].includes(action.type)
         ){
-          let currPlayingTrack = getCurrentTrackBySide(store, action.side);
+          let currPlayingTrack = getCurrentTrackBySide(store.getState(), action.side);
           console.info('new currently playing track, attempt download',currPlayingTrack);
           if(currPlayingTrack){
             storeLocalTrack(currPlayingTrack);

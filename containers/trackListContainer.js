@@ -6,17 +6,11 @@ import React, { PropTypes, Component } from 'react';
 import {
   AppRegistry,
   StyleSheet,
-  Text,
-  TextInput,
-  ListView,
   View,
-  TouchableOpacity,
 } from 'react-native';
-import axios from 'axios';
 import config from '../helpers/config';
 import THEME from '../styles/variables'
 import { connect } from 'react-redux';
-import { compose } from 'redux';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import TrackList from '../components/trackList';
 import ToggleFavoriteTrackContainer from './toggleFavoriteTrackContainer';
@@ -26,14 +20,13 @@ import {
 } from '../redux/actions/notificationActions';
 import {
   setPlaylist,
-  addPlaylistItem,
-  removePlaylistItem,
   changeCurrentPlayIndex
 } from '../redux/actions/currentPlaylistActions';
 import {
   formatDurationExtended,
   formatNumberPrefix
 } from '../helpers/formatters';
+import HorizontalTrackListing from '../components/horizontalTrackListing';
 const {SC_CLIENT_ID} = config;
 
 class TrackListContainer extends Component {
@@ -45,7 +38,8 @@ class TrackListContainer extends Component {
     this.scApi = new SoundCloudApi({clientId: SC_CLIENT_ID});
     this.onTrackActionRender = this.onTrackActionRender.bind(this);
     this.onTrackSelected = this.onTrackSelected.bind(this);
-    console.log('TrackListContainer onEndThreshold',props.onEndThreshold);
+    this.onPlaylistSelected = this.onPlaylistSelected.bind(this);
+    console.log('TrackListContainer ',props.onEndThreshold, props.navigator);
   }
   
   hasFavoriteTrack(track){
@@ -73,9 +67,9 @@ class TrackListContainer extends Component {
     }
   }
   onPlaylistSelected(playlist){
-    
+    console.log('',this.props)
     this.props.navigator.push({
-      title : 'PlaylistContainer - playlist.name - ' + this.props.side,
+      title : `PlaylistContainer - ${playlist.name} - ${this.props.side}`,
       name : 'PlaylistContainer' + this.props.side,
       component: PlaylistContainer,
       passProps : {
@@ -94,6 +88,16 @@ class TrackListContainer extends Component {
     return [duration,playCount,username].filter(e =>e.length).join(' • ');
   }
   render() {
+    if (this.props.layout == 'horizontal') {
+      return <HorizontalTrackListing 
+        items={this.props.trackList}
+        onTrackDescRender={this.onTrackDescRender}
+        onTrackActionRender={this.onTrackActionRender}
+        currentTrack={this.props.currentPlayingTrack}
+        onSelected={this.onTrackSelected}
+        onPlaylistSelected={this.onPlaylistSelected}
+      />
+    }
     return (
       <View style={styles.container}>
         <TrackList
@@ -115,7 +119,8 @@ class TrackListContainer extends Component {
   }
 }
 TrackListContainer.defaultProps ={
-  resetToTop:false
+  resetToTop:false,
+  layout: 'default',
 }
 TrackListContainer.propTypes = {
   side : PropTypes.string.isRequired,
@@ -127,7 +132,8 @@ TrackListContainer.propTypes = {
   onPlaylistSelected: PropTypes.func,
   onHeaderRender: PropTypes.func,
   isLoading: PropTypes.bool,
-  scrollToCurrentTrack: PropTypes.bool
+  scrollToCurrentTrack: PropTypes.bool,
+  layout: PropTypes.string
 }
 const styles = StyleSheet.create({
   container: {
@@ -152,7 +158,7 @@ const mapStateToProps = (state,props) => {
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
   onTrackSelected : (track,trackList) => {
-    console.log('tracklist connect onTrackSelected');
+    console.log('tracklist connect onTrackSelected',track,trackList);
     dispatch(setPlaylist(props.side,trackList,'playbackQueue_'+props.side));
     dispatch(changeCurrentPlayIndex(props.side,track,'playbackQueue_'+props.side));
   }
