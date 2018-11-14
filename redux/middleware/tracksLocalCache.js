@@ -60,7 +60,7 @@ const trackCacheMiddleware = store => {
       if(isDefaultPlaylist(action) && action.type == actionTypes.SET_PLAYLIST &&
        action.tracks.length == 0){
         console.info('get the deletable tracks assets')
-        prevPlaylistTracks = getCurrentPlaylistBySide(store, action.side).tracks.map(t => ({...t})); //deep copy
+        prevPlaylistTracks = getCurrentPlaylistBySide(store.getState(), action.side).tracks.map(t => ({...t})); //deep copy
       }
       // dispatch next action middleware and reducers for action
       let result = next(action);
