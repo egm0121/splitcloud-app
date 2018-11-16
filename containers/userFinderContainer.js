@@ -4,17 +4,9 @@
 import React, { PropTypes, Component } from 'react';
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
-  TextInput,
-  ActivityIndicator,
-  ListView,
-  View,
-  TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
 import config from '../helpers/config';
-import THEME from '../styles/variables'
 import { connect } from 'react-redux';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import UserList from '../components/userList';
@@ -70,9 +62,9 @@ class UserFinderContainer extends Component {
     this.prevQueryCancelToken = axios.CancelToken.source();
     return this.prevQueryCancelToken;
   }
-  userProfileOpen(){
+  userProfileOpen(user){
     this.props.navigator.push({
-      title : 'UploaderProfileContainer - searchResult - ' + this.props.side,
+      title : `UploaderProfileContainer - searchResult:${user.username} - ${this.props.side}`,
       name : 'UploaderProfileContainer.searchResult' + this.props.side,
       component: UploaderProfileContainer,
       passProps : {
@@ -83,7 +75,7 @@ class UserFinderContainer extends Component {
   }
   onUserSelected(user){
     this.props.onUserSelected(user);
-    this.userProfileOpen();
+    this.userProfileOpen(user);
   }
   onRequestFail(err,type){
     this.props.pushNotification({

@@ -104,5 +104,5 @@ export default {
         ...state.featureDiscovery,
       }
     }
-  },
+  }
 }
