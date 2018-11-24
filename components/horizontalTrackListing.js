@@ -3,8 +3,6 @@ import React from 'react';
 import {View, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 import AppText from './appText';
 import THEME from '../styles/variables';
-import PlaylistContainer from '../containers/playlistContainer';
-
 
 const styles = StyleSheet.create({
   container:{
@@ -39,8 +37,9 @@ const styles = StyleSheet.create({
 function HorizontalTrackListing(props){
   let playlistSubset = props.items.slice(0,4);
   console.log('horizontalTrackListing render', playlistSubset,props);
+  if(!playlistSubset.length) return null;
   return <View style={styles.container}>
-    <AppText bold={true} style={styles.titleText}>Suggested songs</AppText>
+    <AppText bold={true} style={styles.titleText}>{props.title}</AppText>
     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
       {playlistSubset.map((track,key) => 
       <TrackItem 
@@ -59,11 +58,14 @@ function HorizontalTrackListing(props){
       onPress={
         ()=> props.onPlaylistSelected({
           label: `Suggested for: ${props.currentTrack.label}`,
-          tracks:props.items
+          tracks: props.items
         })}>
      <AppText style={styles.moreButtonText}>More...</AppText>
     </TouchableOpacity>: null}
     </ScrollView>
   </View>
+}
+HorizontalTrackListing.defaultProps = {
+  title: 'Suggested song'
 }
 export default HorizontalTrackListing;

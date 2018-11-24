@@ -11,6 +11,7 @@ import { storeVersionReducer } from './storeVersionReducer';
 import { playlistStoreReducer } from './playlistStoreReducer';
 import { reviewStateReducer } from './reviewStateReducer';
 import { featureDiscoveryReducer } from './featureDiscoveryReducer';
+import { playbackStatusReducer } from './playbackStatusReducer';
 
 const appReducer = combineReducers({
   [VERSION_REDUCER_KEY] : storeVersionReducer,
@@ -24,7 +25,8 @@ const appReducer = combineReducers({
   'playlistStore':playlistStoreReducer,
   'backup': (state = {}) => state,
   'reviewState': reviewStateReducer,
-  'featureDiscovery': featureDiscoveryReducer
+  'featureDiscovery': featureDiscoveryReducer,
+  'playbackStatus': playbackStatusReducer,
 });
 
 export default appReducer;

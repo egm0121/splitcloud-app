@@ -1,5 +1,12 @@
 import { playbackModeTypes } from '../constants/actions';
-import { FEATURE_SC_EXPORT, FEATURE_SOCIAL_SHARE, FEATURE_SHUFFLE, FEATURE_REPEAT, FEATURE_SUGGESTED } from '../../helpers/constants';
+import { audioPlayerStates } from '../../helpers/constants';
+import { 
+  FEATURE_SC_EXPORT, 
+  FEATURE_SOCIAL_SHARE, 
+  FEATURE_SHUFFLE, 
+  FEATURE_REPEAT, 
+  FEATURE_SUGGESTED 
+} from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
@@ -52,6 +59,17 @@ const initialState = {
     muted : 0,
     repeat : false,
     inverted : false
+  }],
+  playbackStatus: [{
+    side: playbackModeTypes.LEFT,
+    status: audioPlayerStates.STOPPED,
+    duration: 0,
+    elapsed: 0
+  },{
+    side: playbackModeTypes.RIGHT,
+    status: audioPlayerStates.STOPPED,
+    duration: 0,
+    elapsed: 0
   }],
   playlist : [{
     filterTracks:'',//deprecated

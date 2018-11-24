@@ -25,7 +25,7 @@ const createStoreWithDebug = withLog => {
   let store = createStore(rootReducer,applyMiddleware(...middlewareList),enhancer);
 
   let persistor = persistStore(store, {
-    blacklist: ['notifications'],
+    blacklist: ['notifications','playbackStatus'],
     storage: AsyncStorage
   }, () => console.log('rehydration complete'));
   return [store, persistor];

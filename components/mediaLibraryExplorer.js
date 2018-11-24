@@ -70,7 +70,7 @@ class MediaLibraryExplorer extends Component {
       });      
     } else {
       this.props.navigator.push({
-        title : 'MediaLibraryListing - '+sectionName+' - ' + this.props.side,
+        title : 'MediaLibraryListing - ' + sectionName + ' - ' + this.props.side,
         name : 'MediaLibraryListing' + this.props.side,
         component: MediaLibraryListing,
         passProps : {

@@ -69,7 +69,7 @@ class TrackListContainer extends Component {
   onPlaylistSelected(playlist){
     console.log('',this.props)
     this.props.navigator.push({
-      title : `PlaylistContainer - ${playlist.name} - ${this.props.side}`,
+      title : `PlaylistContainer - ${playlist.label} - ${this.props.side}`,
       name : 'PlaylistContainer' + this.props.side,
       component: PlaylistContainer,
       passProps : {

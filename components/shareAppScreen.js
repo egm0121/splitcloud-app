@@ -30,6 +30,10 @@ import {
 class ShareAppScreen extends Component {
   constructor(props){
     super(props);
+    this.closeScreen = this.closeScreen.bind(this);
+  }
+  closeScreen(){
+    setTimeout(() => this.props.onClose(),1500);
   }
   openShareApp(platformName){
     const { shareOptions } = this.props;
@@ -43,14 +47,14 @@ class ShareAppScreen extends Component {
       Clipboard.setString(shareOptions.url);
       this.props.onPushNotification('Link Copied');
       this.props.onSocialShareCompleted(platformName);
-      this.props.onClose();
+      this.closeScreen();
       return true;
     }
     return Share.shareSingle({...shareOptions, social: platformName})
     .then(data => {
       console.log('social share completed');
       this.props.onSocialShareCompleted(platformName);
-      this.props.onClose();
+      this.closeScreen();
     }).catch(err => {
       console.log('social share failed',err);
       this.props.onSocialShareAborted(platformName);
@@ -96,16 +100,16 @@ class ShareAppScreen extends Component {
 }
 ShareAppScreen.defaultProps = {
   shareOptions : {
-    title: 'Try Splitcloud for iOS',
-    message: 'With Splitcloud you can listen two different songs at the same time with one phone! get it for free here:',
+    title: 'Try SplitCloud for iOS',
+    message: 'With SplitCloud double music player, use headphones and play two different songs on each side! Download Free on AppStore:',
     url: 'https://itunes.apple.com/app/splitcloud-double-music-player/id1244515007?mt=8',
-    subject: 'Checkout this music app - Splitcloud' //  for email
+    subject: 'Checkout this new music app - SplitCloud for iOS' //  for email
   },
   screenTitle: 'Share SplitCloud App!',
   infoTitle: 'Help your friends discover SplitCloud',
   infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and invite your friends to try it!',
   lockedTitle: 'Thanks for using SplitCloud',
-  lockedText : 'We need your support to keep SplitCloud free!\nTo continue using the app share the link on your social platforms. Thank you!',
+  lockedText : 'We need your support to keep SplitCloud Free!\nTo continue using the app share the link with your friends. Thank you!',
 };
 const mapStateToProps = (state, props) => {
   return {

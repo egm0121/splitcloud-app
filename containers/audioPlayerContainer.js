@@ -25,7 +25,10 @@ import {
   decrementCurrentPlayIndex,
   setPlaylistShuffleMode,
 } from '../redux/actions/currentPlaylistActions';
-import{
+import {
+  setPlaybackStatus,
+} from '../redux/actions/playbackStatusActions';
+import {
   updateLastUploaderProfile
 } from '../redux/actions/uploaderProfileActions';
 import { 
@@ -107,15 +110,17 @@ class AudioPlayerContainer extends Component {
     this.musicPlayer.on('AudioSessionInterruptionEvent',this._onAudioSessionInterruption);
     this.musicPlayer.on('RemoteControlEvents',this._onRemoteControlEvent);
   }
-  _updateComponentPlayerState(){
+  _updateComponentPlayerState(){ 
     this.musicPlayer.getStatus((err,data) => {
       let currPlaybackProgress = parseInt( (data.progress * 100) / data.duration ) || 0;
-      this.setState({
+      const statusObj = {
         duration : data.duration,
         elapsed: data.progress,
         playbackProgressValue:[currPlaybackProgress],
         status : data.status
-      });
+      };
+      this.setState(statusObj);
+      this.props.setPlaybackStatus(statusObj);
     });
   }
   _onProgressTick(){
@@ -174,6 +179,21 @@ class AudioPlayerContainer extends Component {
     };
     if(this._isCurrentExclusiveSide()){
       (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
+    }
+    if(this._isSplitMode() && evt.type === 'togglePlayPauseCommand'){
+      const bothMuted = this.props.playbackStatus.filter(
+        player => !(player.status in PLAYBACK_ENABLED_STATES)
+      ).length == 2;
+      if(bothMuted){
+        this._onPlayTogglePress();
+      } else {
+        this.musicPlayer.getStatus((err,data) => {
+          if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
+          console.log('split mode - should pause player');
+          this.musicPlayer.pause();
+          this.setState({prevRemoteStatus : data.status});
+        });
+      }
     }
     if(evt.type === 'pauseCommand'){
       this.musicPlayer.getStatus((err,data) => {
@@ -255,16 +275,17 @@ class AudioPlayerContainer extends Component {
     });
   }
   _onUploaderProfileOpen(){
+    const currentArtistName = this._getCurrentTrackObj().username;
     if( isLocalTrack(this._getCurrentTrackObj()) ){
       return this.props.navigator.push({
-        title : 'MediaLibraryPlaylist - ' + this.props.side,
-        name : 'MediaLibraryPlaylist.' + this.props.side,
+        title : `MediaLibraryPlaylist - ${currentArtistName} - ${this.props.side}`,
+        name : `MediaLibraryPlaylist. ${this.props.side}`,
         component: MediaLibraryPlaylist,
         passProps : {
           side : this.props.side,
           browseCategory: 'artist',
           playlist: {
-            label : this._getCurrentTrackObj().username
+            label : currentArtistName
           },
           onClose: () => this.props.navigator.pop()
         }
@@ -279,7 +300,7 @@ class AudioPlayerContainer extends Component {
       return this.props.navigator.jumpTo(prevPickerRoute);
     }
     this.props.navigator.pushToBottom({
-      title : 'UploaderProfileContainer - ' + this.props.side,
+      title : `UploaderProfileContainer - ${currentArtistName} - ${this.props.side}`,
       name : 'UploaderProfileContainer.' + this.props.side,
       component: UploaderProfileContainer,
       passProps : {
@@ -339,7 +360,7 @@ class AudioPlayerContainer extends Component {
       return this.props.navigator.jumpTo(prevRoute);
     }
     this.props.navigator.pushToBottom({
-      title : 'CurrentPlaylistContainer - ' + this.props.side,
+      title : `CurrentPlaylistContainer - Favorites - ${this.props.side}`,
       name : 'CurrentPlaylistContainer.' + this.props.side,
       component: CurrentPlaylistContainer,
       passProps : {
@@ -509,6 +530,9 @@ class AudioPlayerContainer extends Component {
   _isCurrentMutedSide(){
     return this.state.muted === 1;
   }
+  _isSplitMode(){
+    return this.state.pan != 0;
+  }
   render() {
     return <AudioPlayer {...this.props}
         playbackIndex={this.state.playbackIndex}
@@ -537,6 +561,7 @@ class AudioPlayerContainer extends Component {
 
 AudioPlayerContainer.propTypes = {};
 const mapStateToProps = (state, props) => {
+  let playbackStatus = state.playbackStatus;
   let player = state.players.find((player) => player.side === props.side);
   let playlist = state.playlist.find((playlist) => playlist.side === props.side);
   let playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == playlist.currentPlaylistId);
@@ -555,7 +580,8 @@ const mapStateToProps = (state, props) => {
     currentTrackIndex:playlistStore.currentTrackIndex,
     isSplitMode,
     currentPlaylistId,
-    playlistStore
+    playlistStore,
+    playbackStatus
   }
 };
 const mapDispatchToProps = (dispatch, props) => {
@@ -565,6 +591,9 @@ const mapDispatchToProps = (dispatch, props) => {
     },
     goToPrevTrack: (playlistId,isShuffle) => {
       dispatch(decrementCurrentPlayIndex(props.side,playlistId,isShuffle))
+    },
+    setPlaybackStatus: (status) => {
+      dispatch(setPlaybackStatus(props.side,status));
     },
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url)),
     onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
