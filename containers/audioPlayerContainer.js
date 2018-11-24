@@ -57,36 +57,32 @@ const PLAYBACK_DISABLED_STATES = {
 class AudioPlayerContainer extends Component {
   constructor(props){
     super(props);
-    this._onPlayTogglePress = this._onPlayTogglePress.bind(this);
-    this._onPickerToggle = this._onPickerToggle.bind(this);
-    this._onTrackLabelPressed = this._onTrackLabelPressed.bind(this);
-    this._onVolumeValueChange = this._onVolumeValueChange.bind(this);
-    this._onSeekToTime = this._onSeekToTime.bind(this);
-    this._onSeekToTimeStart = this._onSeekToTimeStart.bind(this);
-    this._onProgressTick = this._onProgressTick.bind(this);
-    this._goToNextTrack = this._goToNextTrack.bind(this);
-    this._goToPrevTrack = this._goToPrevTrack.bind(this);
-    this._toggleCurrentPlaylist = this._toggleCurrentPlaylist.bind(this);
-    this._toggleFavoritePlaylist = this._toggleFavoritePlaylist.bind(this);
-    this._onPlayerStoppedDebounced = throttle(this._onPlayerStoppedDebounced.bind(this),500,{trailing:false});
-    this._onAudioRouteInterruption = this._onAudioRouteInterruption.bind(this);
-    this._onAudioSessionInterruption = this._onAudioSessionInterruption.bind(this);
-    this._onRemoteControlEvent = this._onRemoteControlEvent.bind(this);
-    this._openScUploaderLink = this._openScUploaderLink.bind(this);
-    this._onUploaderProfileOpen = this._onUploaderProfileOpen.bind(this);
-    this._onShuffle = this._onShuffle.bind(this);
-    this._onRepeatToggle = this._onRepeatToggle.bind(this);
+    this.onPlayTogglePress = this.onPlayTogglePress.bind(this);
+    this.onPickerToggle = this.onPickerToggle.bind(this);
+    this.onTrackLabelPressed = this.onTrackLabelPressed.bind(this);
+    this.onVolumeValueChange = this.onVolumeValueChange.bind(this);
+    this.onSeekToTime = this.onSeekToTime.bind(this);
+    this.onSeekToTimeStart = this.onSeekToTimeStart.bind(this);
+    this.onProgressTick = this.onProgressTick.bind(this);
+    this.goToNextTrack = this.goToNextTrack.bind(this);
+    this.goToPrevTrack = this.goToPrevTrack.bind(this);
+    this.toggleCurrentPlaylist = this.toggleCurrentPlaylist.bind(this);
+    this.toggleFavoritePlaylist = this.toggleFavoritePlaylist.bind(this);
+    this.onPlayerStoppedDebounced = throttle(this.onPlayerStoppedDebounced.bind(this),500,{trailing:false});
+    this.onAudioRouteInterruption = this.onAudioRouteInterruption.bind(this);
+    this.onAudioSessionInterruption = this.onAudioSessionInterruption.bind(this);
+    this.onRemoteControlEvent = this.onRemoteControlEvent.bind(this);
+    this.openScUploaderLink = this.openScUploaderLink.bind(this);
+    this.onUploaderProfileOpen = this.onUploaderProfileOpen.bind(this);
+    this.onShuffle = this.onShuffle.bind(this);
+    this.onRepeatToggle = this.onRepeatToggle.bind(this);
     this.scClientId = Config.SC_CLIENT_ID;
     this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
     this.state = {
       volume:1,
       userVolume:1,
-      elapsed:0,
-      duration:0,
-      status:'',
       volumeSliderValue:1,
-      playbackProgressValue:[1],
       pan : this.props.pan,
       muted : this.props.muted,
       prevRemoteStatus : false,
@@ -94,23 +90,23 @@ class AudioPlayerContainer extends Component {
     };
     this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100});
     this.musicPlayer.setPan(this.state.pan);
-    this.musicPlayer.setVolume(this._linearToLogVolume(this.state.volume));
-    this._onProgressTick();
+    this.musicPlayer.setVolume(this.linearToLogVolume(this.state.volume));
+    this.onProgressTick();
     this.setupAudioPlayerListeners();
   }
   setupAudioPlayerListeners(){
     this.musicPlayer.on('stateChange',(evt) => {
       const actionName = evt.status.toLowerCase(),
-        hookName = '_onPlayer'+capitalize(actionName);
+        hookName = 'onPlayer'+capitalize(actionName);
       if(typeof this[hookName] === 'function' ){
         this[hookName](...[evt]);
       }
     });
-    this.musicPlayer.on('AudioRouteInterruptionEvent',this._onAudioRouteInterruption);
-    this.musicPlayer.on('AudioSessionInterruptionEvent',this._onAudioSessionInterruption);
-    this.musicPlayer.on('RemoteControlEvents',this._onRemoteControlEvent);
+    this.musicPlayer.on('AudioRouteInterruptionEvent',this.onAudioRouteInterruption);
+    this.musicPlayer.on('AudioSessionInterruptionEvent',this.onAudioSessionInterruption);
+    this.musicPlayer.on('RemoteControlEvents',this.onRemoteControlEvent);
   }
-  _updateComponentPlayerState(){ 
+  updateComponentPlayerState(){ 
     this.musicPlayer.getStatus((err,data) => {
       let currPlaybackProgress = parseInt( (data.progress * 100) / data.duration ) || 0;
       const statusObj = {
@@ -119,37 +115,36 @@ class AudioPlayerContainer extends Component {
         playbackProgressValue:[currPlaybackProgress],
         status : data.status
       };
-      this.setState(statusObj);
       this.props.setPlaybackStatus(statusObj);
     });
   }
-  _onProgressTick(){
-    this._updateComponentPlayerState();
+  onProgressTick(){
+    this.updateComponentPlayerState();
     this.playbackProgressRef = setTimeout(
-      this._onProgressTick,PROGRESS_TICK_INTERVAL
+      this.onProgressTick,PROGRESS_TICK_INTERVAL
     );
   }
-  _clearProgressTick(){
+  clearProgressTick(){
     if(this.playbackProgressRef){
       clearTimeout(this.playbackProgressRef);
     }
   }
-  _onPlayerStopped(evt){
-    this._onPlayerStoppedDebounced(evt);
+  onPlayerStopped(evt){
+    this.onPlayerStoppedDebounced(evt);
   }
-  _onPlayerStoppedDebounced(evt){
-    console.log('_onPlayerStopped Debounced',evt);
+  onPlayerStoppedDebounced(evt){
+    console.log('onPlayerStopped Debounced',evt);
     if(evt.progress == 0 && evt.duration == 0 && evt.prevStatus in PLAYBACK_ENABLED_STATES){
       console.log('track end detected. go to next track');
       if (this.props.repeat) {
         this.musicPlayer.seekToTime(0);
         this.musicPlayer.play();
       } else {
-        this._goToNextTrack();
+        this.goToNextTrack();
       }
     }
   }
-  _onAudioRouteInterruption(evt){
+  onAudioRouteInterruption(evt){
     console.log('onAudioRouteChange',evt);
     if(evt.reason === 'AVAudioSessionRouteChangeReasonOldDeviceUnavailable'){
       this.musicPlayer.isPlaying((err,isPlaying) => {
@@ -157,35 +152,33 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _onAudioSessionInterruption(evt){
+  onAudioSessionInterruption(evt){
     console.log('AudioSessionInterruption',evt);
     if(evt.reason == 'AVAudioSessionInterruptionTypeBegan'){
-      this.playbackInterrupted = this.state.status in PLAYBACK_ENABLED_STATES;
+      this.playbackInterrupted = this.props.playbackStatus.status in PLAYBACK_ENABLED_STATES;
       if(this.playbackInterrupted){
-        this._onPlayTogglePress(); //update ui state to show the playback state change
+        this.onPlayTogglePress(); //update ui state to show the playback state change
       }
     }
     if(evt.reason == 'AVAudioSessionInterruptionTypeEnded' && this.playbackInterrupted ){
-      this._onPlayTogglePress();
+      this.onPlayTogglePress();
       this.playbackInterrupted = false;
     }
   }
-  _onRemoteControlEvent(evt){
+  onRemoteControlEvent(evt){
     console.log('onRemoteControlEvent',evt);
     let exclusiveCommandMap = {
-      'nextTrackCommand' : this._goToNextTrack,
-      'prevTrackCommand' : this._goToPrevTrack,
-      'togglePlayPauseCommand' : this._onPlayTogglePress
+      'nextTrackCommand' : this.goToNextTrack,
+      'prevTrackCommand' : this.goToPrevTrack,
+      'togglePlayPauseCommand' : this.onPlayTogglePress
     };
-    if(this._isCurrentExclusiveSide()){
+    if(this.isCurrentExclusiveSide()){
       (evt.type in exclusiveCommandMap) ? exclusiveCommandMap[evt.type]() : null;
     }
-    if(this._isSplitMode() && evt.type === 'togglePlayPauseCommand'){
-      const bothMuted = this.props.playbackStatus.filter(
-        player => !(player.status in PLAYBACK_ENABLED_STATES)
-      ).length == 2;
-      if(bothMuted){
-        this._onPlayTogglePress();
+    if(this.isSplitMode() && evt.type === 'togglePlayPauseCommand'){
+     
+      if(this.props.bothPlayerMuted){
+        this.onPlayTogglePress();
       } else {
         this.musicPlayer.getStatus((err,data) => {
           if(!(data.status in PLAYBACK_ENABLED_STATES)) return false;
@@ -222,17 +215,17 @@ class AudioPlayerContainer extends Component {
       });
     }
   }
-  _goToNextTrack(){
+  goToNextTrack(){
     const {goToNextTrack,playlist,currentPlaylistId} = this.props;
     goToNextTrack(currentPlaylistId,playlist.shuffle);
   }
-  _goToPrevTrack(){
+  goToPrevTrack(){
     const {goToPrevTrack,playlist,currentPlaylistId} = this.props;
     goToPrevTrack(currentPlaylistId,playlist.shuffle);
   }
-  _prepareCurrentTrack(shouldAutoPlay){
-    this._getCurrentTrackStream().then((streamUrl) => {
-      console.log('_prepareCurrentTrack url is :',streamUrl,' and play');
+  prepareCurrentTrack(shouldAutoPlay){
+    this.getCurrentTrackStream().then((streamUrl) => {
+      console.log('prepareCurrentTrack url is :',streamUrl,' and play');
       this.musicPlayer.isPlaying((err,isPlaying) => {
         if(isPlaying) {
           console.log('pause and set url to next')
@@ -252,31 +245,31 @@ class AudioPlayerContainer extends Component {
       });
     }).catch(err => console.log('err hasLocalAsset',err));
   }
-  _onPlayTogglePress(){
-    if(this._isCurrentMutedSide() || !this._getCurrentTrackUrl()){
+  onPlayTogglePress(){
+    if(this.isCurrentMutedSide() || !this.getCurrentTrackUrl()){
       console.log('toggle playback attempted on muted or empty player');
       return false;
     }
-    console.log('_onPlayToggle checks passed');
+    console.log('onPlayToggle checks passed');
     this.musicPlayer.getStatus((err,playbackStatus) => {
       if(playbackStatus.status in PLAYBACK_ENABLED_STATES ){
-        console.log('_onPlayToggle status PLAYBACK_ENABLED call .pause()')
+        console.log('onPlayToggle status PLAYBACK_ENABLED call .pause()')
         this.musicPlayer.pause();
       }
       if(playbackStatus.status === audioPlayerStates.PAUSED ){
-        console.log('_onPlayToggle status PAUSED call .resume()')
+        console.log('onPlayToggle status PAUSED call .resume()')
         this.musicPlayer.resume()
       }
       if(playbackStatus.status === audioPlayerStates.STOPPED){
-        console.log('_onPlayToggle status STOPPED call .play()')
+        console.log('onPlayToggle status STOPPED call .play()')
         this.musicPlayer.play();
       }
-      this._updateComponentPlayerState();
+      this.updateComponentPlayerState();
     });
   }
-  _onUploaderProfileOpen(){
-    const currentArtistName = this._getCurrentTrackObj().username;
-    if( isLocalTrack(this._getCurrentTrackObj()) ){
+  onUploaderProfileOpen(){
+    const currentArtistName = this.getCurrentTrackObj().username;
+    if( isLocalTrack(this.getCurrentTrackObj()) ){
       return this.props.navigator.push({
         title : `MediaLibraryPlaylist - ${currentArtistName} - ${this.props.side}`,
         name : `MediaLibraryPlaylist. ${this.props.side}`,
@@ -292,7 +285,7 @@ class AudioPlayerContainer extends Component {
       });
     }
     if(!this.props.isOnline) return false;
-    this.props.onOpenUploaderProfile(this._getCurrentTrackUploaderLink());
+    this.props.onOpenUploaderProfile(this.getCurrentTrackUploaderLink());
     let prevPickerRoute = this.findRouteByName(
       'UploaderProfileContainer.' + this.props.side
     );
@@ -311,7 +304,7 @@ class AudioPlayerContainer extends Component {
       }
     });
   }
-  _onPickerToggle(){
+  onPickerToggle(){
     let prevPickerRoute =
       this.findRouteByName('SongPickerContainer.' + this.props.side);
     if(prevPickerRoute){
@@ -331,13 +324,13 @@ class AudioPlayerContainer extends Component {
       }
     });
   }
-  _onTrackLabelPressed(){
-    if(this._hasCurrentTrackObj()){
-      return this._toggleCurrentPlaylist();
+  onTrackLabelPressed(){
+    if(this.hasCurrentTrackObj()){
+      return this.toggleCurrentPlaylist();
     }
-    return this._onPickerToggle();
+    return this.onPickerToggle();
   }
-  _toggleCurrentPlaylist(){
+  toggleCurrentPlaylist(){
     this.props.onMarkSuggestedFeatureDiscovery();
     this.props.navigator.push({
       title : 'CurrentPlaylistContainer -' + this.props.currentPlaylistId,
@@ -353,7 +346,7 @@ class AudioPlayerContainer extends Component {
       }
     });
   }
-  _toggleFavoritePlaylist(){
+  toggleFavoritePlaylist(){
     let prevRoute =
       this.findRouteByName('CurrentPlaylistContainer.' + this.props.side);
     if(prevRoute){
@@ -376,45 +369,46 @@ class AudioPlayerContainer extends Component {
       }
     });
   }
-  _onSeekToTime(newPos){
-    let seekedPos = (parseInt(newPos[0]) * this.state.duration) / 100;
+  onSeekToTime(newPos){
+    const { playbackStatus } = this.props;
+    let seekedPos = (parseInt(newPos[0]) * playbackStatus.duration) / 100;
     this.musicPlayer.seekToTime(seekedPos);
-    this._onProgressTick();
+    this.onProgressTick();
   }
-  _onSeekToTimeStart(){
-    this._clearProgressTick();
+  onSeekToTimeStart(){
+    this.clearProgressTick();
   }
-  _onVolumeValueChange(value) {
-    const volume = this._linearToLogVolume(value);
+  onVolumeValueChange(value) {
+    const volume = this.linearToLogVolume(value);
     console.log('increment volume : slider',value,'volume', volume);
     this.setState({
       volume: volume,
       userVolume: volume
     });
   }
-  _linearToLogVolume(currVolumePosition){
+  linearToLogVolume(currVolumePosition){
     currVolumePosition = parseInt(currVolumePosition * 100);
     if(currVolumePosition == 0 || currVolumePosition == 100){
       return currVolumePosition / 100;
     }
     return parseFloat((this.volumeSliderScale.value(currVolumePosition)/100).toFixed(2));
   }
-  _onPlayerMuteChange(muted){
+  onPlayerMuteChange(muted){
     if(muted){
-      this.musicPlayer.setVolume(this._linearToLogVolume(0));
+      this.musicPlayer.setVolume(this.linearToLogVolume(0));
       this.musicPlayer.isPlaying((err,isPlaying) => {
         if(isPlaying) this.musicPlayer.pause();
       });
     } else {
-      this.musicPlayer.setVolume(this._linearToLogVolume(this.state.userVolume));
+      this.musicPlayer.setVolume(this.linearToLogVolume(this.state.userVolume));
     }
   }
-  _onShuffle(){
+  onShuffle(){
     const { playlist, onSetPlaylistShuffleMode, onMarkShuffleFeatureDiscovery } = this.props;
     onSetPlaylistShuffleMode(!playlist.shuffle);
     onMarkShuffleFeatureDiscovery();
   }
-  _onRepeatToggle(){
+  onRepeatToggle(){
     const { repeat, onSetRepeatMode, onMarkRepeatFeatureDiscovery } = this.props;
     onSetRepeatMode(!repeat);
     onMarkRepeatFeatureDiscovery();
@@ -450,10 +444,10 @@ class AudioPlayerContainer extends Component {
       this.musicPlayer.setPan(this.state.pan);
     }
     if(prevState.muted !== this.state.muted){
-      this._onPlayerMuteChange(this.state.muted);
+      this.onPlayerMuteChange(this.state.muted);
     }
-    if(this._hasCurrentTrackObj()){
-      if(this._getCurrentTrackObj().id != prevTrackObj.id){
+    if(this.hasCurrentTrackObj()){
+      if(this.getCurrentTrackObj().id != prevTrackObj.id){
         console.log(
            '(state Update) current playing track changed: prepare to play. idx:',
            this.state.playbackIndex,
@@ -461,10 +455,10 @@ class AudioPlayerContainer extends Component {
            prevState.playbackIndex
         );
         let shouldAutoPlay = this.props.playlistStore.autoplay;
-        this._prepareCurrentTrack(shouldAutoPlay);
+        this.prepareCurrentTrack(shouldAutoPlay);
       }
     }
-    if(this._isCurrentExclusiveSide() && this._getCurrentTrackTitle() ){
+    if(this.isCurrentExclusiveSide() && this.getCurrentTrackTitle() ){
       this.setNowPlayingDescription();
     }
   }
@@ -477,91 +471,95 @@ class AudioPlayerContainer extends Component {
   }
   setNowPlayingDescription({isSplit} = {isSplit : false}){
     let description =
-      `${this._getCurrentTrackTitle()} • ${this._getCurrentTrackDescription()}`;
+      `${this.getCurrentTrackTitle()} • ${this.getCurrentTrackDescription()}`;
     if(isSplit){
       description = messages.SPLIT_MODE_CONTROLS_DISABLED;
     }
     this.musicPlayer.setNowPlayingInfo(
       description,
       NOW_PLAYING_ASSET_NAME,
-      this.state.status in PLAYBACK_ENABLED_STATES);
+      this.props.playbackStatus.status in PLAYBACK_ENABLED_STATES);
   }
-  _hasCurrentTrackObj(){
+  hasCurrentTrackObj(){
     return this.props.queue[this.state.playbackIndex];
   }
-  _getCurrentTrackObj(){
+  getCurrentTrackObj(){
     return this.props.queue[this.state.playbackIndex] || {};
   }
-  _getCurrentTrackStream(){
-    return this.fileManager.hasLocalAsset(this._getCurrentTrackId())
+  getCurrentTrackStream(){
+    return this.fileManager.hasLocalAsset(this.getCurrentTrackId())
     .then(hasLocal => {
       if(hasLocal){
         console.log('playback from local cache');
-        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(this._getCurrentTrackId());
+        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(this.getCurrentTrackId());
         return cachedPath;
       } else {
-        return this._getCurrentTrackUrl();
+        return this.getCurrentTrackUrl();
       }
     })
   }
-  _getCurrentTrackId(){
-    return this._getCurrentTrackObj().id;
+  getCurrentTrackId(){
+    return this.getCurrentTrackObj().id;
   }
-  _getCurrentTrackUrl(){
-    return this._getCurrentTrackObj().streamUrl;
+  getCurrentTrackUrl(){
+    return this.getCurrentTrackObj().streamUrl;
   }
-  _getCurrentTrackTitle() {
-    return this._getCurrentTrackObj().label;
+  getCurrentTrackTitle() {
+    return this.getCurrentTrackObj().label;
   }
-  _getCurrentTrackDescription(){
-    return  this._getCurrentTrackObj().username;
+  getCurrentTrackDescription(){
+    return  this.getCurrentTrackObj().username;
   }
-  _getCurrentTrackUploaderLink(){
-    return  this._getCurrentTrackObj().scUploaderLink;
+  getCurrentTrackUploaderLink(){
+    return  this.getCurrentTrackObj().scUploaderLink;
   }
-  _openScUploaderLink(){
+  openScUploaderLink(){
     Linking.openURL(
-      this._getCurrentTrackUploaderLink() || soundcloudEndpoint.profileUrl
+      this.getCurrentTrackUploaderLink() || soundcloudEndpoint.profileUrl
     );
   }
-  _isCurrentExclusiveSide(){
+  isCurrentExclusiveSide(){
     return this.state.pan === 0 && this.state.muted === 0;
   }
-  _isCurrentMutedSide(){
+  isCurrentMutedSide(){
     return this.state.muted === 1;
   }
-  _isSplitMode(){
+  isSplitMode(){
     return this.state.pan != 0;
   }
   render() {
+    const {playbackStatus} = this.props;
     return <AudioPlayer {...this.props}
         playbackIndex={this.state.playbackIndex}
-        status={this.state.status}
-        duration={this.state.duration}
-        elapsed={this.state.elapsed}
+        status={playbackStatus.status}
+        duration={playbackStatus.duration}
+        elapsed={playbackStatus.elapsed}
         volumeSliderValue={this.state.volumeSliderValue}
-        playbackProgressValue={this.state.playbackProgressValue}
-        onPickerToggle={this._onPickerToggle}
-        onShuffleModeToggle={this._onShuffle}
-        onTrackLabelPress={this._onTrackLabelPressed}
-        onUploaderProfileOpen={this._onUploaderProfileOpen}
-        openScUploaderLink={this._openScUploaderLink}
-        onSeekToTimeStart={this._onSeekToTimeStart}
-        onSeekToTime={this._onSeekToTime}
-        toggleFavoritePlaylist={this._toggleFavoritePlaylist}
-        toggleCurrentPlaylist={this._toggleCurrentPlaylist}
-        goToPrevTrack={this._goToPrevTrack}
-        onPlayTogglePress={this._onPlayTogglePress}
-        goToNextTrack={this._goToNextTrack}
-        onVolumeValueChange={this._onVolumeValueChange}
-        onRepeatToggle={this._onRepeatToggle}
+        playbackProgressValue={playbackStatus.playbackProgressValue}
+        onPickerToggle={this.onPickerToggle}
+        onShuffleModeToggle={this.onShuffle}
+        onTrackLabelPress={this.onTrackLabelPressed}
+        onUploaderProfileOpen={this.onUploaderProfileOpen}
+        openScUploaderLink={this.openScUploaderLink}
+        onSeekToTimeStart={this.onSeekToTimeStart}
+        onSeekToTime={this.onSeekToTime}
+        toggleFavoritePlaylist={this.toggleFavoritePlaylist}
+        toggleCurrentPlaylist={this.toggleCurrentPlaylist}
+        goToPrevTrack={this.goToPrevTrack}
+        onPlayTogglePress={this.onPlayTogglePress}
+        goToNextTrack={this.goToNextTrack}
+        onVolumeValueChange={this.onVolumeValueChange}
+        onRepeatToggle={this.onRepeatToggle}
     />
   }
 }
 
 AudioPlayerContainer.propTypes = {};
 const mapStateToProps = (state, props) => {
-  let playbackStatus = state.playbackStatus;
+  let ownPlaybackStatus = state.playbackStatus.find((player) => player.side === props.side);
+  const bothPlayerMuted = state.playbackStatus.filter(
+    player => !(player.status in PLAYBACK_ENABLED_STATES)
+  ).length == 2;
   let player = state.players.find((player) => player.side === props.side);
   let playlist = state.playlist.find((playlist) => playlist.side === props.side);
   let playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == playlist.currentPlaylistId);
@@ -581,7 +579,8 @@ const mapStateToProps = (state, props) => {
     isSplitMode,
     currentPlaylistId,
     playlistStore,
-    playbackStatus
+    playbackStatus:ownPlaybackStatus,
+    bothPlayerMuted
   }
 };
 const mapDispatchToProps = (dispatch, props) => {

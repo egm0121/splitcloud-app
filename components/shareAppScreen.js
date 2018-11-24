@@ -90,9 +90,9 @@ class ShareAppScreen extends Component {
               <Button style={styles.socialIcon} image={{uri: TWITTER_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'twitter')}/>
               <Button style={styles.socialIcon} image={{uri: FACEBOOK_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'facebook')}/>
               <Button style={styles.socialIcon} image={{uri: WHATSAPP_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'whatsapp')}/>
-              <Button style={styles.socialIcon} image={{uri: LINE_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'line')} />    
+              <Button style={styles.socialIcon} image={{uri: LINE_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'line')} />
               <Button style={styles.socialIcon} image={{uri: EMAIL_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'email')} />
-              <Button style={styles.socialIcon} image={{uri: CLIPBOARD_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'clipboard')} />                  
+              <Button style={styles.socialIcon} image={{uri: CLIPBOARD_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'clipboard')} />
         </View> 
       </View>
     );
@@ -101,13 +101,13 @@ class ShareAppScreen extends Component {
 ShareAppScreen.defaultProps = {
   shareOptions : {
     title: 'Try SplitCloud for iOS',
-    message: 'With SplitCloud double music player, use headphones and play two different songs on each side! Download Free on AppStore:',
+    message: 'With SplitCloud double music player,you can share your headphones and play two different songs on each side! Download Free on AppStore:',
     url: 'https://itunes.apple.com/app/splitcloud-double-music-player/id1244515007?mt=8',
     subject: 'Checkout this new music app - SplitCloud for iOS' //  for email
   },
   screenTitle: 'Share SplitCloud App!',
   infoTitle: 'Help your friends discover SplitCloud',
-  infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and invite your friends to try it!',
+  infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and inviting your friends to try it!',
   lockedTitle: 'Thanks for using SplitCloud',
   lockedText : 'We need your support to keep SplitCloud Free!\nTo continue using the app share the link with your friends. Thank you!',
 };

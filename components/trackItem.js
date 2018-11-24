@@ -38,7 +38,7 @@ export default function TrackItem(props){
   }
 
   return <View style={[styles.row,props.style]}>
-   {props.renderArtwork &&
+   {!!props.renderArtwork &&
     <TouchableOpacity onPress={props.onSelected.bind(null,rowData)}>
       <View style={styles.rowArtworkContainer}>
         <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>

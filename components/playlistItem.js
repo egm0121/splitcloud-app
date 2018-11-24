@@ -21,7 +21,7 @@ export default function PlaylistItem(props){
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.rowLabel,styles['rowLabel'+ucFirst(props.layout)]]} onPress={props.onSelected.bind(false,props.item)}>
-          {props.item.username && props.item.label ?
+          {!!props.item.username && props.item.label ?
           <View>
           <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText,styles['rowLabelText'+ucFirst(props.layout)]].concat(rowTextStyle)} >
             {props.item.label}
