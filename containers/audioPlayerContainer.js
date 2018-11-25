@@ -478,7 +478,9 @@ class AudioPlayerContainer extends Component {
     this.musicPlayer.setNowPlayingInfo(
       description,
       NOW_PLAYING_ASSET_NAME,
-      this.props.playbackStatus.status in PLAYBACK_ENABLED_STATES);
+      this.props.playbackStatus.status in PLAYBACK_ENABLED_STATES,
+      this.props.playbackStatus.elapsed,
+      this.props.playbackStatus.duration);
   }
   hasCurrentTrackObj(){
     return this.props.queue[this.state.playbackIndex];
