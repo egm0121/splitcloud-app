@@ -252,7 +252,7 @@ class AudioPlayer extends Component {
   }
   renderForegroundArtCover(artworkSource) {
     let { width, height } = Dimensions.get('window');
-    let extraMargin = height <= 568 ? 20 : 0;
+    let extraMargin = height <= 667 ? 20 : 0;
     const resizeStyle = {
       flex:0,
       width: width - extraMargin - 60,
