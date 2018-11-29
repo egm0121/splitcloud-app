@@ -23,6 +23,7 @@ import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
 import THEME from './styles/variables';
+import AdMobBottomBanner from './components/adMobBottomBanner';
 
 
 //decorate navigator to add a method to push at the bottom of the routeStack
@@ -106,6 +107,7 @@ class SplitCloudApp extends Component {
                               <NotificationContainer />
                               <SocialShareContainer navigator={navigator} />
                               <OfflineModeBanner isOnline={isOnline} />
+                              <AdMobBottomBanner />
                             </View>
                         }
                   }</NetworkAvailability>

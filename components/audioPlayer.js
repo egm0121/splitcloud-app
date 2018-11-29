@@ -251,11 +251,12 @@ class AudioPlayer extends Component {
     );
   }
   renderForegroundArtCover(artworkSource) {
-    let {width} = Dimensions.get('window');
+    let { width, height } = Dimensions.get('window');
+    let extraMargin = height <= 568 ? 20 : 0;
     const resizeStyle = {
       flex:0,
-      width: width - 60,
-      height: width - 60
+      width: width - extraMargin - 60,
+      height: width - extraMargin - 60
     };
     
     return <Image style={[styles.controlsFadeImage]}
