@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   },
   controlsFadeImage:{
     flex:5,
-    marginBottom:-2,
+    marginBottom:0,
     width:null,
     height:null,
     alignItems:'center',
