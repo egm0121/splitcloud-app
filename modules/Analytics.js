@@ -27,7 +27,7 @@ let AnalyticsService = {
        );
     this.ga.send(screenView);
   },
-  sendEvent({category,action,label,value}){
+  sendEvent({category,action,label,value,dimensions}){
     if(!this.ga){
       this.initialBuffer.push(
         () => this.sendEvent({category,action,label,value})
@@ -36,6 +36,11 @@ let AnalyticsService = {
     }
     label = label || `${category} - ${action}`;
     let eventHit = new GAHits.Event(category,action,label,value);
+    if(typeof dimensions == 'object'){
+      console.log('Adding custom dimension to event',dimensions);
+      eventHit.set(dimensions);
+      console.log('Serialized ga event',eventHit.toQueryString());
+    }
     this.ga.send(eventHit);
   },
   processPrematureHitsQueue(){

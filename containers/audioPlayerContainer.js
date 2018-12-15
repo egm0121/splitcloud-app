@@ -417,7 +417,6 @@ class AudioPlayerContainer extends Component {
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
   }
   componentWillReceiveProps(newProps){
-    console.log('new props',newProps.currentPlaylistId,newProps.playlistStore)
     if(newProps.pan != this.props.pan || newProps.muted != this.props.muted){
       this.setState({
         pan:newProps.pan,

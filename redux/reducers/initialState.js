@@ -18,9 +18,9 @@ const initialState = {
     offlineMode : true
   },
   featureDiscovery : { 
-    [FEATURE_SC_EXPORT] : true,
-    [FEATURE_SOCIAL_SHARE] : false,
-    [FEATURE_SHUFFLE] : false,
+    [FEATURE_SC_EXPORT] : false,
+    [FEATURE_SOCIAL_SHARE] : true,
+    [FEATURE_SHUFFLE] : true,
     [FEATURE_REPEAT] : true,
     [FEATURE_SUGGESTED] : true
   },

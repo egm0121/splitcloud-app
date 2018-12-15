@@ -40,7 +40,10 @@ const schedulePlaybackHit = (track,action) => {
       category: getCategoryFromAction(action),
       action: PLAYBACK_COMPLETE_HIT,
       label: track.provider,
-      value: 1
+      value: 1,
+      dimensions: {
+        'cd1': track.id
+      }
     });
   },PLAYBACK_MIN_TIME *1e3)
 };
