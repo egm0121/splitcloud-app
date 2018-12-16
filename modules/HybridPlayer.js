@@ -184,7 +184,7 @@ export default class HybridPlayer extends ReactNativeStreamingPlayer {
     this.itunesPlayer = new SoundPlayer(soundUrl,'',(err) => {
       if(err){
         console.log('Error loading SoundPlayer',err);
-        Bugsnag.notify(err);
+        Bugsnag.notify(new Error('createNewSoundPlayerWithUrl: '+soundUrl+' failed'));
       } else {
         this.state.isPlaybackReady = true;
         this.itunesPlayer.setVolume(this.state.volume);
