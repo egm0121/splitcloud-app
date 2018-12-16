@@ -10,6 +10,7 @@ let AnalyticsService = {
   ga : null,
   initialBuffer : [],
   initialize(trackerId,appName){
+    this.uniqueClientId = uniqClientId;
     this.trackingAppName = appName;
     this.ga = new Analytics(trackerId, uniqClientId, 1, DeviceInfo.getUserAgent());
     this.processPrematureHitsQueue();
@@ -30,11 +31,11 @@ let AnalyticsService = {
   sendEvent({category,action,label,value,dimensions}){
     if(!this.ga){
       this.initialBuffer.push(
-        () => this.sendEvent({category,action,label,value})
+        () => this.sendEvent({category,action,label,value,dimensions})
       );
       return false;
     }
-    label = label || `${category} - ${action}`;
+    label = (label || `${category} - ${action}`).substr(0,250);
     let eventHit = new GAHits.Event(category,action,label,value);
     if(typeof dimensions == 'object'){
       console.log('Adding custom dimension to event',dimensions);

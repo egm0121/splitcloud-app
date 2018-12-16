@@ -1,6 +1,8 @@
 import { ReactNativeStreamingPlayer } from 'react-native-audio-streaming';
 import {audioPlayerStates} from '../helpers/constants';
 import SoundPlayer from 'react-native-sound';
+import Bugsnag from './Bugsnag';
+
 const {
   PLAYING,
   STOPPED,
@@ -182,7 +184,7 @@ export default class HybridPlayer extends ReactNativeStreamingPlayer {
     this.itunesPlayer = new SoundPlayer(soundUrl,'',(err) => {
       if(err){
         console.log('Error loading SoundPlayer',err);
-        throw err;
+        Bugsnag.notify(err);
       } else {
         this.state.isPlaybackReady = true;
         this.itunesPlayer.setVolume(this.state.volume);
