@@ -223,7 +223,7 @@ class TopList extends Component {
           )
         }
       </SectionTabBar>
-      {this.getCurrSectionObj().scChartType && 
+      {!!this.getCurrSectionObj().scChartType && 
         <TrackListContainer {...this.props}
         trackList={this.state.trackList}
         side={this.props.side}

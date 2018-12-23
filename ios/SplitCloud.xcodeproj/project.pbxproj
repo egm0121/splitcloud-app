@@ -24,10 +24,12 @@
 		15F73173A30C41898A75A1A2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 921F3DC736EC43EAA17B2B08 /* libRNFS.a */; };
 		18B29E61FAA6427094B25851 /* libBugsnagReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 308A0B55B70B45AB943124E8 /* libBugsnagReactNative.a */; };
 		22D58CA1129F45CC8957AA41 /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D61851379FDF4BC88B1D4D61 /* libRNDeviceInfo.a */; };
+		5D6C86D52AEA4FC09CDEC8FF /* libRNAdMobManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A320882A23B64E6691E94417 /* libRNAdMobManager.a */; };
 		5ECACD3E8D084CF996D15503 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 53FD6644FC0846FCA22AE97A /* libRCTActionSheet.a */; };
 		600393DBC17B45BE9AB8EDCC /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2410903D6A76436B927629F1 /* Lato-Regular.ttf */; };
 		75F3EE6A0614429F8A2CE166 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FABDF32E10F04BEA839F5E83 /* libRNShare.a */; };
 		785BC3D52069B35D00CCD765 /* libStreamingKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3D32069B33000CCD765 /* libStreamingKit.a */; };
+		7876224021ACDCDB0035E9E8 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7876223F21ACDCDA0035E9E8 /* GoogleMobileAds.framework */; };
 		78DA9D342154D293003019B4 /* libReactNativeAudioStreaming.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 785BC3CA2069B31D00CCD765 /* libReactNativeAudioStreaming.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		88EA680DF2B14F08882CADCB /* libRNSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA3C8D91E53A4E189B40367D /* libRNSound.a */; };
@@ -157,6 +159,13 @@
 			remoteGlobalIDString = DA5891D81BA9A9FC002B4DB2;
 			remoteInfo = RNDeviceInfo;
 		};
+		7876227721ACE0C10035E9E8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 18D1C45B28DA40B3BF6E3F2C /* RNAdMobManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A96DA7741C146D7200FC639B;
+			remoteInfo = RNAdMobManager;
+		};
 		78B3FF121FC9933A00E07D2C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CCCABDD5EEBF41AC936F62C6 /* Slider.xcodeproj */;
@@ -229,6 +238,7 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Example/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Example/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		18D1C45B28DA40B3BF6E3F2C /* RNAdMobManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNAdMobManager.xcodeproj; path = "../node_modules/react-native-admob/ios/RNAdMobManager.xcodeproj"; sourceTree = "<group>"; };
 		1C8969598EB343D69DEF0249 /* RNShare.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNShare.xcodeproj; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; };
 		2410903D6A76436B927629F1 /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
 		2F0C35BEBCDD4B88B110F9AC /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
@@ -237,12 +247,14 @@
 		70E59A0E6B4B4854A49B721E /* RNFS.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFS.xcodeproj; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; };
 		785BC3C52069B31D00CCD765 /* ReactNativeAudioStreaming.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ReactNativeAudioStreaming.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/ReactNativeAudioStreaming.xcodeproj"; sourceTree = "<group>"; };
 		785BC3CB2069B32F00CCD765 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = "../node_modules/react-native-audio-streaming/ios/Pods/Pods.xcodeproj"; sourceTree = "<group>"; };
+		7876223F21ACDCDA0035E9E8 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		78BD77291E9A534100F10066 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		79E52D6F39714ED7AB2914B7 /* RNiTunes.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNiTunes.xcodeproj; path = "../node_modules/react-native-itunes/RNiTunes.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		83E319E3E75C42AE9C8A61F8 /* libRNStoreReview.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNStoreReview.a; sourceTree = "<group>"; };
 		921F3DC736EC43EAA17B2B08 /* libRNFS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFS.a; sourceTree = "<group>"; };
+		A320882A23B64E6691E94417 /* libRNAdMobManager.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNAdMobManager.a; sourceTree = "<group>"; };
 		A455F4EB97994CA18994FCB2 /* libRNiTunes.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNiTunes.a; sourceTree = "<group>"; };
 		AAC918A173D6440E9D894CE3 /* BugsnagReactNative.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = BugsnagReactNative.xcodeproj; path = "../node_modules/bugsnag-react-native/cocoa/BugsnagReactNative.xcodeproj"; sourceTree = "<group>"; };
 		B239EF7C47904D0FB4187734 /* RNSound.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSound.xcodeproj; path = "../node_modules/react-native-sound/RNSound.xcodeproj"; sourceTree = "<group>"; };
@@ -279,6 +291,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				7876224021ACDCDB0035E9E8 /* GoogleMobileAds.framework in Frameworks */,
 				22D58CA1129F45CC8957AA41 /* libRNDeviceInfo.a in Frameworks */,
 				15F73173A30C41898A75A1A2 /* libRNFS.a in Frameworks */,
 				5ECACD3E8D084CF996D15503 /* libRCTActionSheet.a in Frameworks */,
@@ -287,6 +300,7 @@
 				88EA680DF2B14F08882CADCB /* libRNSound.a in Frameworks */,
 				18B29E61FAA6427094B25851 /* libBugsnagReactNative.a in Frameworks */,
 				75F3EE6A0614429F8A2CE166 /* libRNShare.a in Frameworks */,
+				5D6C86D52AEA4FC09CDEC8FF /* libRNAdMobManager.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,6 +404,7 @@
 		1DD6BB1D205183D700A157FD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7876223F21ACDCDA0035E9E8 /* GoogleMobileAds.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -461,6 +476,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		7876227421ACE0C10035E9E8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7876227821ACE0C10035E9E8 /* libRNAdMobManager.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		788C632E1F9355440043AA46 /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -473,6 +496,7 @@
 				CA3C8D91E53A4E189B40367D /* libRNSound.a */,
 				308A0B55B70B45AB943124E8 /* libBugsnagReactNative.a */,
 				FABDF32E10F04BEA839F5E83 /* libRNShare.a */,
+				A320882A23B64E6691E94417 /* libRNAdMobManager.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -542,6 +566,7 @@
 				B239EF7C47904D0FB4187734 /* RNSound.xcodeproj */,
 				AAC918A173D6440E9D894CE3 /* BugsnagReactNative.xcodeproj */,
 				1C8969598EB343D69DEF0249 /* RNShare.xcodeproj */,
+				18D1C45B28DA40B3BF6E3F2C /* RNAdMobManager.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -706,6 +731,10 @@
 					ProjectRef = 785BC3C52069B31D00CCD765 /* ReactNativeAudioStreaming.xcodeproj */;
 				},
 				{
+					ProductGroup = 7876227421ACE0C10035E9E8 /* Products */;
+					ProjectRef = 18D1C45B28DA40B3BF6E3F2C /* RNAdMobManager.xcodeproj */;
+				},
+				{
 					ProductGroup = 786EC7891EEECF1E0067842D /* Products */;
 					ProjectRef = BBF7D9320DF04D5086F14733 /* RNDeviceInfo.xcodeproj */;
 				},
@@ -855,6 +884,13 @@
 			remoteRef = 786EC79A1EEECF1E0067842D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		7876227821ACE0C10035E9E8 /* libRNAdMobManager.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNAdMobManager.a;
+			remoteRef = 7876227721ACE0C10035E9E8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		78B3FF131FC9933A00E07D2C /* Slider.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -996,6 +1032,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1023,6 +1060,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1039,6 +1077,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 6N6U4FLZ43;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1052,6 +1094,7 @@
 					"$(SRCROOT)/../node_modules/react-native-sound/RNSound/**",
 					"$(SRCROOT)/../node_modules/bugsnag-react-native/cocoa/**",
 					"$(SRCROOT)/../node_modules/react-native-share/ios",
+					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 				);
 				INFOPLIST_FILE = Example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1075,6 +1118,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6N6U4FLZ43;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -1088,6 +1135,7 @@
 					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
 					"$(SRCROOT)/../node_modules/bugsnag-react-native/cocoa/**",
 					"$(SRCROOT)/../node_modules/react-native-share/ios",
+					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 				);
 				INFOPLIST_FILE = Example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1156,6 +1204,7 @@
 					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
 					"$(SRCROOT)/../node_modules/bugsnag-react-native/cocoa/**",
 					"$(SRCROOT)/../node_modules/react-native-share/ios",
+					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1210,6 +1259,7 @@
 					"$(SRCROOT)/../node_modules/react-native-sound/RNSound",
 					"$(SRCROOT)/../node_modules/bugsnag-react-native/cocoa/**",
 					"$(SRCROOT)/../node_modules/react-native-share/ios",
+					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;

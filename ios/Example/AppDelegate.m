@@ -12,6 +12,7 @@
 #import "RCTRootView.h"
 #import "RCTLinkingManager.h"
 #import <BugsnagReactNative/BugsnagReactNative.h>
+@import GoogleMobileAds;
 
 @implementation AppDelegate
 
@@ -37,6 +38,7 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [BugsnagReactNative start];
+  [GADMobileAds configureWithApplicationID:@"ca-app-pub-8685101882223767~6124113001"];
   return YES;
 }
 

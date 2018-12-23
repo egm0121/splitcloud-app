@@ -6,7 +6,7 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "build-sourcemaps": "react-native bundle    --platform ios    --dev false    --entry-file index.ios.js    --bundle-output ios-release.bundle    --sourcemap-output ios-release.bundle.map",
     "upload-sourcemaps": "bugsnag-sourcemaps upload --api-key $BUGSNAG_KEY  --app-version $APP_VERSION  --minified-file ios-release.bundle --source-map ios-release.bundle.map --minified-url main.jsbundle --upload-sources",
-    "test-env":"echo $BUGSNAG_KEY"
+    "test-env": "echo $BUGSNAG_KEY"
   },
   "dependencies": {
     "axios": "^0.15.3",
@@ -20,6 +20,7 @@
     "query-string": "^6.1.0",
     "react": "15.2.1",
     "react-native": "0.30.0",
+    "react-native-admob": "^2.0.0-beta.5",
     "react-native-audio-streaming": "git+https://github.com/egm0121/react-native-audio-streaming.git#release/RNv030",
     "react-native-device-info": "^0.10.2",
     "react-native-fs": "git+https://git@github.com/egm0121/react-native-fs.git#v2.0.1-patch-ios",

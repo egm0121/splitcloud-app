@@ -27,65 +27,55 @@ import { formatDurationExtended, getArtworkImagePath, isLocalTrack } from '../he
 const isBufferingLabel = 'Buffering - ';
 
 class AudioPlayer extends Component {
-  constructor(props){
-    super(props);
-  } 
-  componentWillUnmount(){
-    console.log('component will unmount! destory player instance')
-    if(this.playerAObj){
-      this.playerAObj.stop();
-      this.playerAObj.destroy();
-    }
-  }
-  _getCurrentTrackIndex(){
+  getCurrentTrackIndex(){
     return this.props.playbackIndex;
   }
-  _hasCurrentTrackObj(){
+  hasCurrentTrackObj(){
     return this.props.queue[this.props.playbackIndex];
   }
-  _getCurrentTrackObj(){
+  getCurrentTrackObj(){
     return this.props.queue[this.props.playbackIndex] || {};
   }
-  _getCurrentTrackId(){
-    return this._getCurrentTrackObj().id;
+  getCurrentTrackId(){
+    return this.getCurrentTrackObj().id;
   }
-  _getCurrentTrackUrl(){
-    return this._getCurrentTrackObj().streamUrl;
+  getCurrentTrackUrl(){
+    return this.getCurrentTrackObj().streamUrl;
   }
-  _getCurrentTrackTitle() {
-    return this._getCurrentTrackObj().label;
+  getCurrentTrackTitle() {
+    return this.getCurrentTrackObj().label;
   }
-  _getCurrentTrackDescription(){
-    return this._getCurrentTrackObj().username;
+  getCurrentTrackDescription(){
+    return this.getCurrentTrackObj().username;
   }
-  _getCurrentTrackArtwork(){
-    if( isLocalTrack(this._getCurrentTrackObj()) 
-      && this._getCurrentTrackObj().artwork){
-      return getArtworkImagePath(this._getCurrentTrackObj().artwork);
+  getCurrentTrackArtwork(){
+    if( isLocalTrack(this.getCurrentTrackObj()) 
+      && this.getCurrentTrackObj().artwork){
+      return getArtworkImagePath(this.getCurrentTrackObj().artwork);
     }
-    const scArtwork = this._getCurrentTrackObj().artwork ?
-      this._getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
+    const scArtwork = this.getCurrentTrackObj().artwork ?
+      this.getCurrentTrackObj().artwork.replace('-large', '-t500x500') : null;
     return scArtwork || false;
   }
-  _getFallbackTrackArtwork(){
+  getFallbackTrackArtwork(){
     return this.props.side == playbackModeTypes.LEFT ?
       require('../assets/empty_album.png'):
       require('../assets/empty_album_alt.png');
   }
-  _isPlayerBuffering(){
+  isPlayerBuffering(){
     return this.props.status === audioPlayerStates.BUFFERING;
   }
-  _isPlayerPlaying(){
+  isPlayerPlaying(){
     return this.props.status === audioPlayerStates.PLAYING;
   }
-  _isPlayerPaused(){
+  isPlayerPaused(){
     return this.props.status === audioPlayerStates.PAUSED;
   }
-  _isPlayerStopped(){
+  isPlayerStopped(){
     return this.props.status === audioPlayerStates.STOPPED;
   }
-  _isSoundCloudTrack(){
-    return !!this._getCurrentTrackObj().scUploaderLink;
+  isSoundCloudTrack(){
+    return !!this.getCurrentTrackObj().scUploaderLink;
   }
   renderInFullscreen(children){
     return this.props.isFullscreen ? children :null;
@@ -98,7 +88,7 @@ class AudioPlayer extends Component {
       'L' : 'left',
       'R' : 'right'
     };
-    let isUiPlaybackActive = this._isPlayerPlaying() || this._isPlayerBuffering();
+    let isUiPlaybackActive = this.isPlayerPlaying() || this.isPlayerBuffering();
     let playbackSource = isUiPlaybackActive ?
       require('../assets/flat_pause.png') : require('../assets/flat_play.png');
     let playPauseButtonStyle = [styles.container];
@@ -107,11 +97,10 @@ class AudioPlayer extends Component {
 
     let {width} = Dimensions.get('window');
     let progressTrackLength = width - 160;
-    let volumeSliderWidth = width - 160;
-    let showBgArtCover = this._getCurrentTrackArtwork();
+    let showBgArtCover = this.getCurrentTrackArtwork();
     let artworkSource = showBgArtCover ?
-      {uri:this._getCurrentTrackArtwork()} :
-      this._getFallbackTrackArtwork();
+      {uri:this.getCurrentTrackArtwork()} :
+      this.getFallbackTrackArtwork();
     let tracknameStyles = [styles.tracknameContainer];
     let tracknameTextStyles = [styles.trackname];
     let tracknameTextDescription = [styles.trackDescription];
@@ -131,11 +120,11 @@ class AudioPlayer extends Component {
       smallTimeText = styles.playbackTimeSmall;
       progressTrackLength -= 20;
     }
-    if( this._getCurrentTrackTitle() ){
-      trackLabelPlaceholder = this._getCurrentTrackTitle();
-      trackDescription = 'by '+this._getCurrentTrackDescription();
+    if( this.getCurrentTrackTitle() ){
+      trackLabelPlaceholder = this.getCurrentTrackTitle();
+      trackDescription = 'by '+this.getCurrentTrackDescription();
     }
-    if( this._isPlayerBuffering() ){
+    if( this.isPlayerBuffering() ){
       trackLabelPlaceholder = `${isBufferingLabel} ${trackLabelPlaceholder}`;
     }
     return (
@@ -159,7 +148,7 @@ class AudioPlayer extends Component {
                             resizeMode={'contain'}>
                           <ToggleFavoriteTrackContainer 
                               side={this.props.side} 
-                              track={this._getCurrentTrackObj()} 
+                              track={this.getCurrentTrackObj()} 
                               style={[styles.favoriteToggleCenteredPosition]}
                               size={'small'}
                             />
@@ -176,7 +165,7 @@ class AudioPlayer extends Component {
                            { trackDescription }
                          </AppText>
                        </TouchableOpacity>
-                       {this._isSoundCloudTrack() && <TouchableOpacity onPress={this.props.openScUploaderLink}>
+                       {this.isSoundCloudTrack() && <TouchableOpacity onPress={this.props.openScUploaderLink}>
                           <Image
                           style={[styles.scCopyInlineImage]}
                           source={require('../assets/soundcloud_gray_logo.png')}
@@ -262,11 +251,12 @@ class AudioPlayer extends Component {
     );
   }
   renderForegroundArtCover(artworkSource) {
-    let {width} = Dimensions.get('window');
+    let { width, height } = Dimensions.get('window');
+    let extraMargin = height <= 667 ? 20 : 0;
     const resizeStyle = {
       flex:0,
-      width: width - 60,
-      height: width - 60
+      width: width - extraMargin - 60,
+      height: width - extraMargin - 60
     };
     
     return <Image style={[styles.controlsFadeImage]}
@@ -276,7 +266,7 @@ class AudioPlayer extends Component {
             <FeatureDiscoveryContainer featureName={FEATURE_SUGGESTED} style={styles.featureSuggestedDot} />
             <Image style={[styles.fgArtCoverImage,resizeStyle]}
               source={artworkSource} >
-              {this._isSoundCloudTrack() && <View style={styles.scCopyContainerWrapper}>
+              {this.isSoundCloudTrack() && <View style={styles.scCopyContainerWrapper}>
                 <TouchableOpacity onPress={this.props.openScUploaderLink} style={styles.scCopyContainer}>
                     <Image
                     style={[styles.scCopyImage]}
@@ -287,7 +277,7 @@ class AudioPlayer extends Component {
               <View style={styles.toggleFavoriteBtnContainer} >
                 <ToggleFavoriteTrackContainer 
                   side={this.props.side} 
-                  track={this._getCurrentTrackObj()}
+                  track={this.getCurrentTrackObj()}
                   style={[styles.toggleFavoriteBtn]} 
                 />
               </View>
@@ -314,7 +304,9 @@ class AudioPlayer extends Component {
     </View>
   }
 }
-
+AudioPlayer.defaultProps = {
+  playbackProgressValue: [1],
+}
 AudioPlayer.propTypes = {
   side : PropTypes.string,
   playbackIndex : PropTypes.number,
@@ -343,7 +335,6 @@ AudioPlayer.propTypes = {
   onRepeatToggle : PropTypes.func
 };
 
-const volumeMarginSide = 80;
 const playbackHorizontalMargin = 10;
 const mainFgColor = '#FFFFFF';
 const overImageShadowColor = 'rgb(0,0,0)';
@@ -354,11 +345,6 @@ const textShadowStyle = {
   textShadowOffset: overImageShadowOffset,
   textShadowRadius : overImageShadowRadious,
 }
-const lightTextShadowStyle = {
-  textShadowColor: '#555',
-  textShadowOffset: {width:0,height:0},
-  textShadowRadius : 0
-};
 const styles = StyleSheet.create({
   mainContainer:{
     flex:1
@@ -554,7 +540,7 @@ const styles = StyleSheet.create({
   },
   controlsFadeImage:{
     flex:5,
-    marginBottom:-2,
+    marginBottom:0,
     width:null,
     height:null,
     alignItems:'center',

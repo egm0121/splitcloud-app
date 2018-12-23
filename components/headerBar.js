@@ -7,7 +7,7 @@ import THEME from '../styles/variables';
 import AppText from './appText';
 function HeaderBar(props){
   return <View style={styles.headerContainer}>
-    {props.title && <View style={styles.headerTitleContainer}>
+    {!!props.title && <View style={styles.headerTitleContainer}>
       <AppText
         bold={true}
         numberOfLines={1}

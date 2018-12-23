@@ -178,7 +178,7 @@ class CurrentPlaylistContainer extends Component {
     this.onOverlayClosed();
   }
   hasRelatedTracks(component){
-    if(!this.props.currentTrack || isLocalTrack(this.props.currentTrack)) return;
+    if(!this.props.currentTrack || isLocalTrack(this.props.currentTrack)) return null;
     return component;
   }
   componentWillUnmount(){
@@ -194,7 +194,7 @@ class CurrentPlaylistContainer extends Component {
       <View style={styles.container}>
         <HeaderBar title={this.props.playlistTitle}>
           <BackButton onPressed={this.props.onClose} style={styles.closeButton}/>
-          {this.props.showMenu && 
+          {!!this.props.showMenu && 
             <FeatureDiscoveryContainer featureName={FEATURE_SOCIAL_SHARE} style={styles.playlistMenuButton}>
               <Button size="small" 
                 image={require('../assets/menu_dots_vertical.png')}

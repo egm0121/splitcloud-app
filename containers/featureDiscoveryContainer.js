@@ -17,7 +17,7 @@ class FeatureDiscoveryContainer extends Component {
   render() {
     return (
       <View style={this.props.style}>
-      {this.props.showDot && <FeatureDiscoveryDot />}
+      {!!this.props.showDot && <FeatureDiscoveryDot />}
       {this.props.children}
       </View>
     );

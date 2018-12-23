@@ -12,7 +12,7 @@ import {
   Linking,
 } from 'react-native';
 import config from '../helpers/config';
-import { isIphoneX,ifIphoneX } from 'react-native-iphone-x-helper';
+import { ifIphoneX } from 'react-native-iphone-x-helper';
 import THEME from '../styles/variables';
 import AudioPlayerContainer from './audioPlayerContainer';
 import Button from '../components/button';
@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
   },
   horizontalContainer:{
     flexDirection:'row',
-    paddingBottom: isIphoneX() ? 20 : 0
   },
   panButtoncontainer:{
     flex:1,

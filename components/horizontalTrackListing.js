@@ -66,6 +66,6 @@ function HorizontalTrackListing(props){
   </View>
 }
 HorizontalTrackListing.defaultProps = {
-  title: 'Suggested song'
+  title: 'Suggested songs'
 }
 export default HorizontalTrackListing;
