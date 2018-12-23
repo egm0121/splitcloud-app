@@ -10,7 +10,13 @@ You can also choose to listen to the same song on both headphones by using the m
 
 Tap on the track title label to search songs and add them to your playlist.
 
+
 ### The App
+
+Get it from the App Store:
+![http://bit.ly/splitcloud](https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg-25178aeef6eb6b83b96f5f2d004eda3bffbb37122de64afbaef7107b384a4132.svg)
+
+![http://bit.ly/splitcloud](https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2017-06-22&kind=iossoftware&bubble=ios_apps)
 
 ![splitcloud](https://cdn-images-1.medium.com/max/800/1*_MedN7kEkKkLKPjCzNbWzA.png)
 
