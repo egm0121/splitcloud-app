@@ -21,7 +21,7 @@ const initialState = {
     [FEATURE_SC_EXPORT] : true,
     [FEATURE_SOCIAL_SHARE] : false,
     [FEATURE_SHUFFLE] : false,
-    [FEATURE_REPEAT] : true,
+    [FEATURE_REPEAT] : false,
     [FEATURE_SUGGESTED] : true
   },
   notifications : {

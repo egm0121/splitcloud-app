@@ -40,7 +40,12 @@ const schedulePlaybackHit = (track,action) => {
       category: getCategoryFromAction(action),
       action: PLAYBACK_COMPLETE_HIT,
       label: track.provider,
-      value: 1
+      value: 1,
+      dimensions: {
+        'cd1': track.id,
+        'cd2': AnalyticsService.uniqueClientId,
+        'cd3': (new Date).toISOString()
+      }
     });
   },PLAYBACK_MIN_TIME *1e3)
 };
@@ -52,7 +57,11 @@ const AnalyticsMiddleware = store => {
           category : action.gaCategory || getCategoryFromAction(action),
           action : action.type,
           label : action.gaLabel || 'redux-action',
-          value : 1
+          value : 1,
+          dimensions: {
+            'cd2': AnalyticsService.uniqueClientId,
+            'cd3': (new Date).toISOString()
+          },
         });
       }
       if( actionScreenChangeList.includes(action.type)){
