@@ -15,7 +15,7 @@ Tap on the track title label to search songs and add them to your playlist.
 
 Get it from the App Store:
 
-http://bit.ly/splitcloud
+<a href="http://bit.ly/splitcloud" target="_blank"><img src="https://linkmaker.itunes.apple.com/assets/shared/badges/en-us/appstore-lrg-25178aeef6eb6b83b96f5f2d004eda3bffbb37122de64afbaef7107b384a4132.svg"></a>
 
 
 ![splitcloud](https://cdn-images-1.medium.com/max/800/1*_MedN7kEkKkLKPjCzNbWzA.png)
