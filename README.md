@@ -12,6 +12,7 @@ Tap on the track title label to search songs and add them to your playlist.
 
 ### The App
 
+
 ![splitcloud](https://cdn-images-1.medium.com/max/800/1*_MedN7kEkKkLKPjCzNbWzA.png)
 
 ### Dev instructions
