@@ -1,6 +1,7 @@
 import axios from 'axios';
 import CacheDecorator from '../helpers/cacheDecorator';
 import SoundCloudApi from './SoundcloudApi';
+import { toArray } from '../helpers/utils';
 
 class SplitCloud {
 
@@ -62,7 +63,7 @@ class SplitCloud {
   getWeeklyPopular(opts){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     return this.request('weekly_popular.json', queryOpts, SplitCloud.methods.GET ,cancelToken).then(resp => {
-      return resp.data
+      return toArray(resp.data)
         .map(this.scApi.normalizeStreamUrlProperty)
         .map(this.scApi.transformTrackPayload);
     });
@@ -71,7 +72,7 @@ class SplitCloud {
   getWeeklyTrending(opts){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
     return this.request('weekly_trending.json', queryOpts, SplitCloud.methods.GET ,cancelToken).then(resp => {
-      return resp.data
+      return toArray(resp.data)
         .map(this.scApi.normalizeStreamUrlProperty)
         .map(this.scApi.transformTrackPayload);
     });
