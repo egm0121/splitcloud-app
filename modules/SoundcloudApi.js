@@ -405,7 +405,7 @@ SoundCloudApi.selectionChart = {
   TRENDING:'soundcloud:selections:charts-trending'
 }
 SoundCloudApi.genre = {
-  ALL : 'soundcloud:genres:all-music',
+  GLOBAL : 'soundcloud:genres:all-music',
   ALTERNATIVE_ROCK : 'soundcloud:genres:alternativerock',
   AMBIENT : 'soundcloud:genres:ambient',
   CLASSICAL : 'soundcloud:genres:classical',

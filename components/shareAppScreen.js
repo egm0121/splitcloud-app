@@ -102,7 +102,7 @@ ShareAppScreen.defaultProps = {
   shareOptions : {
     title: 'Try SplitCloud for iOS',
     message: 'With SplitCloud double music player,you can share your headphones and play two different songs on each side! Download Free on AppStore:',
-    url: 'https://itunes.apple.com/app/splitcloud-double-music-player/id1244515007?mt=8',
+    url: 'http://bit.ly/splitcloud',
     subject: 'Checkout this new music app - SplitCloud for iOS' //  for email
   },
   screenTitle: 'Share SplitCloud App!',

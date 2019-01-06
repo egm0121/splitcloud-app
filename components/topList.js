@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
+import SplitCloudApi from '../modules/SplitcloudApi';
 import THEME from '../styles/variables';
 import {animationPresets} from '../helpers/constants';
 import { ucFirst } from '../helpers/formatters';
@@ -83,7 +84,7 @@ class TopList extends Component {
         offlineAvailable:false
       }],
       section : props.isOnline ? 'TOP' : 'LOCAL',
-      selectedGenre : props.selectedGenre || SoundCloudApi.genre.ALL,
+      selectedGenre : props.selectedGenre || 'splitcloud:charts',
       selectedRegion : props.selectedRegion || SoundCloudApi.region.WORLDWIDE,
       genreOptions : this.getOptionsListByType('genre'),
       regionOptions: this.getOptionsListByType('region'),
@@ -97,7 +98,10 @@ class TopList extends Component {
     return this.state.sectionList.filter(s => s.name === this.state.section ).pop();
   }
   componentWillMount(){
-    this.scApi = new SoundCloudApi({clientId: this.props.scClientId});
+    const { scClientId } = this.props;
+    const opts = {clientId: scClientId};
+    this.scApi = new SoundCloudApi(opts);
+    this.splitcloudApi = new SplitCloudApi(opts);
     this.showStreamableOnly = this.props.showStreamableOnly;
     //fetch initial section list only if online
     if(this.props.isOnline){
@@ -136,13 +140,20 @@ class TopList extends Component {
   }
   getOptionsListByType(type){
     if(!['genre','region'].includes(type)) return [];
-    return Object.keys(SoundCloudApi[type]).map((key,i) => {
+    let optionsList = Object.keys(SoundCloudApi[type]).map((key,i) => {
       return {
         label : formatGenreLabel(key),
         value : SoundCloudApi[type][key],
-        key : i
       }
     });
+
+    if(type == 'genre'){
+      optionsList.splice(1,0,{
+        label : 'On SplitCloud',
+        value : 'splitcloud:charts',
+      });
+    }
+    return optionsList.map((el,i) =>({...el,key:i}));
   }
   getKeyByValue(obj,value){
     return Object.keys(obj).find((key) => obj[key] == value);
@@ -165,11 +176,24 @@ class TopList extends Component {
   loadTopSoundCloudTracks(){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.getPopularByGenre(
-      this.getCurrSectionObj().scChartType,
-      this.state.selectedGenre,
-      this.state.selectedRegion,
-      { cancelToken : this.generateRequestInvalidationToken().token});
+    let requestPromise ;
+    let currChartType = this.getCurrSectionObj().scChartType;
+    if (this.state.selectedGenre === 'splitcloud:charts') {
+      const apiMap = {
+        [SoundCloudApi.chartType.TOP] : 'getWeeklyPopular',
+        [SoundCloudApi.chartType.TRENDING] : 'getWeeklyTrending'
+      };
+      const chartName =apiMap[currChartType]
+      requestPromise = this.splitcloudApi[chartName](
+        {cancelToken : this.generateRequestInvalidationToken().token});
+    } else {
+      requestPromise = this.scApi.getPopularByGenre(
+        currChartType,
+        this.state.selectedGenre,
+        this.state.selectedRegion,
+        { cancelToken : this.generateRequestInvalidationToken().token});
+    }
+  
     requestPromise.catch((err) => {
       this.props.onRequestFail(err,this.state.selectedGenre);
       return Promise.resolve(err);
