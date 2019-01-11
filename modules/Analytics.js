@@ -12,10 +12,13 @@ let AnalyticsService = {
   initialize(trackerId,appName){
     this.uniqueClientId = uniqClientId;
     this.trackingAppName = appName;
+    this.currentRootScreen = ''; 
     this.ga = new Analytics(trackerId, uniqClientId, 1, DeviceInfo.getUserAgent());
     this.processPrematureHitsQueue();
   },
   sendScreenView(screenName){
+    console.log('SEND SCREEN VIEW',screenName);
+    this.currentRootScreen = screenName;
     if(!this.ga){
       this.initialBuffer.push(() => this.sendScreenView(screenName));
       return false;
@@ -26,6 +29,17 @@ let AnalyticsService = {
          DeviceInfo.getReadableVersion(),
          DeviceInfo.getBundleId()
        );
+    this.ga.send(screenView);
+  },
+  sendNestedScreenView(subView){
+    let screenName = [this.currentRootScreen, subView].join(' - ');
+    console.log('SEND SCREEN VIEW -nested',screenName);
+    let screenView = new GAHits.ScreenView(
+      this.trackingAppName,
+      screenName,
+      DeviceInfo.getReadableVersion(),
+      DeviceInfo.getBundleId()
+    );
     this.ga.send(screenView);
   },
   sendEvent({category,action,label,value,dimensions}){
