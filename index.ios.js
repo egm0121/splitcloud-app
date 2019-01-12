@@ -45,7 +45,7 @@ Navigator.prototype.pushToBottom = function (route) {
   });
 };
 
-AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID,'SplitcloudApp');
+AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID, 'SplitcloudApp');
 
 if(!__DEV__){
   /* avoid any logging to prevent performance drops in prod mode */
