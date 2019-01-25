@@ -21,6 +21,14 @@ export const audioPlayerStates = {
   BUFFERING : 'BUFFERING',
   LOADING : 'LOADING'
 };
+export const PLAYBACK_ENABLED_STATES = {
+  [audioPlayerStates.PLAYING]:1,
+  [audioPlayerStates.BUFFERING]:1
+};
+export const PLAYBACK_DISABLED_STATES = {
+  [audioPlayerStates.STOPPED]:1,
+  [audioPlayerStates.PAUSED]:1
+};
 export const playlistType = {
   UP_NEXT : 'UP_NEXT_PLAYLIST',
   FAVORITES : '',

@@ -28,6 +28,7 @@ class SocialShareContainer extends Component {
       name : 'ShareAppScreen',
       component: ShareAppScreen,
       passProps : {
+        willPausePlayback: true,
         onClose:() => this.props.navigator.pop()
       }
     });

@@ -26,11 +26,21 @@ import {
   abortedSocialShareAction,
   socialShareRequiredAction,
 } from '../redux/actions/storeReviewAction';
+import {
+  pauseCurrentTrack
+} from '../redux/actions/playbackStatusActions';
 
 class ShareAppScreen extends Component {
   constructor(props){
     super(props);
     this.closeScreen = this.closeScreen.bind(this);
+  }
+  componentDidMount(){
+    const { willPausePlayback, pauseAllPlayback } = this.props;
+    if (willPausePlayback || true) {
+      console.log('pauseAllPlayback');
+      pauseAllPlayback();
+    }
   }
   closeScreen(){
     setTimeout(() => this.props.onClose(),1500);
@@ -122,7 +132,8 @@ const mapDispatchToProps = (dispatch) => {
     onPushNotification(message){ dispatch(pushNotification({type:'success',message})); },
     onSocialShareCompleted(platformName){ dispatch(completedSocialShareAction(platformName));},
     onSocialShareAborted(platformName){ dispatch(abortedSocialShareAction(platformName));},
-    onSocialShareRequired(){ dispatch(socialShareRequiredAction())}
+    onSocialShareRequired(){ dispatch(socialShareRequiredAction())},
+    pauseAllPlayback(){ dispatch(pauseCurrentTrack('L')); dispatch(pauseCurrentTrack('R'))}
   }
 };
 const styles = StyleSheet.create({
