@@ -108,7 +108,12 @@ class SplitCloudApp extends Component {
                         (isOnline,networkType) => {
                           const fullScreenPlayerScene = route.name == 'MainSceneContainer' ? [styles.fullScreenPlayer] :null;
                           return <View style={[styles.rootContainerView,fullScreenPlayerScene]}>
-                              <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
+                              <Component title={route.title} 
+                                isOnline={isOnline} 
+                                networkType={networkType} 
+                                routeName={route.name} 
+                                navigator={navigator} 
+                                {...route.passProps}/>
                               <NotificationContainer />
                               <SocialShareContainer navigator={navigator} />
                               <OfflineModeBanner isOnline={isOnline} />
