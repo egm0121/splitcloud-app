@@ -15,7 +15,7 @@ let AnalyticsService = {
     this.currentRootScreen = ''; 
     this.ga = new Analytics(trackerId, uniqClientId, 1, DeviceInfo.getUserAgent());
     this.processPrematureHitsQueue();
-    this.addSessionDimension(4, DeviceInfo.getModel());
+    this.addSessionDimension(4, DeviceInfo.getDeviceId());
   },
   addSessionDimension(index,value){
     return this.ga.addDimension(index,value);
