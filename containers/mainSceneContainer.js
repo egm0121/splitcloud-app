@@ -26,6 +26,8 @@ const {
   SC_CLIENT_SECRET,
   SC_OAUTH_REDIRECT_URI
 } = config;
+
+
 class MainSceneContainer extends Component {
   constructor(props){
     super(props);
@@ -111,12 +113,37 @@ class MainSceneContainer extends Component {
                onPressed={this.switchPlaybackSide} />
           }
           if( this.props.mode != 'S' && (!isSelected && e.mode != 'S')) return null;
+          const imageMap = {
+            'L':{
+              'on':require('../assets/player_top_on.png'),
+              'off':require('../assets/player_top_off.png')
+            },
+            'R':{
+              'on':require('../assets/player_bottom_on.png'),
+              'off':require('../assets/player_bottom_off.png')
+            },
+            'S':{
+              'on':require('../assets/player_split_on.png'),
+              'off': require('../assets/player_split_off.png')
+            }
+          };
+          const buttonImage = imageMap[e.mode][isSelected ? 'on': 'off'];
           return <TouchableHighlight style={styles.panButtoncontainer} key={i}
                   onPress={this.props.onModeSelected.bind(this,e.mode)}>
                   <View>
-                    <AppText bold={true} style={[styles.textSplitControls].concat(isSelectedStyle)}>{e.label}</AppText>
+                  <Button style={styles.buttonImageStyle}
+                    image={buttonImage}
+                    size={'small'}
+                    key={i}
+                    onPressed={this.props.onModeSelected.bind(this,e.mode)} />
                   </View>
-            </TouchableHighlight>;
+            </TouchableHighlight>
+          // return <View style={styles.panButtoncontainer}  key={i} >
+          // <Button style={styles.buttonImageStyle}
+          //   image={buttonImage}
+          //   size={'small'}
+          //   onPressed={this.props.onModeSelected.bind(this,e.mode)} />
+          // </View>
         })}
       </View>
     </View>;
@@ -185,6 +212,12 @@ const styles = StyleSheet.create({
     fontSize:15,
     lineHeight:20,
     color : THEME.mainColor
+  },
+  buttonImageStyle:{
+    flex:1,
+    height:35,
+    alignItems:'center',
+    justifyContent:'center',
   },
   invertSwitchStyle:{
     flex:1,

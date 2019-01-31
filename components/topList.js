@@ -4,33 +4,23 @@
 
 import React, { PropTypes, Component } from 'react';
 import {
-  AppRegistry,
   StyleSheet,
-  Text,
-  TextInput,
   Image,
-  ListView,
-  ActivityIndicator,
-  View,
-  TouchableOpacity,
-  TouchableHighlight,
-  LayoutAnimation
+  View
 } from 'react-native';
 import axios from 'axios';
 import SoundCloudApi from '../modules/SoundcloudApi';
 import SplitCloudApi from '../modules/SplitcloudApi';
+import AnalyticsService from '../modules/Analytics';
 import THEME from '../styles/variables';
-import {animationPresets} from '../helpers/constants';
-import { ucFirst } from '../helpers/formatters';
 import SectionTabBar from '../components/sectionTabBar';
 import SectionItem from '../components/sectionItem';
 import TrackListContainer from '../containers/trackListContainer';
-import ModalPicker from '../components/modalPicker';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
 import {formatGenreLabel} from '../helpers/formatters';
-import AppText from './appText';
+
 class TopList extends Component {
 
   constructor(props){
@@ -107,6 +97,7 @@ class TopList extends Component {
     if(this.props.isOnline){
       this.loadTopSoundCloudTracks().then(this.updateResultList);
     }
+    this.trackActiveSubScreen();
   }
   componentWillReceiveProps(newProps){
     console.log('props changed for topList',newProps.networkType);
@@ -125,11 +116,13 @@ class TopList extends Component {
     }
   }
   componentDidUpdate(prevProps,prevState){
+    const { section, selectedGenre, selectedRegion } = this.state;
     if(
-      this.state.section != prevState.section ||
-      this.state.selectedGenre !== prevState.selectedGenre ||
-      this.state.selectedRegion !== prevState.selectedRegion
+      section != prevState.section ||
+      selectedGenre !== prevState.selectedGenre ||
+      selectedRegion !== prevState.selectedRegion
     ){
+      this.trackActiveSubScreen();
       if(this.getCurrSectionObj().scChartType){
         this.loadTopSoundCloudTracks().then(this.updateResultList);
       }
@@ -137,6 +130,11 @@ class TopList extends Component {
         this.loadSoundCloudSections().then(this.updateResultList);
       }
     }
+  }
+  trackActiveSubScreen(){
+    const { section, selectedGenre } = this.state;
+    const subSection = this.getCurrSectionObj().scChartType ? selectedGenre : null;
+    AnalyticsService.sendNestedScreenView([section, subSection].join(' - '))
   }
   getOptionsListByType(type){
     if(!['genre','region'].includes(type)) return [];

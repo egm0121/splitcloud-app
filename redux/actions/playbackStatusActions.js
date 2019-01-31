@@ -7,3 +7,16 @@ export function setPlaybackStatus(side,status){
     status,
   }
 }
+
+export function playCurrentTrack(side){
+  return {
+    type: actionTypes.PLAYBACK_PLAY,
+    side
+  };
+}
+export function pauseCurrentTrack(side){
+  return {
+    type: actionTypes.PLAYBACK_PAUSE,
+    side,
+  };
+}

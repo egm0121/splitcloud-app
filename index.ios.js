@@ -45,7 +45,7 @@ Navigator.prototype.pushToBottom = function (route) {
   });
 };
 
-AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID,'SplitcloudApp');
+AnalyticsService.initialize(Config.GOOG_ANALYTICS_ID, 'SplitcloudApp');
 
 if(!__DEV__){
   /* avoid any logging to prevent performance drops in prod mode */
@@ -59,6 +59,7 @@ class SplitCloudApp extends Component {
     super(props);
     this.configureScene = this.configureScene.bind(this);
     this.onSceneDidFocus = this.onSceneDidFocus.bind(this);
+    this.onSceneWillFocus = this.onSceneWillFocus.bind(this);
     this.setStylesGlobalOvverides();
   }
   setStylesGlobalOvverides(){
@@ -73,11 +74,14 @@ class SplitCloudApp extends Component {
   onSceneDidFocus(route){
     console.log('new scene did focus:',route);
     NavigationStateNotifier.onSceneDidFocus(route);
+  }
+  onSceneWillFocus(route){
+    console.log('new scene will focus:',route);
     let screenName = route.title;
     if( this.isMainPlayerScreen(route) ){
       screenName += ' | mode: ' + this.getActivePlaybackMode(store);  
     }
-    AnalyticsService.sendScreenView( screenName || 'Component Screen');
+    AnalyticsService.sendScreenView( screenName || 'Unknown Screen');
   }
   isMainPlayerScreen(route){
     return route.name == 'MainSceneContainer';
@@ -96,6 +100,7 @@ class SplitCloudApp extends Component {
                   component: MainSceneContainer
                 }}
                 onDidFocus={this.onSceneDidFocus}
+                onWillFocus={this.onSceneWillFocus}
                 ref={(navigator)=> {this.navigator = navigator;}}
                 renderScene={(route, navigator) => {
                   let Component = route.component;
@@ -103,7 +108,12 @@ class SplitCloudApp extends Component {
                         (isOnline,networkType) => {
                           const fullScreenPlayerScene = route.name == 'MainSceneContainer' ? [styles.fullScreenPlayer] :null;
                           return <View style={[styles.rootContainerView,fullScreenPlayerScene]}>
-                              <Component title={route.title} isOnline={isOnline} networkType={networkType} routeName={route.name} navigator={navigator} {...route.passProps}/>
+                              <Component title={route.title} 
+                                isOnline={isOnline} 
+                                networkType={networkType} 
+                                routeName={route.name} 
+                                navigator={navigator} 
+                                {...route.passProps}/>
                               <NotificationContainer />
                               <SocialShareContainer navigator={navigator} />
                               <OfflineModeBanner isOnline={isOnline} />

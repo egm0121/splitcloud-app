@@ -27,3 +27,8 @@ export function socialShareRequiredAction() {
     type: actionTypes.HIT_SOCIAL_SHARE_REQUIRED
   }
 }
+export function rewarededAdCompletedAction(){
+  return {
+    type: actionTypes.REWARDED_AD_COMPLETED
+  }
+}

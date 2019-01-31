@@ -76,6 +76,9 @@ class AudioPlayerContainer extends Component {
     this.onUploaderProfileOpen = this.onUploaderProfileOpen.bind(this);
     this.onShuffle = this.onShuffle.bind(this);
     this.onRepeatToggle = this.onRepeatToggle.bind(this);
+    this.playCurrentTrack = this.playCurrentTrack.bind(this);
+    this.pauseCurrentTrack = this.pauseCurrentTrack.bind(this);
+
     this.scClientId = Config.SC_CLIENT_ID;
     this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
@@ -113,7 +116,7 @@ class AudioPlayerContainer extends Component {
         duration : data.duration,
         elapsed: data.progress,
         playbackProgressValue:[currPlaybackProgress],
-        status : data.status
+        status : data.status,
       };
       this.props.setPlaybackStatus(statusObj);
     });
@@ -246,16 +249,17 @@ class AudioPlayerContainer extends Component {
     }).catch(err => console.log('err hasLocalAsset',err));
   }
   onPlayTogglePress(){
+    this.musicPlayer.getStatus((err,playbackStatus) => {
+      playbackStatus.status in PLAYBACK_ENABLED_STATES ?
+        this.pauseCurrentTrack() : this.playCurrentTrack();
+    });
+  }
+  playCurrentTrack(){
     if(this.isCurrentMutedSide() || !this.getCurrentTrackUrl()){
-      console.log('toggle playback attempted on muted or empty player');
+      console.log('playCurrentTrack attempted on muted or empty player');
       return false;
     }
-    console.log('onPlayToggle checks passed');
     this.musicPlayer.getStatus((err,playbackStatus) => {
-      if(playbackStatus.status in PLAYBACK_ENABLED_STATES ){
-        console.log('onPlayToggle status PLAYBACK_ENABLED call .pause()')
-        this.musicPlayer.pause();
-      }
       if(playbackStatus.status === audioPlayerStates.PAUSED ){
         console.log('onPlayToggle status PAUSED call .resume()')
         this.musicPlayer.resume()
@@ -263,6 +267,19 @@ class AudioPlayerContainer extends Component {
       if(playbackStatus.status === audioPlayerStates.STOPPED){
         console.log('onPlayToggle status STOPPED call .play()')
         this.musicPlayer.play();
+      }
+      this.updateComponentPlayerState();
+    });
+  }
+  pauseCurrentTrack(){
+    if(this.isCurrentMutedSide() || !this.getCurrentTrackUrl()){
+      console.log('pauseCurrentTrack attempted on muted or empty player');
+      return false;
+    }
+    this.musicPlayer.getStatus((err,playbackStatus) => {
+      if(playbackStatus.status in PLAYBACK_ENABLED_STATES ){
+        console.log('onPlayToggle status PLAYBACK_ENABLED call .pause()')
+        this.musicPlayer.pause();
       }
       this.updateComponentPlayerState();
     });
@@ -417,6 +434,17 @@ class AudioPlayerContainer extends Component {
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
   }
   componentWillReceiveProps(newProps){
+    const newStatus = newProps.playbackStatus;
+    const currStatus = this.props.playbackStatus;
+    if( newStatus.status != currStatus.status &&
+        !newStatus.playerFeedbackState ){
+      console.log('app playback state change, trigger player methods');
+      if(currStatus.status in PLAYBACK_ENABLED_STATES ){
+        this.pauseCurrentTrack();
+      } else {
+        this.playCurrentTrack();
+      }
+    }
     if(newProps.pan != this.props.pan || newProps.muted != this.props.muted){
       this.setState({
         pan:newProps.pan,

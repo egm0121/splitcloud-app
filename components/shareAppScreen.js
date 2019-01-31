@@ -9,6 +9,8 @@ import {
   View,
   Image,
   Linking,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { connect } from 'react-redux';
 import THEME from '../styles/variables'
@@ -18,6 +20,7 @@ import Button from '../components/button';
 import AppText from '../components/appText';
 import Share from 'react-native-share';
 import { MAX_INTERACTION_COUNT } from '../helpers/constants';
+import config from '../helpers/config';
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
@@ -25,15 +28,60 @@ import {
   completedSocialShareAction,
   abortedSocialShareAction,
   socialShareRequiredAction,
+  rewarededAdCompletedAction,
 } from '../redux/actions/storeReviewAction';
+import {
+  pauseCurrentTrack
+} from '../redux/actions/playbackStatusActions';
+import {
+  AdMobRewarded,
+} from 'react-native-admob';
 
 class ShareAppScreen extends Component {
   constructor(props){
     super(props);
+    this.rewardedAd = null;
+    this.didApplyReward = false;
+    this.state = {
+      didRewardAdLoad: false
+    }
     this.closeScreen = this.closeScreen.bind(this);
+    this.onRewardedAdSelected = this.onRewardedAdSelected.bind(this);
+  }
+  componentDidMount(){
+    if (this.props.isAppLocked) {
+      console.log('pauseAllPlayback');
+      this.props.pauseAllPlayback();
+      this.preloadRewardedAd();
+    }
   }
   closeScreen(){
     setTimeout(() => this.props.onClose(),1500);
+  }
+  preloadRewardedAd(){
+    AdMobRewarded.setAdUnitID(config.ADMOB_REWARDED_ID);
+    AdMobRewarded.setTestDevices([AdMobRewarded.simulatorId]);
+    this.rewardedAd = AdMobRewarded.requestAd();
+    this.rewardedAd
+    .then(() => this.setState({didRewardAdLoad:true}))
+    .catch(err => console.log('rewarded ad load failed',err));
+  }
+  onRewardedAdSelected(){
+    console.log('show rewarded ad');
+    if(!this.state.didRewardAdLoad) return;
+    const  { applyAdReward } = this.props;
+    AdMobRewarded.addEventListener('rewarded',() => {
+      console.log('video ad done, user rewarded');
+      applyAdReward();
+      this.didApplyReward = true;
+    });
+    AdMobRewarded.addEventListener('adClosed',() => {
+      console.log('video ad closed');
+      if(this.didApplyReward){
+        this.closeScreen();
+      }
+    });
+    this.rewardedAd.then(() => AdMobRewarded.showAd());
   }
   openShareApp(platformName){
     const { shareOptions } = this.props;
@@ -61,31 +109,37 @@ class ShareAppScreen extends Component {
     });
   }
   componentDidUpdate(){
-    const { interactionCount, didShareOnce, onSocialShareRequired } = this.props;
-    if(interactionCount >= MAX_INTERACTION_COUNT && !didShareOnce){
-      onSocialShareRequired();
+    if(this.props.isAppLocked){
+      this.props.onSocialShareRequired();      
     }
   }
   render() {
-    const {
-      interactionCount ,didShareOnce, infoText, 
-      infoTitle, lockedText, lockedTitle
-    } = this.props;
-    const allowDismiss = interactionCount < MAX_INTERACTION_COUNT || didShareOnce;
+    const { infoText, infoTitle, lockedText, lockedTitle, isAppLocked } = this.props;
+    const allowDismiss = !isAppLocked;
+    const adBtnStyles = this.state.didRewardAdLoad ? 
+      [styles.adBtnContainer]: [styles.adBtnContainer,styles.adBtnDisabled];
     const displayTitle =  allowDismiss ? infoTitle : lockedTitle;
     const displayInfo =  allowDismiss ? infoText : lockedText;
+    let { height } = Dimensions.get('window');
+    const isSmallDisplay = height <= 568;
     return (
       <View style={styles.container}>
         <HeaderBar title={this.props.screenTitle}>
           {allowDismiss && <BackButton style={styles.backButton} onPressed={this.props.onClose} />}
         </HeaderBar>
         <View style={styles.infoContainer}>
-          <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/splitcloud_round_logo.png')} />
+          { !isSmallDisplay && <Image style={styles.heroImg} resizeMode={'contain'} source={require('../assets/splitcloud_round_logo.png')} />}
           <View style={styles.infoTextContainer}>
-            <AppText bold={true} style={styles.infoTitle}>{displayTitle}</AppText>
+            <AppText bold={true} style={[styles.infoTitle,styles.extraLineHeigth]}>{displayTitle}</AppText>
             <AppText style={styles.infoDesc}>{displayInfo}</AppText>
           </View>
         </View>
+        {isAppLocked && <View style={adBtnStyles}>
+          <TouchableOpacity style={[styles.textButtonContainer]} onPress={this.onRewardedAdSelected}>
+            <AppText style={styles.infoTitle} bold={true} >Watch Ad</AppText>
+          </TouchableOpacity>
+            <AppText bold={true} style={styles.infoTitle}>OR</AppText>
+        </View>}
         <View style={styles.socialIconsContainer}>
               <Button style={styles.socialIcon} image={{uri: TWITTER_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'twitter')}/>
               <Button style={styles.socialIcon} image={{uri: FACEBOOK_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'facebook')}/>
@@ -109,12 +163,15 @@ ShareAppScreen.defaultProps = {
   infoTitle: 'Help your friends discover SplitCloud',
   infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and inviting your friends to try it!',
   lockedTitle: 'Thanks for using SplitCloud',
-  lockedText : 'We need your support to keep SplitCloud Free!\nTo continue using the app share the link with your friends. Thank you!',
+  lockedText : 'We need your support to keep SplitCloud Free!\nTo continue using the app share it or watch a video ad. Thank you!',
 };
 const mapStateToProps = (state, props) => {
+  const didShareOnce =  state.reviewState.shared;
+  const interactionCount = state.reviewState.actionCounter ;
   return {
-    didShareOnce: state.reviewState.shared,
-    interactionCount: state.reviewState.actionCounter,
+    didShareOnce,
+    interactionCount,
+    isAppLocked: interactionCount >= MAX_INTERACTION_COUNT && !didShareOnce
   };
 }
 const mapDispatchToProps = (dispatch) => {
@@ -122,7 +179,9 @@ const mapDispatchToProps = (dispatch) => {
     onPushNotification(message){ dispatch(pushNotification({type:'success',message})); },
     onSocialShareCompleted(platformName){ dispatch(completedSocialShareAction(platformName));},
     onSocialShareAborted(platformName){ dispatch(abortedSocialShareAction(platformName));},
-    onSocialShareRequired(){ dispatch(socialShareRequiredAction())}
+    onSocialShareRequired(){ dispatch(socialShareRequiredAction())},
+    pauseAllPlayback(){ dispatch(pauseCurrentTrack('L')); dispatch(pauseCurrentTrack('R'))},
+    applyAdReward(){ dispatch(rewarededAdCompletedAction());}    
   }
 };
 const styles = StyleSheet.create({
@@ -140,6 +199,7 @@ const styles = StyleSheet.create({
     zIndex:20
   },
   heroImg:{
+    marginTop:40,
     flex:3,
     width:null,
     height:null,
@@ -149,16 +209,18 @@ const styles = StyleSheet.create({
   },
   infoContainer:{
     flex:1,
-    paddingTop:40,
     backgroundColor: THEME.mainBgColor,
   },
   infoTitle:{
     color: THEME.mainHighlightColor,
     fontSize: 18,
-    lineHeight: 30,
+    lineHeight: 20,
     textAlign:'center',
     paddingVertical:20,
     paddingHorizontal:20,
+  },
+  extraLineHeigth:{
+    lineHeight: 30,
   },
   infoDesc:{
     color: THEME.mainHighlightColor,
@@ -174,6 +236,21 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginHorizontal:20,
     padding:20,
+    backgroundColor:THEME.notifyBgColor,
+    borderRadius:20,
+  },
+  adBtnContainer:{
+    flexDirection:'column',
+    alignItems:'center',
+    position:'relative',
+    bottom:-20,
+  },
+  adBtnDisabled:{
+    opacity:0.5
+  },
+  textButtonContainer:{
+    padding:0,
+    width:150,
     backgroundColor:THEME.notifyBgColor,
     borderRadius:20,
   },

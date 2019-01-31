@@ -12,10 +12,19 @@ let AnalyticsService = {
   initialize(trackerId,appName){
     this.uniqueClientId = uniqClientId;
     this.trackingAppName = appName;
+    this.currentRootScreen = ''; 
     this.ga = new Analytics(trackerId, uniqClientId, 1, DeviceInfo.getUserAgent());
     this.processPrematureHitsQueue();
+    this.addSessionDimension(4, DeviceInfo.getModel());
+  },
+  addSessionDimension(index,value){
+    return this.ga.addDimension(index,value);
+  },
+  removeSessionDimension(index){
+    return this.ga.removeDimension(index);
   },
   sendScreenView(screenName){
+    this.currentRootScreen = screenName;
     if(!this.ga){
       this.initialBuffer.push(() => this.sendScreenView(screenName));
       return false;
@@ -28,6 +37,16 @@ let AnalyticsService = {
        );
     this.ga.send(screenView);
   },
+  sendNestedScreenView(subView){
+    let screenName = [this.currentRootScreen, subView].join(' - ');
+    let screenView = new GAHits.ScreenView(
+      this.trackingAppName,
+      screenName,
+      DeviceInfo.getReadableVersion(),
+      DeviceInfo.getBundleId()
+    );
+    this.ga.send(screenView);
+  },
   sendEvent({category,action,label,value,dimensions}){
     if(!this.ga){
       this.initialBuffer.push(
@@ -38,7 +57,6 @@ let AnalyticsService = {
     label = (label || `${category} - ${action}`).substr(0,250);
     let eventHit = new GAHits.Event(category,action,label,value);
     if(typeof dimensions == 'object'){
-      console.log('Adding custom dimension to event',dimensions);
       eventHit.set(dimensions);
       console.log('Serialized ga event',eventHit.toQueryString());
     }

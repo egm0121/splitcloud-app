@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "build-sourcemaps": "react-native bundle    --platform ios    --dev false    --entry-file index.ios.js    --bundle-output ios-release.bundle    --sourcemap-output ios-release.bundle.map",
-    "upload-sourcemaps": "bugsnag-sourcemaps upload --api-key $BUGSNAG_KEY  --app-version $APP_VERSION  --minified-file ios-release.bundle --source-map ios-release.bundle.map --minified-url main.jsbundle --upload-sources",
+    "upload-sourcemaps": "source .env && bugsnag-sourcemaps upload --api-key $BUGSNAG_KEY  --app-version $APP_VERSION  --minified-file ios-release.bundle --source-map ios-release.bundle.map --minified-url main.jsbundle --upload-sources",
     "test-env": "echo $BUGSNAG_KEY"
   },
   "dependencies": {
