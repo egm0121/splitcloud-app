@@ -3,8 +3,14 @@ import { globalSettings } from '../../helpers/constants';
 import FileDownloadManager from '../../modules/FileDownloadManager';
 import { isLocalTrack } from '../../helpers/formatters';
 import { getCurrentTrackBySide, getCurrentPlaylistBySide } from '../selectors/playlistSelector';
-let trackManager = new FileDownloadManager({extension:'mp3'});
+import config from '../../helpers/config';
+import SoundCloudApi from '../../modules/SoundcloudApi';
 
+let trackManager = new FileDownloadManager({extension:'mp3'});
+const scApi = new SoundCloudApi({
+  clientId: config.SC_CLIENT_ID,
+  clientSecret: config.SC_CLIENT_SECRET,
+});
 trackManager.initCacheDir().then(
   () => trackManager.cleanupIncompleteDownloads()
 );
@@ -21,7 +27,7 @@ const storeLocalTrack = (track) => {
     console.info('track is from local media library. skip download to cache')
     return false;
   }
-  let assetUrl = track.streamUrl, assetId = track.id;
+  let assetUrl = scApi.resolvePlayableStreamForTrackId(track.id) , assetId = track.id;
   console.info('trackCacheMiddleware: attempt download asset ->', assetUrl);
   trackManager.hasLocalAsset(assetId)
   .then(hasAsset => {

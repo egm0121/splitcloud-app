@@ -39,9 +39,6 @@ class AudioPlayer extends Component {
   getCurrentTrackId(){
     return this.getCurrentTrackObj().id;
   }
-  getCurrentTrackUrl(){
-    return this.getCurrentTrackObj().streamUrl;
-  }
   getCurrentTrackTitle() {
     return this.getCurrentTrackObj().label;
   }
