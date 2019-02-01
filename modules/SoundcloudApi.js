@@ -346,19 +346,18 @@ class SoundCloudApi {
     };
   }
   transformTrackPayload(t){
-    return this.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        type: 'track',
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration,
-        playbackCount: t.playback_count,
-        provider : 'soundcloud'
-      });
+    return {
+      id: t.id,
+      type: 'track',
+      label : t.title,
+      username: t.user.username,
+      streamUrl : t.stream_url,
+      artwork : stripSSL(t.artwork_url),
+      scUploaderLink : t.user.permalink_url,
+      duration: t.duration,
+      playbackCount: t.playback_count,
+      provider : 'soundcloud'
+    };
   }
   transformUserPayload(user){
     return {
@@ -381,16 +380,6 @@ class SoundCloudApi {
   }
   resolveStreamUrlFromTrackId(id){
     return `https://api.soundcloud.com/tracks/${id}/stream`;
-  }
-  resolvePlayableTrackItem(trackObj){
-    //this strip of https is needed as the ATS excaption for tls version on
-    //the info.plist wont work on twice for same request and 302 redirect
-    //to a second exceptional domain
-    return Object.assign({},trackObj,{
-      streamUrl : stripSSL(trackObj.streamUrl) +
-        '?client_id='+this.getClientId(),
-      artwork : stripSSL(trackObj.artwork)
-    });
   }
   resolvePlayableStreamForTrackId(trackId){
     return stripSSL(this.resolveStreamUrlFromTrackId(trackId)) + '?client_id=' + this.streamClientId; 
