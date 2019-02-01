@@ -43,6 +43,7 @@ import LogSlider from '../helpers/LogSlider';
 import FileDownloadManager from '../modules/FileDownloadManager';
 import { isLocalTrack } from '../helpers/formatters';
 import MediaLibraryPlaylist from './mediaLibraryPlaylist';
+import SoundCloudApi from '../modules/SoundcloudApi';
 
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -78,8 +79,11 @@ class AudioPlayerContainer extends Component {
     this.onRepeatToggle = this.onRepeatToggle.bind(this);
     this.playCurrentTrack = this.playCurrentTrack.bind(this);
     this.pauseCurrentTrack = this.pauseCurrentTrack.bind(this);
-
-    this.scClientId = Config.SC_CLIENT_ID;
+    
+    this.scApi = new SoundCloudApi({
+      clientId: Config.SC_CLIENT_ID,
+      clientSecret: Config.SC_CLIENT_SECRET,
+    });
     this.musicPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
     this.state = {
@@ -531,7 +535,11 @@ class AudioPlayerContainer extends Component {
     return this.getCurrentTrackObj().id;
   }
   getCurrentTrackUrl(){
-    return this.getCurrentTrackObj().streamUrl;
+    const streamUrl = this.scApi.resolvePlayableStreamForTrackId(
+      this.getCurrentTrackObj().id
+    );
+    console.log('getCurrentTrackUrl',streamUrl);
+    return streamUrl;
   }
   getCurrentTrackTitle() {
     return this.getCurrentTrackObj().label;

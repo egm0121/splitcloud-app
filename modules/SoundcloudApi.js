@@ -5,12 +5,13 @@ import { Linking } from 'react-native';
 import querystring from 'query-string';
 class SoundCloudApi {
 
-  constructor({endpoints,clientId,redirectUri,clientSecret}){
+  constructor({endpoints,clientId,streamClientId,redirectUri,clientSecret}){
     this.endpoints = endpoints || {
       v1: 'api.soundcloud.com',
       v2: 'api-v2.soundcloud.com'
     };
     this.clientId = clientId;
+    this.streamClientId = streamClientId || clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
     
@@ -390,6 +391,9 @@ class SoundCloudApi {
         '?client_id='+this.getClientId(),
       artwork : stripSSL(trackObj.artwork)
     });
+  }
+  resolvePlayableStreamForTrackId(trackId){
+    return stripSSL(this.resolveStreamUrlFromTrackId(trackId)) + '?client_id=' + this.streamClientId; 
   }
 }
 SoundCloudApi.api = {
