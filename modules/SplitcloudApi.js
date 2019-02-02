@@ -5,8 +5,8 @@ import { toArray } from '../helpers/utils';
 
 class SplitCloud {
 
-  constructor(opts){
-    this.endpoint = 'www.splitcloud-app.com/charts';
+  constructor(opts = {}){
+    this.endpoint = 'www.splitcloud-app.com';
     this.scApi = new SoundCloudApi(opts);
     this.timeout = 4*1e3;
     this.extendedTimeout = 10*1e3;
@@ -62,7 +62,7 @@ class SplitCloud {
   
   getWeeklyPopular(opts){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
-    return this.request('weekly_popular.json', queryOpts, SplitCloud.methods.GET ,cancelToken).then(resp => {
+    return this.request('charts/weekly_popular.json', queryOpts, SplitCloud.methods.GET, cancelToken).then(resp => {
       return toArray(resp.data)
         .map(this.scApi.normalizeStreamUrlProperty)
         .map(this.scApi.transformTrackPayload);
@@ -71,11 +71,16 @@ class SplitCloud {
 
   getWeeklyTrending(opts){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
-    return this.request('weekly_trending.json', queryOpts, SplitCloud.methods.GET ,cancelToken).then(resp => {
+    return this.request('charts/weekly_trending.json', queryOpts, SplitCloud.methods.GET, cancelToken).then(resp => {
       return toArray(resp.data)
         .map(this.scApi.normalizeStreamUrlProperty)
         .map(this.scApi.transformTrackPayload);
     });
+  }
+  getApplicationConfig(opts){
+    let [cancelToken,queryOpts] = this._extractCancelToken(opts);
+    return this.request('app/app_config.json', queryOpts, SplitCloud.methods.GET, cancelToken)
+      .then(resp => resp.data);
   }
 }
 SplitCloud.methods = {

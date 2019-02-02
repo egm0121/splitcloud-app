@@ -5,6 +5,15 @@ import { Linking } from 'react-native';
 import querystring from 'query-string';
 import { SC_STREAM_TOKEN_HIT, ANALYTICS_CATEGORY } from '../helpers/constants';
 import AnalyticsService from '../modules/Analytics';
+import EventEmitter from 'es2015-event-emitter';
+
+const configEmitter = new EventEmitter();
+configEmitter.EVENTS = {
+  STREAM_TOKEN_UPDATE: 'STREAM_TOKEN_UPDATE'
+};
+export const updateActiveStreamToken = newClientToken => {
+  configEmitter.trigger(configEmitter.EVENTS.STREAM_TOKEN_UPDATE,newClientToken);
+};
 
 class SoundCloudApi {
 
@@ -24,7 +33,12 @@ class SoundCloudApi {
     this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
     this.transformSelectionPayload = this.transformSelectionPayload.bind(this);
     this.handleAuthCode = this.handleAuthCode.bind(this);
-
+    configEmitter.on(
+      configEmitter.EVENTS.STREAM_TOKEN_UPDATE,
+      streamToken => {
+        console.log('the stream token has been updated to', streamToken);
+        this.streamClientId = streamToken;
+      });
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){

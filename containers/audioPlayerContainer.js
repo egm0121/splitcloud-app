@@ -44,6 +44,7 @@ import FileDownloadManager from '../modules/FileDownloadManager';
 import { isLocalTrack } from '../helpers/formatters';
 import MediaLibraryPlaylist from './mediaLibraryPlaylist';
 import SoundCloudApi from '../modules/SoundcloudApi';
+import StreamTokenManager from  '../modules/StreamTokenManager';
 
 const PROGRESS_TICK_INTERVAL = 1000;
 const capitalize = (str) => str[0].toUpperCase() + str.substring(1).toLowerCase();
@@ -535,6 +536,9 @@ class AudioPlayerContainer extends Component {
     return this.getCurrentTrackObj().id;
   }
   getCurrentTrackUrl(){
+    //every time we use a stream api request 
+    //let's check for updating the current streamClient token.
+    StreamTokenManager.checkActiveToken();
     const streamUrl = this.scApi.resolvePlayableStreamForTrackId(
       this.getCurrentTrackObj().id
     );
