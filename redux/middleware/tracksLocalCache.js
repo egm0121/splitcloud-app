@@ -14,7 +14,6 @@ const scApi = new SoundCloudApi({
 trackManager.initCacheDir().then(
   () => trackManager.cleanupIncompleteDownloads()
 );
-
 const findTrackInAnyStoredPlaylist = (playlistArr,track) => {
   return playlistArr
   .filter(p => p.id.indexOf('default_') == 0)
@@ -27,6 +26,7 @@ const storeLocalTrack = (track) => {
     console.info('track is from local media library. skip download to cache')
     return false;
   }
+  
   let assetUrl = scApi.resolvePlayableStreamForTrackId(track.id) , assetId = track.id;
   console.info('trackCacheMiddleware: attempt download asset ->', assetUrl);
   trackManager.hasLocalAsset(assetId)

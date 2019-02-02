@@ -3,6 +3,9 @@ import CacheDecorator from '../helpers/cacheDecorator';
 import { stripSSL, toArray } from '../helpers/utils';
 import { Linking } from 'react-native';
 import querystring from 'query-string';
+import { SC_STREAM_TOKEN_HIT, ANALYTICS_CATEGORY } from '../helpers/constants';
+import AnalyticsService from '../modules/Analytics';
+
 class SoundCloudApi {
 
   constructor({endpoints,clientId,streamClientId,redirectUri,clientSecret}){
@@ -382,6 +385,11 @@ class SoundCloudApi {
     return `https://api.soundcloud.com/tracks/${id}/stream`;
   }
   resolvePlayableStreamForTrackId(trackId){
+    AnalyticsService.sendEvent({
+      category: ANALYTICS_CATEGORY.SC_API,
+      action: SC_STREAM_TOKEN_HIT,
+      label: this.streamClientId
+    });
     return stripSSL(this.resolveStreamUrlFromTrackId(trackId)) + '?client_id=' + this.streamClientId; 
   }
 }
