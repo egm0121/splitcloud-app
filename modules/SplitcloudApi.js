@@ -79,7 +79,7 @@ class SplitCloud {
   }
   getApplicationConfig(opts){
     let [cancelToken,queryOpts] = this._extractCancelToken(opts);
-    return this.request('app/app_config.json', queryOpts, SplitCloud.methods.GET, cancelToken)
+    return this.request('app/app_config.json', {rd: parseInt(Math.random()*1e3)}, SplitCloud.methods.GET, cancelToken)
       .then(resp => resp.data);
   }
 }

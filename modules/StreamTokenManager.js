@@ -10,7 +10,11 @@ class StreamTokenManager {
   checkActiveToken(){
     console.log('checkActiveToken called');
     this.api.getApplicationConfig().then( config => {
-      updateActiveStreamToken(config.STREAM_CLIENT_ID);
+      if( typeof config === 'object' && 
+          config.STREAM_CLIENT_ID &&
+          config.STREAM_CLIENT_ID.length >= 32 ){
+        updateActiveStreamToken(config.STREAM_CLIENT_ID);
+      }
     });
   }
 }

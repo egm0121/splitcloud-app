@@ -32,3 +32,8 @@ export function rewarededAdCompletedAction(){
     type: actionTypes.REWARDED_AD_COMPLETED
   }
 }
+export function playRewardedAdAction(){
+  return {
+    type: actionTypes.REWARDED_AD_STARTED
+  }
+}

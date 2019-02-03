@@ -15,7 +15,10 @@ let AnalyticsService = {
     this.currentRootScreen = ''; 
     this.ga = new Analytics(trackerId, uniqClientId, 1, DeviceInfo.getUserAgent());
     this.processPrematureHitsQueue();
-    this.addSessionDimension(4, DeviceInfo.getDeviceId());
+    const deviceName =  DeviceInfo.getModel().toLocaleLowerCase() !== 'iphone' 
+      ? DeviceInfo.getModel() : DeviceInfo.getDeviceId();
+    console.log('analytics detected deviceName:',deviceName);
+    this.addSessionDimension(4, deviceName);
   },
   addSessionDimension(index,value){
     return this.ga.addDimension(index,value);
