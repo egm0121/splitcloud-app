@@ -3,14 +3,27 @@ import CacheDecorator from '../helpers/cacheDecorator';
 import { stripSSL, toArray } from '../helpers/utils';
 import { Linking } from 'react-native';
 import querystring from 'query-string';
+import { SC_STREAM_TOKEN_HIT, ANALYTICS_CATEGORY } from '../helpers/constants';
+import AnalyticsService from '../modules/Analytics';
+import EventEmitter from 'es2015-event-emitter';
+
+const configEmitter = new EventEmitter();
+configEmitter.EVENTS = {
+  STREAM_TOKEN_UPDATE: 'STREAM_TOKEN_UPDATE'
+};
+export const updateActiveStreamToken = newClientToken => {
+  configEmitter.trigger(configEmitter.EVENTS.STREAM_TOKEN_UPDATE,newClientToken);
+};
+
 class SoundCloudApi {
 
-  constructor({endpoints,clientId,redirectUri,clientSecret}){
+  constructor({endpoints,clientId,streamClientId,redirectUri,clientSecret}){
     this.endpoints = endpoints || {
       v1: 'api.soundcloud.com',
       v2: 'api-v2.soundcloud.com'
     };
     this.clientId = clientId;
+    this.streamClientId = streamClientId || clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
     
@@ -20,7 +33,12 @@ class SoundCloudApi {
     this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
     this.transformSelectionPayload = this.transformSelectionPayload.bind(this);
     this.handleAuthCode = this.handleAuthCode.bind(this);
-
+    configEmitter.on(
+      configEmitter.EVENTS.STREAM_TOKEN_UPDATE,
+      streamToken => {
+        console.log('the stream token has been updated to', streamToken);
+        this.streamClientId = streamToken;
+      });
     this.initializeCacheDecorators();
   }
   initializeCacheDecorators(){
@@ -345,19 +363,18 @@ class SoundCloudApi {
     };
   }
   transformTrackPayload(t){
-    return this.resolvePlayableTrackItem(
-      {
-        id: t.id,
-        type: 'track',
-        label : t.title,
-        username: t.user.username,
-        streamUrl : t.stream_url,
-        artwork : t.artwork_url,
-        scUploaderLink : t.user.permalink_url,
-        duration: t.duration,
-        playbackCount: t.playback_count,
-        provider : 'soundcloud'
-      });
+    return {
+      id: t.id,
+      type: 'track',
+      label : t.title,
+      username: t.user.username,
+      streamUrl : t.stream_url,
+      artwork : stripSSL(t.artwork_url),
+      scUploaderLink : t.user.permalink_url,
+      duration: t.duration,
+      playbackCount: t.playback_count,
+      provider : 'soundcloud'
+    };
   }
   transformUserPayload(user){
     return {
@@ -381,15 +398,13 @@ class SoundCloudApi {
   resolveStreamUrlFromTrackId(id){
     return `https://api.soundcloud.com/tracks/${id}/stream`;
   }
-  resolvePlayableTrackItem(trackObj){
-    //this strip of https is needed as the ATS excaption for tls version on
-    //the info.plist wont work on twice for same request and 302 redirect
-    //to a second exceptional domain
-    return Object.assign({},trackObj,{
-      streamUrl : stripSSL(trackObj.streamUrl) +
-        '?client_id='+this.getClientId(),
-      artwork : stripSSL(trackObj.artwork)
+  resolvePlayableStreamForTrackId(trackId){
+    AnalyticsService.sendEvent({
+      category: ANALYTICS_CATEGORY.SC_API,
+      action: SC_STREAM_TOKEN_HIT,
+      label: this.streamClientId
     });
+    return stripSSL(this.resolveStreamUrlFromTrackId(trackId)) + '?client_id=' + this.streamClientId; 
   }
 }
 SoundCloudApi.api = {

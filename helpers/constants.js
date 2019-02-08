@@ -64,8 +64,13 @@ export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
   LIBRARY: 'library'
 }
+
+export const ANALYTICS_CATEGORY = {
+  SC_API : 'SC_API',
+}
 // min seconds to flag a song as played in stats.
 export const PLAYBACK_MIN_TIME = 30; 
 export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
+export const SC_STREAM_TOKEN_HIT = 'SC_STREAM_TOKEN_HIT';
 export const MAX_INTERACTION_COUNT = 30;
 export const MAX_REVIEW_POSITIVE_ACTIONS = 40;

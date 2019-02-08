@@ -29,6 +29,7 @@ import {
   abortedSocialShareAction,
   socialShareRequiredAction,
   rewarededAdCompletedAction,
+  playRewardedAdAction,
 } from '../redux/actions/storeReviewAction';
 import {
   pauseCurrentTrack
@@ -69,7 +70,8 @@ class ShareAppScreen extends Component {
   onRewardedAdSelected(){
     console.log('show rewarded ad');
     if(!this.state.didRewardAdLoad) return;
-    const  { applyAdReward } = this.props;
+    const  { applyAdReward , playRewardedAd } = this.props;
+    playRewardedAd();
     AdMobRewarded.addEventListener('rewarded',() => {
       console.log('video ad done, user rewarded');
       applyAdReward();
@@ -181,7 +183,8 @@ const mapDispatchToProps = (dispatch) => {
     onSocialShareAborted(platformName){ dispatch(abortedSocialShareAction(platformName));},
     onSocialShareRequired(){ dispatch(socialShareRequiredAction())},
     pauseAllPlayback(){ dispatch(pauseCurrentTrack('L')); dispatch(pauseCurrentTrack('R'))},
-    applyAdReward(){ dispatch(rewarededAdCompletedAction());}    
+    applyAdReward(){ dispatch(rewarededAdCompletedAction());},
+    playRewardedAd(){ dispatch(playRewardedAdAction());}
   }
 };
 const styles = StyleSheet.create({

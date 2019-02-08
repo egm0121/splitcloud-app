@@ -80,7 +80,7 @@ class DiscoverProviderContainer extends Component {
     if(!resp){
       return this.setState({ trackList : [] });
     }
-    let tracks = resp.map((t) => this.scApi.resolvePlayableTrackItem(t));
+    let tracks = resp;
     console.log('update results with tracks',tracks);
     this.setState({ trackList : tracks });
   }
