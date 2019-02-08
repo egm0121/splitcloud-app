@@ -117,7 +117,7 @@ class SplitCloudApp extends Component {
                               <NotificationContainer />
                               <SocialShareContainer navigator={navigator} />
                               <OfflineModeBanner isOnline={isOnline} />
-                              <AdMobBottomBanner />
+                              <AdMobBottomBanner adDisabled={__DEV__ && false} />
                             </View>
                         }
                   }</NetworkAvailability>

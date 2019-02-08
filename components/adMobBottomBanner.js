@@ -8,16 +8,20 @@ import {
 } from 'react-native-admob';
 import THEME from '../styles/variables';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import AppText from './appText';
+
 function AdMobBottomBanner(props){
+  const { adDisabled } = props;
+  const containerStyle = adDisabled ? 
+    styles.disabledBarContainer :
+    styles.barContainer;
   return <View style={{flexDirection:'row'}}>
-    <View style={[styles.barContainer]}>
-      <AdMobBanner
+    <View style={[containerStyle]}>
+      {!adDisabled && <AdMobBanner
       adSize="smartBannerPortrait"
       adUnitID="ca-app-pub-8685101882223767/5553267369"
       testDevices={[AdMobBanner.simulatorId]}
       onAdFailedToLoad={error => console.warn(error)}
-      />
+      />}
     </View>
   </View>;
 }
@@ -28,6 +32,11 @@ let styles = StyleSheet.create({
     height: 50,
     backgroundColor: THEME.tabBarBorderColor,
     marginBottom: isIphoneX() ? 20 : 0,
+  },
+  disabledBarContainer:{
+    flex:1,
+    height: isIphoneX() ? 20 : 0,
+    backgroundColor: THEME.mainBgColor,
   },
   barText : {
     color: THEME.mainBgColor,
