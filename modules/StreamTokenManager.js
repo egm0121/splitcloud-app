@@ -9,11 +9,15 @@ class StreamTokenManager {
     this.checkActiveToken = throttle(this.checkActiveToken.bind(this),5000,{leading:true});
     this.enabled = true;
   }
-  stop(){
+  stopSync(){
     this.enabled = false;
   }
-  start(){
+  startSync(){
     this.enabled = true;
+  }
+  setActiveToken(token){
+    console.log('setting active token',token);
+    return updateActiveStreamToken(token);
   }
   checkActiveToken(){
     if (!this.enabled){
@@ -31,8 +35,9 @@ class StreamTokenManager {
   }
 }
 const managerService = new StreamTokenManager;
-if (config.OVERRIDE_STREAM_TOKEN ){
-  managerService.stop();
+if (config.OVERRIDE_STREAM_TOKEN){
+  managerService.stopSync();
+  managerService.setActiveToken(config.OVERRIDE_STREAM_TOKEN);
 }
 managerService.checkActiveToken();
 export default managerService;
