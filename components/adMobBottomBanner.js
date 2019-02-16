@@ -35,7 +35,7 @@ let styles = StyleSheet.create({
   },
   disabledBarContainer:{
     flex:1,
-    height: isIphoneX() ? 20 : 0,
+    height: isIphoneX() ? 21 : 0,
     backgroundColor: THEME.mainBgColor,
   },
   barText : {
