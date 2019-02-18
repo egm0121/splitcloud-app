@@ -157,7 +157,7 @@ class ShareAppScreen extends Component {
 ShareAppScreen.defaultProps = {
   shareOptions : {
     title: 'Try SplitCloud for iOS',
-    message: 'With SplitCloud double music player,you can share your headphones and play two different songs on each side! Download Free on AppStore:',
+    message: 'With #SplitCloud double music player, you can share your headphones and play two songs at once! Download Free on AppStore:',
     url: 'http://bit.ly/splitcloud',
     subject: 'Checkout this new music app - SplitCloud for iOS' //  for email
   },
