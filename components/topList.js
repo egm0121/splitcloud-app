@@ -54,7 +54,7 @@ class TopList extends Component {
         name:'SELECTION',
         label:'Discover',
         icon: require('../assets/section_playlist_discover.png'),
-        enabled:props.isOnline,
+        enabled: props.isOnline,
         visible:true,
         offlineAvailable:false
       },
@@ -127,7 +127,7 @@ class TopList extends Component {
         this.loadTopSoundCloudTracks().then(this.updateResultList);
       }
       if(this.getCurrSectionObj().name == 'SELECTION'){
-        this.loadSoundCloudSections().then(this.updateResultList);
+        this.loadDiscoverySection().then(this.updateResultList);
       }
     }
   }
@@ -205,10 +205,10 @@ class TopList extends Component {
     );
     return requestPromise;
   }
-  loadSoundCloudSections(){
+  loadDiscoverySection(){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.getSoundcloudSelections({
+    let requestPromise = this.splitcloudApi.getDiscoveryPlaylists({
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch((err) => {
