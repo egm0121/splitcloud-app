@@ -12,7 +12,7 @@ class SocialShareContainer extends Component {
   componentDidMount(){
     const {interactionCount, didShareOnce} = this.props;
     if(interactionCount > MAX_INTERACTION_COUNT && !didShareOnce && isInitialMount) {
-      console.log('socialShare container  initial mount', interactionCount, didShareOnce);
+      console.log('socialShare container initial mount', interactionCount, didShareOnce);
       this.pushShareScreen();
     }
     isInitialMount = false;

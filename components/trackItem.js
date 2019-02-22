@@ -8,7 +8,7 @@ const ARTIST_TRACK_DELIMITER = ' - ';
 
 function getSmallArtworkUrl(url){
   if(!url) return;
-  return url.replace('-large', '-t67x67');
+  return url.replace('-large','-large');
 }
 function isTrackLike(rowData){
   return rowData.id && rowData.label && !rowData.isEmpty
@@ -89,10 +89,10 @@ const styles = StyleSheet.create({
     paddingRight: 0
   },
   rowArtworkImage:{
-    width:50,
-    height:50,
+    width:52,
+    height:52,
     backgroundColor: THEME.listBorderColor,
-    borderRadius:4
+    borderRadius:3
   },
   rowArtworkContainer:{
     width:60,

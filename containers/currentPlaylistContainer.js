@@ -11,7 +11,6 @@ import {
   Alert
 } from 'react-native';
 import config from '../helpers/config';
-import errorReporter from '../modules/Bugsnag';
 import AnalyticsService from '../modules/Analytics';
 import { connect } from 'react-redux';
 import TrackListContainer from '../containers/trackListContainer';
@@ -218,12 +217,10 @@ class CurrentPlaylistContainer extends Component {
             trackActionStyles={[{fontSize:45}]}
             scrollToCurrentTrack={isUpNextPlaylist}
             />
-        {this.hasRelatedTracks(<RelatedTrackPreviewContainer 
+        <RelatedTrackPreviewContainer 
           navigator={this.props.navigator}
-          layout='horizontal' 
           side={this.props.side}
-          track={this.props.currentTrack}
-        />)}
+        />
         <MenuOverlay onClose={this.onOverlayClosed}
            closeLabel={'Close'}
            overlayStyle={[styles.playlistMenuOverlay,overlayStyle]}>

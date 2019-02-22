@@ -17,6 +17,7 @@ import SectionTabBar from '../components/sectionTabBar';
 import SectionItem from '../components/sectionItem';
 import TrackListContainer from '../containers/trackListContainer';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
+import RelatedTrackPreviewContainer from '../containers/relatedTrackPreviewContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
 import {formatGenreLabel} from '../helpers/formatters';
@@ -281,6 +282,10 @@ class TopList extends Component {
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
             {...this.props} selectionList={this.state.trackList}
             />}
+        <RelatedTrackPreviewContainer 
+          navigator={this.props.navigator}
+          side={this.props.side}
+        />
       </View>
     );
   }
