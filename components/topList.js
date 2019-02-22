@@ -252,6 +252,10 @@ class TopList extends Component {
         side={this.props.side}
         resetToTop={true}
         />}
+      <RelatedTrackPreviewContainer 
+          navigator={this.props.navigator}
+          side={this.props.side}
+        />
     </View>
   }
   render() {
@@ -282,10 +286,6 @@ class TopList extends Component {
           {this.getCurrSectionObj().name == 'SELECTION' && <SelectionExpolorer 
             {...this.props} selectionList={this.state.trackList}
             />}
-        <RelatedTrackPreviewContainer 
-          navigator={this.props.navigator}
-          side={this.props.side}
-        />
       </View>
     );
   }
