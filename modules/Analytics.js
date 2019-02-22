@@ -17,7 +17,7 @@ let AnalyticsService = {
     this.processPrematureHitsQueue();
     const deviceName =  DeviceInfo.getModel().toLocaleLowerCase() !== 'iphone' 
       ? DeviceInfo.getModel() : DeviceInfo.getDeviceId();
-    console.log('analytics detected deviceName:',deviceName);
+    console.log('analytics detected deviceName:',deviceName, 'uid:', uniqClientId);
     this.addSessionDimension(4, deviceName);
   },
   addSessionDimension(index,value){
