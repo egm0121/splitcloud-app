@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     marginRight:10,
     borderRadius:5,
     backgroundColor:THEME.mainBgColor,
-    borderWidth:1,
+    borderWidth:0.5,
     borderColor: THEME.contentBorderColor,
   },
   activeGenreContainer:{
