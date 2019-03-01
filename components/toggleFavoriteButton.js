@@ -50,9 +50,9 @@ const styles = StyleSheet.create({
   },
   inlineTextLabel:{
     color: THEME.mainColor,
-    opacity:0.8,
+    opacity: 0.5,
     fontSize: 45,
-    fontWeight:'200',
+    fontWeight:'300',
     lineHeight:55,
     textAlign : 'right'
   },

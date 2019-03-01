@@ -4,20 +4,24 @@ import THEME from '../styles/variables';
 import AppText from './appText';
 import { formatDurationExtended, ucFirst } from '../helpers/formatters';
 
-function getSmallArtworkUrl(url){
+function getSmallArtworkUrl(url,layout){
   if(!url)return;
+  if(layout == 'horizontal'){
+    return url.replace('-large','-t300x300');
+  }
   return url.replace('-large', '-t67x67');
 }
 
 export default function PlaylistItem(props){
   const rowTextStyle = [styles['rowText'+ucFirst(props.layout)]],
-    artworkImage = {url:getSmallArtworkUrl(props.item.artwork)};
+    artworkImage = {url: getSmallArtworkUrl(props.item.artwork, props.layout)},
+    isHorizontal = props.layout == 'horizontal';
   
   const containerLayout = [styles.row,styles['row'+ucFirst(props.layout)]];
   return <View style={containerLayout}>
       <TouchableOpacity onPress={props.onSelected.bind(false,props.item)}>
-        <View style={[styles.rowArtworkContainer,styles['rowArtworkContainer'+ucFirst(props.layout)]]}>
-          <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
+        <View style={[styles.rowArtworkContainer, styles['rowArtworkContainer'+ucFirst(props.layout)]]}>
+          <Image style={[styles.rowArtworkImage, styles['rowArtwork'+ucFirst(props.layout)]]} source={artworkImage} resizeMode={'cover'}/>
         </View>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.rowLabel,styles['rowLabel'+ucFirst(props.layout)]]} onPress={props.onSelected.bind(false,props.item)}>
@@ -29,9 +33,9 @@ export default function PlaylistItem(props){
           <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowAuthorText,styles['rowAuthorText'+ucFirst(props.layout)]].concat(rowTextStyle)} >
             {props.item.username}
           </AppText>
-          <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
+          {!isHorizontal && <AppText numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowDescText].concat(rowTextStyle)} >
             {props.onDescRender(props.item,props)}
-          </AppText>
+          </AppText>}
           </View>:
           <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText,styles.singleLineTitle]} >
             {props.item.label}
@@ -83,8 +87,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10,
     backgroundColor: THEME.mainBgColor,
-    borderBottomWidth:1,
-    borderBottomColor: THEME.listBorderColor,
+    // borderBottomWidth:1,
+    // borderBottomColor: THEME.listBorderColor,
+    borderRadius: 2,
   },
   rowDefault:{
     marginBottom:15,
@@ -102,6 +107,11 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.listBorderColor,
     borderRadius:4
   },
+  rowArtworkHorizontal:{
+    width:80,
+    height:80,
+    borderRadius:6
+  },
   rowArtworkContainer:{
     width:60
   },
@@ -112,6 +122,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   rowLabelHorizontal:{
+    height: 35,
   },
   rowTextHorizontal:{
     textAlign:'center'

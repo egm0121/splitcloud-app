@@ -5,25 +5,22 @@ import { Linking } from 'react-native';
 import querystring from 'query-string';
 import { SC_STREAM_TOKEN_HIT, ANALYTICS_CATEGORY } from '../helpers/constants';
 import AnalyticsService from '../modules/Analytics';
-import EventEmitter from 'es2015-event-emitter';
 
-const configEmitter = new EventEmitter();
-configEmitter.EVENTS = {
-  STREAM_TOKEN_UPDATE: 'STREAM_TOKEN_UPDATE'
-};
+let activeStreamToken;
+
 export const updateActiveStreamToken = newClientToken => {
-  configEmitter.trigger(configEmitter.EVENTS.STREAM_TOKEN_UPDATE,newClientToken);
+  activeStreamToken = newClientToken;
 };
 
 class SoundCloudApi {
 
-  constructor({endpoints,clientId,streamClientId,redirectUri,clientSecret}){
+  constructor({endpoints,clientId,authClientId,redirectUri,clientSecret}){
     this.endpoints = endpoints || {
       v1: 'api.soundcloud.com',
       v2: 'api-v2.soundcloud.com'
     };
     this.clientId = clientId;
-    this.streamClientId = streamClientId || clientId;
+    this.authClientId = authClientId || clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
     
@@ -33,13 +30,11 @@ class SoundCloudApi {
     this.transformPlaylistPayload = this.transformPlaylistPayload.bind(this);
     this.transformSelectionPayload = this.transformSelectionPayload.bind(this);
     this.handleAuthCode = this.handleAuthCode.bind(this);
-    configEmitter.on(
-      configEmitter.EVENTS.STREAM_TOKEN_UPDATE,
-      streamToken => {
-        console.log('the stream token has been updated to', streamToken);
-        this.streamClientId = streamToken;
-      });
+    
     this.initializeCacheDecorators();
+  }
+  getClientId(){
+    return activeStreamToken || this.clientId;
   }
   initializeCacheDecorators(){
 
@@ -85,14 +80,14 @@ class SoundCloudApi {
       .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(paramObj[key])}`)
       .join('&');
   }
-  _buildRequestObject(version,route,params = {},method = SoundCloudApi.methods.GET,cancelToken,timeout){
+  _buildRequestObject(version,route,params = {},method = SoundCloudApi.methods.GET,cancelToken,timeout,overrideClientId){
     let urlParams = method === SoundCloudApi.methods.GET ?
        '&' + this._toQueryString(params) : '';
     let secure =  method === SoundCloudApi.methods.GET ? '' : 's';
     let accessToken = this.accessToken ? `&oauth_token=${this.accessToken}` :'';
     let reqObj = {
       method : method ,
-      url : `http${secure}://${this.endpoints[version]}/${route}?client_id=${this.clientId}${accessToken}${urlParams}`,
+      url : `http${secure}://${this.endpoints[version]}/${route}?client_id=${overrideClientId||this.getClientId()}${accessToken}${urlParams}`,
       timeout : timeout || this.timeout,
       cancelToken
     };
@@ -141,7 +136,7 @@ class SoundCloudApi {
         'https://soundcloud.com/connect',
         '?response_type=token',
         '&scope=non-expiring',
-        '&client_id=' + this.clientId,
+        '&client_id=' + this.authClientId,
         '&display=popup',
         '&redirect_uri=' + this.redirectUri,
         '&state=testing'
@@ -156,7 +151,7 @@ class SoundCloudApi {
       redirect_uri: this.redirectUri,
       grant_type: 'authorization_code',
       code
-    },SoundCloudApi.methods.POST);
+    },SoundCloudApi.methods.POST,undefined,undefined,this.authClientId);
   }
   getOwnPlaylists(){
     return this.request(SoundCloudApi.api.v1,'me/playlists').then(resp => {
@@ -318,9 +313,6 @@ class SoundCloudApi {
       );
     })
   }
-  getClientId(){
-    return this.clientId;
-  }
   normalizeStreamUrlProperty(trackObj){
     if(trackObj.stream_url)return trackObj;
     trackObj.stream_url = trackObj.uri + '/stream'
@@ -402,9 +394,10 @@ class SoundCloudApi {
     AnalyticsService.sendEvent({
       category: ANALYTICS_CATEGORY.SC_API,
       action: SC_STREAM_TOKEN_HIT,
-      label: this.streamClientId
+      label: this.getClientId()
     });
-    return stripSSL(this.resolveStreamUrlFromTrackId(trackId)) + '?client_id=' + this.streamClientId; 
+    console.log('resolvePlayableStreamForTrackId',this.getClientId());
+    return stripSSL(this.resolveStreamUrlFromTrackId(trackId)) + '?client_id=' + this.getClientId(); 
   }
 }
 SoundCloudApi.api = {

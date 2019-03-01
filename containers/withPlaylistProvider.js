@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 export default function (
   playlistProvider, 
-  { infiniteScroll, emptyLabel, initOffset , limit } = { infiniteScroll:false, offset:0,  limit:20 }) {
+  { infiniteScroll, emptyLabel, initOffset , limit, shouldFetchData } = { infiniteScroll:false, offset:0,  limit:20 }) {
   return function (PlaylistComponent) {// eslint-disable-line
     return class withPlaylistProvider extends Component {
       constructor(props) {
@@ -14,6 +14,8 @@ export default function (
           offset: props.offset || initOffset,
           limit: props.limit || limit,
         };
+        this.shouldFetchData = typeof shouldFetchData == 'function' ? 
+          shouldFetchData : () => false;
       }
 
       loadMoreOnScroll() {
@@ -33,10 +35,10 @@ export default function (
       }
 
       componentDidUpdate(prevProps, prevState) {
-        if (prevState.offset !== this.state.offset) {
+        if (prevState.offset !== this.state.offset || this.shouldFetchData(prevProps, this.props)) {
           this.setState({ isLoading: true });
           playlistProvider(this.props, this.state.offset, this.state.limit).then((playlist) => {
-            if (!this.state.playlist) {
+            if (!this.state.playlist || !infiniteScroll) {
               return this.setState({
                 playlist,
                 isLoading: false,

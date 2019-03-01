@@ -17,6 +17,7 @@ import SectionTabBar from '../components/sectionTabBar';
 import SectionItem from '../components/sectionItem';
 import TrackListContainer from '../containers/trackListContainer';
 import DiscoverProviderContainer from '../containers/discoverProviderContainer';
+import RelatedTrackPreviewContainer from '../containers/relatedTrackPreviewContainer';
 import OfflineTracksContainer from '../containers/offlineTracksContainer';
 import SelectionExpolorer from './selectionExplorer';
 import {formatGenreLabel} from '../helpers/formatters';
@@ -54,7 +55,7 @@ class TopList extends Component {
         name:'SELECTION',
         label:'Discover',
         icon: require('../assets/section_playlist_discover.png'),
-        enabled:props.isOnline,
+        enabled: props.isOnline,
         visible:true,
         offlineAvailable:false
       },
@@ -127,7 +128,7 @@ class TopList extends Component {
         this.loadTopSoundCloudTracks().then(this.updateResultList);
       }
       if(this.getCurrSectionObj().name == 'SELECTION'){
-        this.loadSoundCloudSections().then(this.updateResultList);
+        this.loadDiscoverySection().then(this.updateResultList);
       }
     }
   }
@@ -205,10 +206,10 @@ class TopList extends Component {
     );
     return requestPromise;
   }
-  loadSoundCloudSections(){
+  loadDiscoverySection(){
     this._invalidatePrevRequest();
     this.props.onLoadingStateChange(true);
-    let requestPromise = this.scApi.getSoundcloudSelections({
+    let requestPromise = this.splitcloudApi.getDiscoveryPlaylists({
       cancelToken : this.generateRequestInvalidationToken().token
     });
     requestPromise.catch((err) => {
@@ -251,6 +252,10 @@ class TopList extends Component {
         side={this.props.side}
         resetToTop={true}
         />}
+      <RelatedTrackPreviewContainer 
+          navigator={this.props.navigator}
+          side={this.props.side}
+        />
     </View>
   }
   render() {
@@ -316,7 +321,7 @@ const styles = StyleSheet.create({
     marginRight:10,
     borderRadius:5,
     backgroundColor:THEME.mainBgColor,
-    borderWidth:1,
+    borderWidth:0.5,
     borderColor: THEME.contentBorderColor,
   },
   activeGenreContainer:{

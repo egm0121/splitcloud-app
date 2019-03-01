@@ -20,6 +20,11 @@ class SplitCloud {
       'getWeeklyPopular',
       3600*1e3
     );
+    this.getDiscoveryPlaylists = CacheDecorator.withCache(
+      this.getDiscoveryPlaylists.bind(this),
+      'getDiscoveryPlaylists',
+      3600*1e3
+    )
   }
   request(...args){
     let requestObj = this._buildRequestObject(...args);
@@ -78,9 +83,18 @@ class SplitCloud {
     });
   }
   getApplicationConfig(opts){
-    let [cancelToken,queryOpts] = this._extractCancelToken(opts);
+    let [cancelToken, queryOpts] = this._extractCancelToken(opts);
     return this.request('app/app_config.json', {rd: parseInt(Math.random()*1e3)}, SplitCloud.methods.GET, cancelToken)
       .then(resp => resp.data);
+  }
+  //TODO 
+  getDiscoveryPlaylists(opts){
+    let [cancelToken, queryOpts] = this._extractCancelToken(opts);
+    return this.request('app/api/discovery.json', queryOpts ,SplitCloud.methods.GET, cancelToken)
+      .then(resp => resp.data.collection
+        .map( payload => this.scApi.transformSelectionPayload(payload))
+        .filter(s => !Object.values(SoundCloudApi.selectionChart).includes(s.urn))
+      );
   }
 }
 SplitCloud.methods = {
