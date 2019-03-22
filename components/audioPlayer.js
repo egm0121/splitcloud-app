@@ -249,7 +249,7 @@ class AudioPlayer extends Component {
   }
   renderForegroundArtCover(artworkSource) {
     let { width, height } = Dimensions.get('window');
-    let extraMargin = height <= 667 ? 20 : 0;
+    let extraMargin = height <= 667 ? 30 : 0;
     const resizeStyle = {
       flex:0,
       width: width - extraMargin - 60,
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
   },
   controlsFadeImage:{
     flex:5,
-    marginBottom:0,
+    top:0,
     width:null,
     height:null,
     alignItems:'center',
