@@ -5,14 +5,17 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  AppState,
   Navigator,
   StyleSheet,
   View,
-  Text
+  Text,
+  PushNotificationIOS
 } from 'react-native';
 import './modules/Bugsnag';
 import { Provider } from 'react-redux';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import PubNubReact from 'pubnub-react';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
@@ -20,6 +23,7 @@ import SocialShareContainer from './containers/socialShareContainer';
 import OfflineModeBanner from './components/offlineModeBanner';
 import AnalyticsService from './modules/Analytics';
 import NavigationStateNotifier from './modules/NavigationStateNotifier';
+import SoundcloudPlaylist from './containers/soundcloudPlaylist';
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
 import THEME from './styles/variables';
@@ -62,6 +66,54 @@ class SplitCloudApp extends Component {
     this.onSceneDidFocus = this.onSceneDidFocus.bind(this);
     this.onSceneWillFocus = this.onSceneWillFocus.bind(this);
     this.setStylesGlobalOvverides();
+    this.setupPushNotifications();
+  }
+  setupPushNotifications(){
+    console.log('setting up PushNotifications');
+    this.pubnub = new PubNubReact({
+      publishKey: 'pub-c-85ae49d9-9ff5-4c48-964e-8007f6dcc1e5',
+      subscribeKey: 'sub-c-f6e036c4-4db3-11e9-b0df-968893e54af3'
+    });
+    this.pubnub.init(this);
+    PushNotificationIOS.requestPermissions();
+    PushNotificationIOS.addEventListener('register',(token) => {
+      console.log('GOT APNS deviceToken:',token);
+      this.pubnub.push.addChannels(
+        {
+          channels: ['notifications',AnalyticsService.uniqueClientId],
+          device: token,
+          pushGateway: 'apns'
+        });
+    });
+    PushNotificationIOS.addEventListener('notification', (notification) => {
+      console.log('Received notification while running!',notification);
+      if(AppState.currentState !== 'active'){
+        this.handlePushNotification(notification);
+      }
+    });
+    PushNotificationIOS.getInitialNotification().then(notification => {
+      console.log('app resumed with notification', notification);
+      if(notification) this.handlePushNotification(notification);
+    })
+  }
+  handlePushNotification(notification){
+    const payload = notification.getData().appData;
+    if (payload && payload.componentName === 'SoundcloudPlaylist') {
+      const { playlist } = payload;
+      const activeMode = this.getActivePlaybackMode(store);
+      const activeSide = activeMode !== 'S' ? activeMode : 'L';
+      console.log('trigger playlist screen with props', { playlist, side:activeSide });
+      this.navigator.push({
+        title : `SoundcloudPlaylist - ${playlist.label} - ${activeSide}`,
+        name : 'SoundcloudPlaylist' + activeSide,
+        component: SoundcloudPlaylist,
+        passProps : {
+          playlist,
+          side : activeSide,
+          onClose: () => this.navigator.pop()
+        }
+      });
+    }
   }
   setStylesGlobalOvverides(){
     Text.defaultProps.allowFontScaling = false;
