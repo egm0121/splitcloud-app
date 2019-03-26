@@ -10,18 +10,17 @@ import {
   StyleSheet,
   View,
   Text,
-  PushNotificationIOS
 } from 'react-native';
 import './modules/Bugsnag';
 import { Provider } from 'react-redux';
 import { isIphoneX } from 'react-native-iphone-x-helper';
-import PubNubReact from 'pubnub-react';
 import MainSceneContainer from './containers/mainSceneContainer';
 import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
 import SocialShareContainer from './containers/socialShareContainer';
 import OfflineModeBanner from './components/offlineModeBanner';
 import AnalyticsService from './modules/Analytics';
+import OneSignal from 'react-native-onesignal'; 
 import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import SoundcloudPlaylist from './containers/soundcloudPlaylist';
 import { store } from './redux/store/configure';
@@ -70,45 +69,34 @@ class SplitCloudApp extends Component {
   }
   setupPushNotifications(){
     console.log('setting up PushNotifications');
-    this.pubnub = new PubNubReact({
-      publishKey: 'pub-c-85ae49d9-9ff5-4c48-964e-8007f6dcc1e5',
-      subscribeKey: 'sub-c-f6e036c4-4db3-11e9-b0df-968893e54af3'
+    OneSignal.init('000d7af3-fc3f-4f78-be28-39898054f13e');
+    OneSignal.inFocusDisplaying(0);
+    OneSignal.addEventListener('received', (notification) => {
+      console.log('received notification!', notification);
+      return false;
     });
-    this.pubnub.init(this);
-    PushNotificationIOS.requestPermissions();
-    PushNotificationIOS.addEventListener('register',(token) => {
-      console.log('GOT APNS deviceToken:',token);
-      this.pubnub.push.addChannels(
-        {
-          channels: ['notifications',AnalyticsService.uniqueClientId],
-          device: token,
-          pushGateway: 'apns'
-        });
+    OneSignal.addEventListener('ids',(device) => {
+      console.log('Device info: ', device);
+      
     });
-    PushNotificationIOS.addEventListener('notification', (notification) => {
-      console.log('Received notification while running!',notification);
-      if(AppState.currentState !== 'active'){
-        this.handlePushNotification(notification);
-      }
+    OneSignal.addEventListener('opened', (opened) => {
+      console.log('Opened notification', opened);
+      const notificationData = opened.notification.payload.additionalData;
+      this.handlePushNotification(notificationData);
     });
-    PushNotificationIOS.getInitialNotification().then(notification => {
-      console.log('app resumed with notification', notification);
-      if(notification) this.handlePushNotification(notification);
-    })
   }
   handlePushNotification(notification){
-    const payload = notification.getData().appData;
+    const payload = notification;
     if (payload && payload.componentName === 'SoundcloudPlaylist') {
-      const { playlist } = payload;
       const activeMode = this.getActivePlaybackMode(store);
       const activeSide = activeMode !== 'S' ? activeMode : 'L';
-      console.log('trigger playlist screen with props', { playlist, side:activeSide });
+      console.log('trigger playlist screen with props', payload.playlistId , {side:activeSide });
       this.navigator.push({
-        title : `SoundcloudPlaylist - ${playlist.label} - ${activeSide}`,
+        title : `SoundcloudPlaylist - ${payload.playlistId} - ${activeSide}`,
         name : 'SoundcloudPlaylist' + activeSide,
         component: SoundcloudPlaylist,
         passProps : {
-          playlist,
+          playlist : { id: payload.playlistId },
           side : activeSide,
           onClose: () => this.navigator.pop()
         }
