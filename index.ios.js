@@ -23,6 +23,7 @@ import AnalyticsService from './modules/Analytics';
 import OneSignal from 'react-native-onesignal'; 
 import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import SoundcloudPlaylist from './containers/soundcloudPlaylist';
+import UploaderProfileContainer from './containers/uploaderProfileContainer'
 import { store } from './redux/store/configure';
 import Config from './helpers/config';
 import THEME from './styles/variables';
@@ -69,7 +70,7 @@ class SplitCloudApp extends Component {
   }
   setupPushNotifications(){
     console.log('setting up PushNotifications');
-    OneSignal.init('000d7af3-fc3f-4f78-be28-39898054f13e');
+    OneSignal.init(config.ONE_SIGNAL_APP_ID,{kOSSettingsKeyAutoPrompt : true});
     OneSignal.inFocusDisplaying(0);
     OneSignal.addEventListener('received', (notification) => {
       console.log('received notification!', notification);
@@ -87,20 +88,40 @@ class SplitCloudApp extends Component {
   }
   handlePushNotification(notification){
     const payload = notification;
-    if (payload && payload.componentName === 'SoundcloudPlaylist') {
-      const activeMode = this.getActivePlaybackMode(store);
-      const activeSide = activeMode !== 'S' ? activeMode : 'L';
+    let componentSceneData;
+    if (!payload) return false;
+    const activeMode = this.getActivePlaybackMode(store);
+    const activeSide = activeMode !== 'S' ? activeMode : 'L';
+    if (payload.componentName === 'SoundcloudPlaylist') {
       console.log('trigger playlist screen with props', payload.playlistId , {side:activeSide });
-      this.navigator.push({
+      componentSceneData = {
         title : `SoundcloudPlaylist - ${payload.playlistId} - ${activeSide}`,
         name : 'SoundcloudPlaylist' + activeSide,
         component: SoundcloudPlaylist,
         passProps : {
           playlist : { id: payload.playlistId },
           side : activeSide,
+        }
+      };
+    }
+    if (payload.componentName === 'UploaderProfileContainer') {
+      componentSceneData = {
+        title: `${payload.componentName} - ${payload.scUploaderLink}`,
+        name: `${payload.componentName} ${activeSide}`,
+        component: UploaderProfileContainer,
+        passProps : {
+          scUploaderLink: payload.scUploaderLink,
+          side: activeSide
+        }
+      }
+    }
+    if (payload.componentName){
+      this.navigator.push({ ...componentSceneData,
+        passProps:{
+          ...componentSceneData.passProps,
           onClose: () => this.navigator.pop()
         }
-      });
+      })
     }
   }
   setStylesGlobalOvverides(){
