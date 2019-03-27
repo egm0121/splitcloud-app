@@ -65,13 +65,22 @@ class SplitCloudApp extends Component {
     this.configureScene = this.configureScene.bind(this);
     this.onSceneDidFocus = this.onSceneDidFocus.bind(this);
     this.onSceneWillFocus = this.onSceneWillFocus.bind(this);
+    this.initialNotification = null;
     this.setStylesGlobalOvverides();
     this.initPushNotifications();
+    this.bindNotificationListeners();
   }
   componentDidMount(){
     // register notification handlers after we 
     // rendered and got a ref to the navigator instance
-    this.bindNotificationListeners();
+    this.processInitialNotification();
+  }
+  processInitialNotification(){
+    console.log('processing initial notification');
+    if (this.initialNotification && this.navigator){
+      this.handlePushNotification(this.initialNotification);
+      this.initialNotification = null;
+    }
   }
   initPushNotifications(){
     console.log('setting up PushNotifications OneSignal SDK');
@@ -90,7 +99,11 @@ class SplitCloudApp extends Component {
     OneSignal.addEventListener('opened', (opened) => {
       console.log('Opened notification', opened);
       const notificationData = opened.notification.payload.additionalData;
-      this.handlePushNotification(notificationData);
+      if( this.navigator ){
+        this.handlePushNotification(notificationData);
+      } else {
+        this.initialNotification = notificationData;
+      }
     });
   }
   handlePushNotification(notification){
