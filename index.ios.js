@@ -66,19 +66,25 @@ class SplitCloudApp extends Component {
     this.onSceneDidFocus = this.onSceneDidFocus.bind(this);
     this.onSceneWillFocus = this.onSceneWillFocus.bind(this);
     this.setStylesGlobalOvverides();
-    this.setupPushNotifications();
+    this.initPushNotifications();
   }
-  setupPushNotifications(){
-    console.log('setting up PushNotifications');
+  componentDidMount(){
+    // register notification handlers after we 
+    // rendered and got a ref to the navigator instance
+    this.bindNotificationListeners();
+  }
+  initPushNotifications(){
+    console.log('setting up PushNotifications OneSignal SDK');
     OneSignal.init(config.ONE_SIGNAL_APP_ID,{kOSSettingsKeyAutoPrompt : true});
     OneSignal.inFocusDisplaying(0);
+  }
+  bindNotificationListeners(){
     OneSignal.addEventListener('received', (notification) => {
       console.log('received notification!', notification);
       return false;
     });
     OneSignal.addEventListener('ids',(device) => {
-      console.log('Device info: ', device);
-      
+      console.log('received device info: ', device);
     });
     OneSignal.addEventListener('opened', (opened) => {
       console.log('Opened notification', opened);
@@ -92,8 +98,8 @@ class SplitCloudApp extends Component {
     if (!payload) return false;
     const activeMode = this.getActivePlaybackMode(store);
     const activeSide = activeMode !== 'S' ? activeMode : 'L';
+
     if (payload.componentName === 'SoundcloudPlaylist') {
-      console.log('trigger playlist screen with props', payload.playlistId , {side:activeSide });
       componentSceneData = {
         title : `SoundcloudPlaylist - ${payload.playlistId} - ${activeSide}`,
         name : 'SoundcloudPlaylist' + activeSide,
@@ -115,7 +121,7 @@ class SplitCloudApp extends Component {
         }
       }
     }
-    if (payload.componentName){
+    if (payload.componentName) {
       this.navigator.push({ ...componentSceneData,
         passProps:{
           ...componentSceneData.passProps,
