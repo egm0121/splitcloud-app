@@ -14,17 +14,18 @@ import {
 import './modules/Bugsnag';
 import { Provider } from 'react-redux';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import OneSignal from 'react-native-onesignal'; 
 import MainSceneContainer from './containers/mainSceneContainer';
 import NetworkAvailability from './components/networkAvailability';
 import NotificationContainer from './containers/notificationContainer';
 import SocialShareContainer from './containers/socialShareContainer';
 import OfflineModeBanner from './components/offlineModeBanner';
 import AnalyticsService from './modules/Analytics';
-import OneSignal from 'react-native-onesignal'; 
 import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import SoundcloudPlaylist from './containers/soundcloudPlaylist';
 import UploaderProfileContainer from './containers/uploaderProfileContainer'
 import { store } from './redux/store/configure';
+import { PUSH_NOTIFICATION_OPENED_HIT } from './helpers/constants';
 import Config from './helpers/config';
 import THEME from './styles/variables';
 import AdMobBottomBanner from './components/adMobBottomBanner';
@@ -112,6 +113,13 @@ class SplitCloudApp extends Component {
     if (!payload) return false;
     const activeMode = this.getActivePlaybackMode(store);
     const activeSide = activeMode !== 'S' ? activeMode : 'L';
+
+    AnalyticsService.sendEvent({
+      category: `side-${activeSide}`,
+      action: PUSH_NOTIFICATION_OPENED_HIT,
+      label: payload.componentName,
+      value: 1,
+    });
 
     if (payload.componentName === 'SoundcloudPlaylist') {
       componentSceneData = {
