@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>5</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>whatsapp</string>
@@ -88,8 +88,12 @@
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>SplitCloud wants to access your Music Library to be able to play your local music</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>SplitCloud wants to send geo-localised notifications</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>SplitCloud wants to send geo-localised notifications</string>
+	<key>NSLocationWhenInUseUsageDescription </key>
+	<string>SplitCloud wants to send geo-localised notifications</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Lato-Medium.ttf</string>

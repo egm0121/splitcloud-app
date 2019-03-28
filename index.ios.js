@@ -87,6 +87,7 @@ class SplitCloudApp extends Component {
     console.log('setting up PushNotifications OneSignal SDK');
     OneSignal.init(config.ONE_SIGNAL_APP_ID,{kOSSettingsKeyAutoPrompt : true});
     OneSignal.inFocusDisplaying(0);
+    OneSignal.setLocationShared(false);
     OneSignal.setExternalUserId(AnalyticsService.uniqueClientId);
   }
   bindNotificationListeners(){
