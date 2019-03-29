@@ -71,6 +71,7 @@ export const ANALYTICS_CATEGORY = {
 // min seconds to flag a song as played in stats.
 export const PLAYBACK_MIN_TIME = 30; 
 export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
+export const PUSH_NOTIFICATION_OPENED_HIT = 'PUSH_NOTIFICATION_OPENED_HIT';
 export const SC_STREAM_TOKEN_HIT = 'SC_STREAM_TOKEN_HIT';
 export const MAX_INTERACTION_COUNT = 30;
 export const MAX_REVIEW_POSITIVE_ACTIONS = 40;

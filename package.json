@@ -28,6 +28,7 @@
     "react-native-iphone-x-helper": "1.0.1",
     "react-native-itunes": "0.4.5",
     "react-native-multi-slider": "0.3.5",
+    "react-native-onesignal": "^3.2.12",
     "react-native-share": "1.1.1",
     "react-native-sound": "git+https://github.com/egm0121/react-native-sound.git#v0.10.9-patch-no-resume",
     "react-native-store-review": "0.1.3",

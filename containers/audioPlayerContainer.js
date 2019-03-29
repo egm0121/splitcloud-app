@@ -536,6 +536,9 @@ class AudioPlayerContainer extends Component {
     return this.getCurrentTrackObj().id;
   }
   getCurrentTrackUrl(){
+    if (isLocalTrack(this.getCurrentTrackObj())) {
+      return this.getCurrentTrackObj().streamUrl;
+    }
     //every time we use a stream api request 
     //let's check for updating the current streamClient token.
     StreamTokenManager.checkActiveToken();
