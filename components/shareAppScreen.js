@@ -19,7 +19,7 @@ import HeaderBar from '../components/headerBar';
 import Button from '../components/button';
 import AppText from '../components/appText';
 import Share from 'react-native-share';
-import { MAX_INTERACTION_COUNT } from '../helpers/constants';
+import { MAX_INTERACTION_COUNT, MAX_DAILY_INTERACTION_COUNT } from '../helpers/constants';
 import config from '../helpers/config';
 import {
   pushNotification
@@ -116,10 +116,12 @@ class ShareAppScreen extends Component {
     }
   }
   render() {
-    const { infoText, infoTitle, lockedText, lockedTitle, isAppLocked } = this.props;
+    const { infoText, infoTitle, lockedText, lockedTitle, isAppLocked, rewardedOnly } = this.props;
     const allowDismiss = !isAppLocked;
+    const showSocialShare = !rewardedOnly;
     const adBtnStyles = this.state.didRewardAdLoad ? 
       [styles.adBtnContainer]: [styles.adBtnContainer,styles.adBtnDisabled];
+    if(rewardedOnly) adBtnStyles.push(styles.adBtnCenter);
     const displayTitle =  allowDismiss ? infoTitle : lockedTitle;
     const displayInfo =  allowDismiss ? infoText : lockedText;
     let { height } = Dimensions.get('window');
@@ -140,16 +142,16 @@ class ShareAppScreen extends Component {
           <TouchableOpacity style={[styles.textButtonContainer]} onPress={this.onRewardedAdSelected}>
             <AppText style={styles.infoTitle} bold={true} >Watch Ad</AppText>
           </TouchableOpacity>
-            <AppText bold={true} style={styles.infoTitle}>OR</AppText>
+            {showSocialShare && <AppText bold={true} style={styles.infoTitle}>OR</AppText>}
         </View>}
-        <View style={styles.socialIconsContainer}>
+        {showSocialShare && <View style={styles.socialIconsContainer}>
               <Button style={styles.socialIcon} image={{uri: TWITTER_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'twitter')}/>
               <Button style={styles.socialIcon} image={{uri: FACEBOOK_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'facebook')}/>
               <Button style={styles.socialIcon} image={{uri: WHATSAPP_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'whatsapp')}/>
               <Button style={styles.socialIcon} image={{uri: LINE_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'line')} />
               <Button style={styles.socialIcon} image={{uri: EMAIL_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'email')} />
               <Button style={styles.socialIcon} image={{uri: CLIPBOARD_ICON}} size={'big'} onPressed={this.openShareApp.bind(this,'clipboard')} />
-        </View> 
+        </View>}
       </View>
     );
   }
@@ -165,15 +167,17 @@ ShareAppScreen.defaultProps = {
   infoTitle: 'Help your friends discover SplitCloud',
   infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and inviting your friends to try it!',
   lockedTitle: 'Thanks for using SplitCloud',
-  lockedText : 'We need your support to keep SplitCloud Free!\nTo continue using the app share it or watch a video ad. Thank you!',
+  lockedText : 'We need your support to keep SplitCloud Free!\nTo continue using the app share it or watch a short ad. Thank you!',
 };
 const mapStateToProps = (state, props) => {
   const didShareOnce =  state.reviewState.shared;
-  const interactionCount = state.reviewState.actionCounter ;
+  const interactionCount = state.reviewState.actionCounter;
+  const dailyInteractionCount = state.reviewState.dailyActionCounter;
   return {
     didShareOnce,
     interactionCount,
-    isAppLocked: interactionCount >= MAX_INTERACTION_COUNT && !didShareOnce
+    isAppLocked: (interactionCount >= MAX_INTERACTION_COUNT && !didShareOnce) || 
+      dailyInteractionCount >= MAX_DAILY_INTERACTION_COUNT
   };
 }
 const mapDispatchToProps = (dispatch) => {
@@ -247,6 +251,9 @@ const styles = StyleSheet.create({
     alignItems:'center',
     position:'relative',
     bottom:-20,
+  },
+  adBtnCenter:{
+    flex:1,
   },
   adBtnDisabled:{
     opacity:0.5

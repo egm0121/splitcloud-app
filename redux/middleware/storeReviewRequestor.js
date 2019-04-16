@@ -1,13 +1,12 @@
 import * as StoreReview from 'react-native-store-review';
 import { actionTypes } from '../constants/actions';
-import { incrementPositiveAction,reviewCountDoneAction } from '../actions/storeReviewAction';
-import { MAX_REVIEW_POSITIVE_ACTIONS, MAX_INTERACTION_COUNT } from '../../helpers/constants';
+import { reviewCountDoneAction } from '../actions/storeReviewAction';
+import { MAX_REVIEW_POSITIVE_ACTIONS, MAX_INTERACTION_COUNT, MAX_DAILY_INTERACTION_COUNT } from '../../helpers/constants';
 const actionTypeWhitelist = [
   actionTypes.INCREMENT_CURR_PLAY_INDEX,
   actionTypes.DECREMENT_CURR_PLAY_INDEX,
   actionTypes.CHANGE_CURR_PLAY_INDEX
 ];
-
 const StoreReviewRequestor = store => {
   return next => {
     return action => {      
@@ -20,12 +19,14 @@ const StoreReviewRequestor = store => {
           StoreReview.isAvailable && StoreReview.requestReview();
           store.dispatch(reviewCountDoneAction());
         }
-        if ( state.actionCounter + 1 == MAX_INTERACTION_COUNT ) {
-          console.log('max iteration count reached - do not trigger action')
+        if ( 
+          state.actionCounter === MAX_INTERACTION_COUNT ||
+          state.dailyActionCounter === MAX_DAILY_INTERACTION_COUNT
+        ) {
+          console.log('max songs reached  - block inflight change track action')
         } else {
           result = next(action);
         }
-        store.dispatch(incrementPositiveAction());
       } else {
         result = next(action);
       }

@@ -73,5 +73,7 @@ export const PLAYBACK_MIN_TIME = 30;
 export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
 export const PUSH_NOTIFICATION_OPENED_HIT = 'PUSH_NOTIFICATION_OPENED_HIT';
 export const SC_STREAM_TOKEN_HIT = 'SC_STREAM_TOKEN_HIT';
-export const MAX_INTERACTION_COUNT = 30;
+export const MAX_INTERACTION_COUNT = 10; //global playback cap
+console.warn('using debug MAX_DAILY_INTERACTION to 3');
+export const MAX_DAILY_INTERACTION_COUNT = 3; //daily playback cap 
 export const MAX_REVIEW_POSITIVE_ACTIONS = 40;

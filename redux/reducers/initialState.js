@@ -11,6 +11,8 @@ const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
     actionCounter : 0,
+    dailyActionCounter: 0,
+    lastDateDay: 0,
     done: false,
     shared: false,
   },

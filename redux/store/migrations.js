@@ -104,5 +104,17 @@ export default {
         ...state.featureDiscovery,
       }
     }
+  },
+  20:(state) => {
+    //adds the daily max interaction fields
+    const newState =  {
+      ...state,
+      reviewState: {
+        ...initialState.reviewState,
+        ...state.reviewState
+      }
+    }
+    console.log('state after migration',newState);
+    return newState;
   }
 }
