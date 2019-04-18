@@ -16,6 +16,9 @@ import TrackList from '../components/trackList';
 import ToggleFavoriteTrackContainer from './toggleFavoriteTrackContainer';
 import PlaylistContainer from './playlistContainer';
 import {
+  setPreviewTrack
+} from '../redux/actions/previewActions';
+import {
   pushNotification
 } from '../redux/actions/notificationActions';
 import {
@@ -93,6 +96,8 @@ class TrackListContainer extends Component {
         items={this.props.trackList}
         onTrackDescRender={this.onTrackDescRender}
         onTrackActionRender={this.onTrackActionRender}
+        onTrackPreviewStart={this.props.onTrackPreviewStart}
+        onTrackPreviewEnd={this.props.onTrackPreviewEnd}
         currentTrack={this.props.currentPlayingTrack}
         onSelected={this.onTrackSelected}
         onPlaylistSelected={this.onPlaylistSelected}
@@ -107,6 +112,8 @@ class TrackListContainer extends Component {
           onTrackActionRender={this.onTrackActionRender}
           currentTrack={this.props.currentPlayingTrack}
           onTrackSelected={this.onTrackSelected}
+          onTrackPreviewStart={this.props.onTrackPreviewStart}
+          onTrackPreviewEnd={this.props.onTrackPreviewEnd}
           isLoading={this.props.isLoading}
           onEndReached={this.props.onEndReached}
           onEndThreshold={this.props.onEndThreshold}
@@ -161,6 +168,12 @@ const mapDispatchToProps = (dispatch,props) =>({
     console.log('tracklist connect onTrackSelected',track,trackList);
     dispatch(setPlaylist(props.side,trackList,'playbackQueue_'+props.side));
     dispatch(changeCurrentPlayIndex(props.side,track,'playbackQueue_'+props.side));
+  },
+  onTrackPreviewStart: (track) =>{
+    dispatch(setPreviewTrack(props.side,track));
+  },
+  onTrackPreviewEnd: () =>{
+    dispatch(setPreviewTrack(props.side,null));
   }
 });
 const mergeProps = (propsFromState, propsFromDispatch, ownProps) => {

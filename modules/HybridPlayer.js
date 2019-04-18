@@ -99,7 +99,7 @@ export default class HybridPlayer extends ReactNativeStreamingPlayer {
   }
   stop(){
     if(this.state.playerMode == HybridPlayer.STREAMING){
-      return super.resume();
+      return super.stop();
     } else {
       this.state.isPlaybackReady = false;
       this.state.playWhenReady = false; 

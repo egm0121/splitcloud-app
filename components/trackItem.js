@@ -16,6 +16,9 @@ function isTrackLike(rowData){
 function cleanText(text){
   return text.replace(/(\"|\')/g,'').trim();
 }
+let isPressAndHold = false;
+let initalPos;
+let longPressRef;
 export default function TrackItem(props){
   const rowData = props.item;
   const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
@@ -37,15 +40,38 @@ export default function TrackItem(props){
     }
   }
 
+  const onLongPress = (e) => {
+    isPressAndHold = true;
+    props.onLongPressStart(rowData);
+  };
+  const onPressOut = (e) => {
+    isPressAndHold = false;
+    props.onLongPressEnd(rowData);
+  };
+  const onPress = (e) => { 
+    if(isPressAndHold){
+      return ;
+    }
+    props.onSelected(rowData);
+  };
   return <View style={[styles.row,props.style]}>
    {!!props.renderArtwork &&
-    <TouchableOpacity onPress={props.onSelected.bind(null,rowData)}>
+    <TouchableOpacity 
+      onPress={onPress}
+      onLongPress={onLongPress}
+      onPressOut={onPressOut}
+      >
       <View style={styles.rowArtworkContainer}>
         <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
       </View>
     </TouchableOpacity>
     }
-    <TouchableOpacity style={styles.rowLabel} onPress={props.onSelected.bind(null,rowData)}>
+    <TouchableOpacity style={styles.rowLabel} 
+      onPress={onPress}
+      onLongPress={onLongPress}
+      onPressOut={onPressOut}
+      delayLongPress={props.pressAndHoldDelay}
+      >
         <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
           {trackTitle}
         </AppText>
@@ -68,7 +94,10 @@ TrackItem.defaultProps = {
   layout:'default',
   onTrackActionRender : () => null,
   renderArtwork: true,
-  style: null
+  style: null,
+  pressAndHoldDelay: 450,
+  onLongPressStart: () => {},
+  onLongPressEnd: () => {},
 };
 TrackItem.propTypes = {
   layout: PropTypes.string,
@@ -77,7 +106,9 @@ TrackItem.propTypes = {
   onSelected: PropTypes.func.isRequired,
   onAction: PropTypes.func,
   onTrackDescRender: PropTypes.func.isRequired,
-  onTrackActionRender: PropTypes.func.isRequired
+  onTrackActionRender: PropTypes.func.isRequired,
+  onLongPressStart: PropTypes.func,
+  onLongPressEnd: PropTypes.func,
 };
 const styles = StyleSheet.create({
   row : {

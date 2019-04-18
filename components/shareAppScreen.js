@@ -46,6 +46,7 @@ class ShareAppScreen extends Component {
     this.state = {
       didRewardAdLoad: false
     }
+    this.loadAttempts = 0;
     this.closeScreen = this.closeScreen.bind(this);
     this.onRewardedAdSelected = this.onRewardedAdSelected.bind(this);
   }
@@ -53,19 +54,32 @@ class ShareAppScreen extends Component {
     if (this.props.isAppLocked) {
       console.log('pauseAllPlayback');
       this.props.pauseAllPlayback();
+      this.setupRewardedAdUnit();
       this.preloadRewardedAd();
     }
   }
   closeScreen(){
     setTimeout(() => this.props.onClose(),1500);
   }
-  preloadRewardedAd(){
+  setupRewardedAdUnit(){
     AdMobRewarded.setAdUnitID(config.ADMOB_REWARDED_ID);
     AdMobRewarded.setTestDevices([AdMobRewarded.simulatorId]);
+  }
+  preloadRewardedAd(){
     this.rewardedAd = AdMobRewarded.requestAd();
     this.rewardedAd
-    .then(() => this.setState({didRewardAdLoad:true}))
-    .catch(err => console.log('rewarded ad load failed',err));
+    .then(() => {
+      this.setState({didRewardAdLoad:true});
+      this.loadAttempts = 0;
+    })
+    .catch(err => { 
+      console.log('rewarded ad load failed',err);
+      this.loadAttempts++;
+      if(this.loadAttempts < 3) {
+        console.log('rewarded ad retry',this.loadAttempts);
+        this.preloadRewardedAd();
+      }
+    });
   }
   onRewardedAdSelected(){
     console.log('show rewarded ad');
@@ -140,7 +154,7 @@ class ShareAppScreen extends Component {
         </View>
         {isAppLocked && <View style={adBtnStyles}>
           <TouchableOpacity style={[styles.textButtonContainer]} onPress={this.onRewardedAdSelected}>
-            <AppText style={styles.infoTitle} bold={true} >Watch Ad</AppText>
+            <AppText style={styles.infoTitle} bold={true} >Watch a short Ad</AppText>
           </TouchableOpacity>
             {showSocialShare && <AppText bold={true} style={styles.infoTitle}>OR</AppText>}
         </View>}
@@ -163,7 +177,7 @@ ShareAppScreen.defaultProps = {
     url: 'http://bit.ly/splitcloud',
     subject: 'Checkout this new music app - SplitCloud for iOS' //  for email
   },
-  screenTitle: 'Share SplitCloud App!',
+  screenTitle: 'Thanks for using SplitCloud!',
   infoTitle: 'Help your friends discover SplitCloud',
   infoText: 'Thanks for using SplitCloud!\nPlease support it by sharing the app link on your social networks and inviting your friends to try it!',
   lockedTitle: 'Thanks for using SplitCloud',

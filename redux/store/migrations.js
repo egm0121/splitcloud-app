@@ -114,7 +114,14 @@ export default {
         ...state.reviewState
       }
     }
-    console.log('state after migration',newState);
+    return newState;
+  },
+  22:(state) => {
+    //adds the preview slice state
+    const newState =  {
+      ...state,
+      preview: initialState.preview
+    }
     return newState;
   }
 }

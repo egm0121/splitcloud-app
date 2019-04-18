@@ -48,6 +48,8 @@ function HorizontalTrackListing(props){
         key={key}
         item={track}
         currentTrack={props.currentTrack}
+        onLongPressStart={props.onTrackPreviewStart}
+        onLongPressEnd={props.onTrackPreviewEnd}
         onSelected={(item) => {
           props.onSelected(item,props.items);
         }} 

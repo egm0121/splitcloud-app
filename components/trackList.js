@@ -44,7 +44,7 @@ class TrackList extends Component {
   }
   componentDidMount(){
     if(this.props.tracksData && this.props.scrollToCurrentTrack ){
-      setImmediate( ()=> {
+      setImmediate(() => {
         this.scrollToCurrentTrack(this.props.tracksData);
       });
     }
@@ -127,6 +127,8 @@ class TrackList extends Component {
       onSelected={this._onSongSelected} 
       onTrackActionRender={this.props.onTrackActionRender}
       onTrackDescRender={this.props.onTrackDescRender}
+      onLongPressStart={this.props.onTrackPreviewStart}
+      onLongPressEnd={this.props.onTrackPreviewEnd}
     />
   }
   render() {
@@ -154,6 +156,8 @@ TrackList.propTypes = {
   tracksData : PropTypes.array.isRequired,
   emptyLabel : PropTypes.string,
   onTrackSelected: PropTypes.func,
+  onTrackPreviewStart: PropTypes.func,
+  onTrackPreviewEnd: PropTypes.func,
   onTrackActionRender: PropTypes.func,
   renderArtwork: PropTypes.bool,
   onHeaderRender: PropTypes.func,

@@ -73,6 +73,13 @@ const initialState = {
     duration: 0,
     elapsed: 0
   }],
+  preview : [{
+    side: playbackModeTypes.LEFT,
+    track: null
+  },{
+    side: playbackModeTypes.RIGHT,
+    track: null
+  }],
   playlist : [{
     filterTracks:'',//deprecated
     currentPlaylistId: 'default_' + playbackModeTypes.LEFT,
