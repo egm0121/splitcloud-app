@@ -3,6 +3,7 @@ import { actionTypes } from '../constants/actions';
 import { getCurrentTrackBySide } from '../selectors/playlistSelector';
 import { incrementPositiveAction } from '../actions/storeReviewAction';
 import { PLAYBACK_COMPLETE_HIT, PLAYBACK_MIN_TIME } from '../../helpers/constants';
+import { isObject } from '../../helpers/utils';
 const actionTypeWhitelist = [
   actionTypes.CHANGE_PLAYBACK_MODE,
   actionTypes.PLAY_PLAYLIST_ITEM,
@@ -24,7 +25,8 @@ const actionTypeWhitelist = [
   actionTypes.SET_PLAYLIST_SHUFFLE,
   actionTypes.TOGGLE_PLAYER_REPEAT,
   actionTypes.REWARDED_AD_COMPLETED,
-  actionTypes.REWARDED_AD_STARTED
+  actionTypes.REWARDED_AD_STARTED,
+  actionTypes.SET_PREVIEW_TRACK
 ];
 const actionScreenChangeList = [
   actionTypes.CHANGE_PLAYBACK_MODE
@@ -63,6 +65,7 @@ const AnalyticsMiddleware = store => {
           label : action.gaLabel || 'redux-action',
           value : 1,
           dimensions: {
+            'cd1': action.track && isObject(action.track) ? action.track.id : '', 
             'cd2': AnalyticsService.uniqueClientId,
             'cd3': (new Date).toISOString()
           },

@@ -21,6 +21,7 @@ let initalPos;
 let longPressRef;
 export default function TrackItem(props){
   const rowData = props.item;
+  const rowContainerStyle = [styles.row,props.style];
   const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
   let trackAuthor,trackTitle,artworkImage;
   if(isTrackLike(rowData)){
@@ -35,8 +36,11 @@ export default function TrackItem(props){
      {url: getArtworkImagePath(rowData.artwork)}:
      {url: getSmallArtworkUrl(rowData.artwork)};
 
-    if(props.currentTrack && rowData.id == props.currentTrack.id){
+    if(props.currentTrack && rowData.id === props.currentTrack.id){
       rowTextStyle.push(styles.hightlightText);
+    }
+    if(props.currentPreviewTrack && rowData.id === props.currentPreviewTrack.id){
+      rowContainerStyle.push(styles.rowContainerActive);
     }
   }
 
@@ -54,7 +58,7 @@ export default function TrackItem(props){
     }
     props.onSelected(rowData);
   };
-  return <View style={[styles.row,props.style]}>
+  return <View style={rowContainerStyle}>
    {!!props.renderArtwork &&
     <TouchableOpacity 
       onPress={onPress}
@@ -103,6 +107,7 @@ TrackItem.propTypes = {
   layout: PropTypes.string,
   item : PropTypes.object.isRequired,
   currentTrack : PropTypes.object,
+  currentPreviewTrack: PropTypes.object,
   onSelected: PropTypes.func.isRequired,
   onAction: PropTypes.func,
   onTrackDescRender: PropTypes.func.isRequired,
@@ -114,10 +119,13 @@ const styles = StyleSheet.create({
   row : {
     flex: 1,
     flexDirection:'row',
-    marginBottom:5,
-    marginTop:5,
+    paddingBottom:10,
+    paddingTop:10,
     paddingLeft: 20,
-    paddingRight: 0
+    paddingRight: 0,
+  },
+  rowContainerActive:{
+    backgroundColor: THEME.listBorderColor
   },
   rowArtworkImage:{
     width:52,
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
   },
   rowLabel : {
     flex: 10,
-    height: 72,
+    height: 62,
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0
   },

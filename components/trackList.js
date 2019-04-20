@@ -17,7 +17,6 @@ import AppText from './appText';
 import PlaylistItem from './playlistItem';
 import TrackItem from './trackItem';
 import UserItem from './userItem';
-
 const LIST_ITEM_HEIGHT = 82;
 
 class TrackList extends Component {
@@ -58,6 +57,9 @@ class TrackList extends Component {
       }
     }
     if(this.props.currentTrack != newProps.currentTrack){
+      this.updateResultList([...newProps.tracksData]);
+    }
+    if(this.props.currentPreviewTrack != newProps.currentPreviewTrack) {
       this.updateResultList([...newProps.tracksData]);
     }
   }
@@ -124,6 +126,7 @@ class TrackList extends Component {
     return <TrackItem 
       item={rowData} 
       currentTrack={this.props.currentTrack}
+      currentPreviewTrack={this.props.currentPreviewTrack}
       onSelected={this._onSongSelected} 
       onTrackActionRender={this.props.onTrackActionRender}
       onTrackDescRender={this.props.onTrackDescRender}

@@ -37,3 +37,8 @@ export function playRewardedAdAction(){
     type: actionTypes.REWARDED_AD_STARTED
   }
 }
+export function rewardedAdAbortedAction(){
+  return {
+    type: actionTypes.REWARDED_AD_ABORTED
+  }
+}

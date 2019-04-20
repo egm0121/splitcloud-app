@@ -30,6 +30,7 @@ import {
   socialShareRequiredAction,
   rewarededAdCompletedAction,
   playRewardedAdAction,
+  rewardedAdAbortedAction,
 } from '../redux/actions/storeReviewAction';
 import {
   pauseCurrentTrack
@@ -59,7 +60,7 @@ class ShareAppScreen extends Component {
     }
   }
   closeScreen(){
-    setTimeout(() => this.props.onClose(),1500);
+    setTimeout(() => this.props.onClose(),1e3);
   }
   setupRewardedAdUnit(){
     AdMobRewarded.setAdUnitID(config.ADMOB_REWARDED_ID);
@@ -78,6 +79,9 @@ class ShareAppScreen extends Component {
       if(this.loadAttempts < 3) {
         console.log('rewarded ad retry',this.loadAttempts);
         this.preloadRewardedAd();
+      } else {
+        this.props.abortAdReward();
+        this.closeScreen();
       }
     });
   }
@@ -202,6 +206,7 @@ const mapDispatchToProps = (dispatch) => {
     onSocialShareRequired(){ dispatch(socialShareRequiredAction())},
     pauseAllPlayback(){ dispatch(pauseCurrentTrack('L')); dispatch(pauseCurrentTrack('R'))},
     applyAdReward(){ dispatch(rewarededAdCompletedAction());},
+    abortAdReward(){ dispatch(rewardedAdAbortedAction())},
     playRewardedAd(){ dispatch(playRewardedAdAction());}
   }
 };
@@ -274,7 +279,7 @@ const styles = StyleSheet.create({
   },
   textButtonContainer:{
     padding:0,
-    width:150,
+    width:200,
     backgroundColor:THEME.notifyBgColor,
     borderRadius:20,
   },

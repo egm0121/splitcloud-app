@@ -33,6 +33,7 @@ export const actionTypes = {
   SET_PLAYLIST_SHUFFLE: 'SET_PLAYLIST_SHUFFLE',
   REWARDED_AD_COMPLETED: 'REWARDED_AD_COMPLETED',
   REWARDED_AD_STARTED: 'REWARDED_AD_STARTED',
+  REWARDED_AD_ABORTED: 'REWARDED_AD_ABORTED',
 }
 //TODO: move out on his own appConstant file
 export const playbackModeTypes = {

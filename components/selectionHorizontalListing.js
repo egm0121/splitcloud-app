@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection:'row',
     flex: 1,
-    backgroundColor: THEME.contentBgColor
+    backgroundColor: THEME.contentBgColor,
   }
 });
 export default SelectionHorizontalListing;

@@ -123,5 +123,15 @@ export default {
       preview: initialState.preview
     }
     return newState;
+  }, 
+  23: (state) => {
+    const newState =  {
+      ...state,
+      featureDiscovery: {
+        ...initialState.featureDiscovery,
+        ...state.featureDiscovery,
+      }
+    }
+    return newState;
   }
 }

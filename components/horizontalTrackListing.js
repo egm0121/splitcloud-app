@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   container:{
     flexDirection:'column',
     paddingLeft:10,
-    paddingTop:0,
+    paddingBottom:10,
     borderBottomWidth:1,
     borderColor: THEME.contentBorderColor,
     backgroundColor: THEME.contentBorderColor
@@ -22,6 +22,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     alignItems:'center',
     justifyContent:'center',
+    marginTop:10,
     marginHorizontal:20
   },
   moreButtonText:{
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
   titleText:{
     color: THEME.mainHighlightColor,
     fontSize: 16,
-    marginVertical:5
+    marginTop:10
   }
 });
 function HorizontalTrackListing(props){
@@ -43,11 +44,12 @@ function HorizontalTrackListing(props){
     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
       {playlistSubset.map((track,key) => 
       <TrackItem 
-        style={{flex:0,width:200,marginBottom:0,marginTop:0,height:65}}
+        style={{flex:0,width:200,marginBottom:0,marginTop:0,height:70}}
         hideAction={true}
         key={key}
         item={track}
         currentTrack={props.currentTrack}
+        currentPreviewTrack={props.currentPreviewTrack}
         onLongPressStart={props.onTrackPreviewStart}
         onLongPressEnd={props.onTrackPreviewEnd}
         onSelected={(item) => {

@@ -59,6 +59,7 @@ export const FEATURE_SOCIAL_SHARE = 'feature-social-share';
 export const FEATURE_SHUFFLE = 'feature-shuffle';
 export const FEATURE_REPEAT = 'feature-repeat';
 export const FEATURE_SUGGESTED = 'feature-suggested';
+export const FEATURE_PREVIEW = 'feature-preview';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',

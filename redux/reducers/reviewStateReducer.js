@@ -26,6 +26,12 @@ export function reviewStateReducer(state = initialState.reviewState, currAction)
       actionCounter: 0,
       dailyActionCounter: 0,
     }
+  case actionTypes.REWARDED_AD_ABORTED:
+    return {
+      ...state,
+      actionCounter: 0,
+      dailyActionCounter: 0,
+    }
   default:
     const currDateDay = (new Date()).getDate();
     // day changed reset daily action counter

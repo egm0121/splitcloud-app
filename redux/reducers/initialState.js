@@ -5,7 +5,8 @@ import {
   FEATURE_SOCIAL_SHARE, 
   FEATURE_SHUFFLE, 
   FEATURE_REPEAT, 
-  FEATURE_SUGGESTED 
+  FEATURE_SUGGESTED,
+  FEATURE_PREVIEW
 } from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
@@ -24,7 +25,8 @@ const initialState = {
     [FEATURE_SOCIAL_SHARE] : false,
     [FEATURE_SHUFFLE] : false,
     [FEATURE_REPEAT] : false,
-    [FEATURE_SUGGESTED] : true
+    [FEATURE_SUGGESTED] : true,
+    [FEATURE_PREVIEW] : true
   },
   notifications : {
     list : []
