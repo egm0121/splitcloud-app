@@ -59,6 +59,7 @@ export const FEATURE_SOCIAL_SHARE = 'feature-social-share';
 export const FEATURE_SHUFFLE = 'feature-shuffle';
 export const FEATURE_REPEAT = 'feature-repeat';
 export const FEATURE_SUGGESTED = 'feature-suggested';
+export const FEATURE_PREVIEW = 'feature-preview';
 
 export const musicProviderType = {
   SOUNDCLOUD: 'soudcloud',
@@ -73,5 +74,7 @@ export const PLAYBACK_MIN_TIME = 30;
 export const PLAYBACK_COMPLETE_HIT = 'playback-completed';
 export const PUSH_NOTIFICATION_OPENED_HIT = 'PUSH_NOTIFICATION_OPENED_HIT';
 export const SC_STREAM_TOKEN_HIT = 'SC_STREAM_TOKEN_HIT';
-export const MAX_INTERACTION_COUNT = 30;
+export const MAX_INTERACTION_COUNT = 10; //global playback cap
+console.warn('using _DEV_ MAX_DAILY_INTERACTION to 3');
+export const MAX_DAILY_INTERACTION_COUNT = __DEV__ ? 6 : 35; //daily playback cap 
 export const MAX_REVIEW_POSITIVE_ACTIONS = 40;

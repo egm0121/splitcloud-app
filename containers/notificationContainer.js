@@ -34,10 +34,13 @@ class NotificationContainer extends Component {
       <View style={[styles.container,{height:isForeground ? null : 0}]} pointerEvents='none'>
         {this.props.notifications.list.map((notification) => {
           return <NotificationOverlay
+            title={notification.title}
+            size={notification.size}
             message={notification.message}
             type={notification.type}
             id={notification.id}
             timeout={notification.timeout}
+            imageSource={notification.imageSource}
             key={notification.id}
             onClearNotification={this.props.onClearNotification}
             />

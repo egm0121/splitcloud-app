@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import {
   View
 } from 'react-native';
+import { isFunction } from '../helpers/utils';
 import FeatureDiscoveryDot from '../components/featureDiscoveryDot';
 
 class FeatureDiscoveryContainer extends Component {
@@ -15,12 +16,18 @@ class FeatureDiscoveryContainer extends Component {
     super(props);
   }
   render() {
+    if(isFunction(this.props.children) && this.props.showDot){
+      return this.props.children();
+    }
     return (
       <View style={this.props.style}>
       {!!this.props.showDot && <FeatureDiscoveryDot />}
       {this.props.children}
       </View>
     );
+  }
+  shouldComponentUpdate(nextProps){
+    return this.props.showDot !== nextProps.showDot;
   }
 }
 FeatureDiscoveryContainer.propTypes = {

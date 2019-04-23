@@ -86,6 +86,7 @@ class AudioPlayerContainer extends Component {
       clientSecret: Config.SC_CLIENT_SECRET,
     });
     this.musicPlayer = new HybridPlayer();
+    this.previewPlayer = new HybridPlayer();
     this.fileManager = new FileDownloadManager({extension:'mp3'});
     this.state = {
       volume:1,
@@ -97,8 +98,14 @@ class AudioPlayerContainer extends Component {
       playbackIndex : 0
     };
     this.volumeSliderScale = LogSlider({maxpos: 100, minval: 0, maxval: 100});
+    const logVolumeLevel = this.linearToLogVolume(this.state.volume);
+
     this.musicPlayer.setPan(this.state.pan);
-    this.musicPlayer.setVolume(this.linearToLogVolume(this.state.volume));
+    this.previewPlayer.setPan(this.state.pan);
+   
+    this.musicPlayer.setVolume(logVolumeLevel);
+    this.previewPlayer.setVolume(logVolumeLevel);
+    
     this.onProgressTick();
     this.setupAudioPlayerListeners();
   }
@@ -252,6 +259,28 @@ class AudioPlayerContainer extends Component {
         }
       });
     }).catch(err => console.log('err hasLocalAsset',err));
+  }
+  startPreviewForTrack(track){
+    console.log('AudioPlayerContainer start preview for',track);
+    const { playbackStatus } = this.props;
+    this.resumePlaybackAfterPreview = 
+      playbackStatus.status in PLAYBACK_ENABLED_STATES;
+    if( this.resumePlaybackAfterPreview ){
+      console.log('pause current song playback');
+      this.pauseCurrentTrack();
+    }
+    this.getTrackStream(track).then(streamUrl => {
+      this.previewPlayer.setSoundUrl(streamUrl);
+      this.previewPlayer.play();
+    });
+  }
+  stopPreview(){
+    console.log('AudioPlayerContainer stop preview ');
+    this.previewPlayer.stop();
+    if( this.resumePlaybackAfterPreview ){
+      console.log('resume current song playback');
+      this.playCurrentTrack();
+    }
   }
   onPlayTogglePress(){
     this.musicPlayer.getStatus((err,playbackStatus) => {
@@ -467,13 +496,21 @@ class AudioPlayerContainer extends Component {
     }
   }
   componentDidUpdate(prevProps, prevState){
+    const { preview } = this.props;
     let prevTrackObj = prevProps.queue[prevState.playbackIndex] || {};
-
+    if(preview.track && prevProps.preview.track !== preview.track){
+      this.startPreviewForTrack(preview.track);
+    }
+    if(!preview.track && prevProps.preview.track){
+      this.stopPreview();
+    }
     if(prevState.volume !== this.state.volume && !this.state.muted){
       this.musicPlayer.setVolume(this.state.volume);
+      this.previewPlayer.setVolume(this.state.volume);
     }
     if(prevState.pan !== this.state.pan){
       this.musicPlayer.setPan(this.state.pan);
+      this.previewPlayer.setPan(this.state.pan);
     }
     if(prevState.muted !== this.state.muted){
       this.onPlayerMuteChange(this.state.muted);
@@ -500,6 +537,10 @@ class AudioPlayerContainer extends Component {
       this.musicPlayer.stop();
       this.musicPlayer.destroy();
     }
+    if(this.previewPlayer){
+      this.previewPlayer.stop()
+      this.previewPlayer.destroy();
+    }
   }
   setNowPlayingDescription({isSplit} = {isSplit : false}){
     let description =
@@ -520,17 +561,33 @@ class AudioPlayerContainer extends Component {
   getCurrentTrackObj(){
     return this.props.queue[this.state.playbackIndex] || {};
   }
-  getCurrentTrackStream(){
-    return this.fileManager.hasLocalAsset(this.getCurrentTrackId())
+  getTrackStream(trackObj){
+    return this.fileManager.hasLocalAsset(trackObj.id)
     .then(hasLocal => {
+      //handle SC cached streams
       if(hasLocal){
-        console.log('playback from local cache');
-        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(this.getCurrentTrackId());
+        console.log('resolved from local cache');
+        let cachedPath = 'file://' + this.fileManager.getLocalAssetPath(trackObj.id);
         return cachedPath;
-      } else {
-        return this.getCurrentTrackUrl();
       }
+      //handle local library url
+      if (isLocalTrack(trackObj)) {
+        console.log('resolved from itunes library');
+        return trackObj.streamUrl;
+      }
+      //handle non cached SC url and inject current client streaming id.
+      //every time we use a stream api request 
+      //let's check for updating the current streamClient token.
+      StreamTokenManager.checkActiveToken();
+      const streamUrl = this.scApi.resolvePlayableStreamForTrackId(
+        trackObj.id
+      );
+      console.log('resolved from sc url with active client id',streamUrl);
+      return streamUrl;
     })
+  }
+  getCurrentTrackStream(){
+    return this.getTrackStream(this.getCurrentTrackObj());
   }
   getCurrentTrackId(){
     return this.getCurrentTrackObj().id;
@@ -606,6 +663,7 @@ const mapStateToProps = (state, props) => {
   ).length == 2;
   let player = state.players.find((player) => player.side === props.side);
   let playlist = state.playlist.find((playlist) => playlist.side === props.side);
+  let preview = state.preview.find(preview => preview.side == props.side);
   let playlistStore = state.playlistStore.find(playlistStore => playlistStore.id == playlist.currentPlaylistId);
   let queue = playlistStore.tracks;
   let currentPlaylistId = playlist.currentPlaylistId;
@@ -624,7 +682,8 @@ const mapStateToProps = (state, props) => {
     currentPlaylistId,
     playlistStore,
     playbackStatus:ownPlaybackStatus,
-    bothPlayerMuted
+    bothPlayerMuted,
+    preview
   }
 };
 const mapDispatchToProps = (dispatch, props) => {

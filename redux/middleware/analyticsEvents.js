@@ -1,7 +1,9 @@
 import AnalyticsService from '../../modules/Analytics';
 import { actionTypes } from '../constants/actions';
 import { getCurrentTrackBySide } from '../selectors/playlistSelector';
+import { incrementPositiveAction } from '../actions/storeReviewAction';
 import { PLAYBACK_COMPLETE_HIT, PLAYBACK_MIN_TIME } from '../../helpers/constants';
+import { isObject } from '../../helpers/utils';
 const actionTypeWhitelist = [
   actionTypes.CHANGE_PLAYBACK_MODE,
   actionTypes.PLAY_PLAYLIST_ITEM,
@@ -23,7 +25,8 @@ const actionTypeWhitelist = [
   actionTypes.SET_PLAYLIST_SHUFFLE,
   actionTypes.TOGGLE_PLAYER_REPEAT,
   actionTypes.REWARDED_AD_COMPLETED,
-  actionTypes.REWARDED_AD_STARTED
+  actionTypes.REWARDED_AD_STARTED,
+  actionTypes.SET_PREVIEW_TRACK
 ];
 const actionScreenChangeList = [
   actionTypes.CHANGE_PLAYBACK_MODE
@@ -34,7 +37,7 @@ const getCategoryFromAction = (action) => {
 
 let lastPlayingTrack = {};
 let lastPlayRef = {};
-const schedulePlaybackHit = (track,action) => {
+const schedulePlaybackHit = (track,action,cb = () => {} ) => {
   console.log('schedule playback hit for track',track);
   return setTimeout(() => {
     console.log('send completed playback hit for track',track);
@@ -49,6 +52,7 @@ const schedulePlaybackHit = (track,action) => {
         'cd3': (new Date).toISOString()
       }
     });
+    cb(track);
   },PLAYBACK_MIN_TIME *1e3)
 };
 const AnalyticsMiddleware = store => {
@@ -61,6 +65,7 @@ const AnalyticsMiddleware = store => {
           label : action.gaLabel || 'redux-action',
           value : 1,
           dimensions: {
+            'cd1': action.track && isObject(action.track) ? action.track.id : '', 
             'cd2': AnalyticsService.uniqueClientId,
             'cd3': (new Date).toISOString()
           },
@@ -77,7 +82,10 @@ const AnalyticsMiddleware = store => {
           lastPlayingTrack[action.side] !== currPlayingTrack
         ) {
           if(lastPlayRef[action.side]) clearTimeout(lastPlayRef[action.side]);
-          lastPlayRef[action.side] = schedulePlaybackHit(currPlayingTrack,action);
+          lastPlayRef[action.side] = schedulePlaybackHit(currPlayingTrack,action,
+          () => {
+            store.dispatch(incrementPositiveAction());
+          });
           lastPlayingTrack[action.side] = currPlayingTrack;
         }  
       }

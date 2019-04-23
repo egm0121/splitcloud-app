@@ -16,8 +16,12 @@ function isTrackLike(rowData){
 function cleanText(text){
   return text.replace(/(\"|\')/g,'').trim();
 }
+let isPressAndHold = false;
+let initalPos;
+let longPressRef;
 export default function TrackItem(props){
   const rowData = props.item;
+  const rowContainerStyle = [styles.row,props.style];
   const rowTextStyle = rowData.isEmpty ? [styles.placeholderRowText] : [];
   let trackAuthor,trackTitle,artworkImage;
   if(isTrackLike(rowData)){
@@ -32,20 +36,46 @@ export default function TrackItem(props){
      {url: getArtworkImagePath(rowData.artwork)}:
      {url: getSmallArtworkUrl(rowData.artwork)};
 
-    if(props.currentTrack && rowData.id == props.currentTrack.id){
+    if(props.currentTrack && rowData.id === props.currentTrack.id){
       rowTextStyle.push(styles.hightlightText);
+    }
+    if(props.currentPreviewTrack && rowData.id === props.currentPreviewTrack.id){
+      rowContainerStyle.push(styles.rowContainerActive);
     }
   }
 
-  return <View style={[styles.row,props.style]}>
+  const onLongPress = (e) => {
+    isPressAndHold = true;
+    props.onLongPressStart(rowData);
+  };
+  const onPressOut = (e) => {
+    isPressAndHold = false;
+    props.onLongPressEnd(rowData);
+  };
+  const onPress = (e) => { 
+    if(isPressAndHold){
+      return ;
+    }
+    props.onSelected(rowData);
+  };
+  return <View style={rowContainerStyle}>
    {!!props.renderArtwork &&
-    <TouchableOpacity onPress={props.onSelected.bind(null,rowData)}>
+    <TouchableOpacity 
+      onPress={onPress}
+      onLongPress={onLongPress}
+      onPressOut={onPressOut}
+      >
       <View style={styles.rowArtworkContainer}>
         <Image style={styles.rowArtworkImage} source={artworkImage} resizeMode={'cover'}/>
       </View>
     </TouchableOpacity>
     }
-    <TouchableOpacity style={styles.rowLabel} onPress={props.onSelected.bind(null,rowData)}>
+    <TouchableOpacity style={styles.rowLabel} 
+      onPress={onPress}
+      onLongPress={onLongPress}
+      onPressOut={onPressOut}
+      delayLongPress={props.pressAndHoldDelay}
+      >
         <AppText bold={true} numberOfLines={1} ellipsizeMode={'tail'} style={[styles.rowTitleText].concat(rowTextStyle)} >
           {trackTitle}
         </AppText>
@@ -68,25 +98,34 @@ TrackItem.defaultProps = {
   layout:'default',
   onTrackActionRender : () => null,
   renderArtwork: true,
-  style: null
+  style: null,
+  pressAndHoldDelay: 450,
+  onLongPressStart: () => {},
+  onLongPressEnd: () => {},
 };
 TrackItem.propTypes = {
   layout: PropTypes.string,
   item : PropTypes.object.isRequired,
   currentTrack : PropTypes.object,
+  currentPreviewTrack: PropTypes.object,
   onSelected: PropTypes.func.isRequired,
   onAction: PropTypes.func,
   onTrackDescRender: PropTypes.func.isRequired,
-  onTrackActionRender: PropTypes.func.isRequired
+  onTrackActionRender: PropTypes.func.isRequired,
+  onLongPressStart: PropTypes.func,
+  onLongPressEnd: PropTypes.func,
 };
 const styles = StyleSheet.create({
   row : {
     flex: 1,
     flexDirection:'row',
-    marginBottom:5,
-    marginTop:5,
+    paddingBottom:10,
+    paddingTop:10,
     paddingLeft: 20,
-    paddingRight: 0
+    paddingRight: 0,
+  },
+  rowContainerActive:{
+    backgroundColor: THEME.listBorderColor
   },
   rowArtworkImage:{
     width:52,
@@ -100,7 +139,7 @@ const styles = StyleSheet.create({
   },
   rowLabel : {
     flex: 10,
-    height: 72,
+    height: 62,
     borderColor: THEME.listBorderColor,
     borderBottomWidth:0
   },

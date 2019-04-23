@@ -5,12 +5,15 @@ import {
   FEATURE_SOCIAL_SHARE, 
   FEATURE_SHUFFLE, 
   FEATURE_REPEAT, 
-  FEATURE_SUGGESTED 
+  FEATURE_SUGGESTED,
+  FEATURE_PREVIEW
 } from '../../helpers/constants';
 const initialState = {
   mode : playbackModeTypes.SPLIT,
   reviewState:{
     actionCounter : 0,
+    dailyActionCounter: 0,
+    lastDateDay: 0,
     done: false,
     shared: false,
   },
@@ -22,7 +25,8 @@ const initialState = {
     [FEATURE_SOCIAL_SHARE] : false,
     [FEATURE_SHUFFLE] : false,
     [FEATURE_REPEAT] : false,
-    [FEATURE_SUGGESTED] : true
+    [FEATURE_SUGGESTED] : true,
+    [FEATURE_PREVIEW] : true
   },
   notifications : {
     list : []
@@ -70,6 +74,13 @@ const initialState = {
     status: audioPlayerStates.STOPPED,
     duration: 0,
     elapsed: 0
+  }],
+  preview : [{
+    side: playbackModeTypes.LEFT,
+    track: null
+  },{
+    side: playbackModeTypes.RIGHT,
+    track: null
   }],
   playlist : [{
     filterTracks:'',//deprecated

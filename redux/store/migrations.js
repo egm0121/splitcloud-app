@@ -104,5 +104,34 @@ export default {
         ...state.featureDiscovery,
       }
     }
+  },
+  20:(state) => {
+    //adds the daily max interaction fields
+    const newState =  {
+      ...state,
+      reviewState: {
+        ...initialState.reviewState,
+        ...state.reviewState
+      }
+    }
+    return newState;
+  },
+  22:(state) => {
+    //adds the preview slice state
+    const newState =  {
+      ...state,
+      preview: initialState.preview
+    }
+    return newState;
+  }, 
+  23: (state) => {
+    const newState =  {
+      ...state,
+      featureDiscovery: {
+        ...initialState.featureDiscovery,
+        ...state.featureDiscovery,
+      }
+    }
+    return newState;
   }
 }

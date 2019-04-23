@@ -22,6 +22,13 @@ import {
 import {
   pushNotification
 } from '../redux/actions/notificationActions';
+import {
+  markFeatureDiscovery
+} from  '../redux/actions/featureDiscoveryActions';
+import {
+  FEATURE_PREVIEW
+} from '../helpers/constants';
+import FeatureDiscoveryContainer from './featureDiscoveryContainer';
 const {SC_CLIENT_ID} = config;
 const DEBOUNCE_MILLISEC = 100;
 const SC_RESULT_LIMIT = 100;
@@ -38,7 +45,6 @@ class SongPickerContainer extends Component {
     });
   }
   render() {
-
     return (
       <View style={styles.container}>
         <SongPicker
@@ -53,6 +59,19 @@ class SongPickerContainer extends Component {
             isLoading={this.props.picker.isLoading}
             {...this.props}
             />
+          <FeatureDiscoveryContainer featureName={FEATURE_PREVIEW}>
+        {() => {
+          setTimeout( () => this.props.pushNotification({
+            type:'image',
+            timeout:4 * 1e3,
+            imageSource: require('../assets/long_tap.png'),
+            message: `\nTap and hold \nto preview a song`,
+            size: 'big'
+          }),1e3);
+          this.props.markPreviewDiscoveryDone();
+          return null;
+        }}
+        </FeatureDiscoveryContainer>
       </View>
     );
   }
@@ -63,8 +82,7 @@ SongPickerContainer.propTypes = {
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#F50'
+    flex: 1
   }
 });
 const mapStateToProps = (state,props) => {
@@ -77,7 +95,8 @@ const mapStateToProps = (state,props) => {
 const mapDispatchToProps = (dispatch,props) =>({
   pushNotification: (notification) => dispatch(pushNotification(notification)),
   onLoadingStateChange : (isLoading) => dispatch(setLoading(props.side,isLoading)),
-  onSearchTermsChange: (terms) => dispatch(updateSearchTerms(props.side,terms))
+  onSearchTermsChange: (terms) => dispatch(updateSearchTerms(props.side,terms)),
+  markPreviewDiscoveryDone: () => dispatch(markFeatureDiscovery(FEATURE_PREVIEW)),
 });
 const ConnectedSongPickerContainer = connect(mapStateToProps,mapDispatchToProps)(SongPickerContainer);
 
