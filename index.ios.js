@@ -24,7 +24,7 @@ import AnalyticsService from './modules/Analytics';
 import NavigationStateNotifier from './modules/NavigationStateNotifier';
 import SoundcloudPlaylist from './containers/soundcloudPlaylist';
 import UploaderProfileContainer from './containers/uploaderProfileContainer'
-import { store } from './redux/store/configure';
+import { store, storeReady } from './redux/store/configure';
 import { PUSH_NOTIFICATION_OPENED_HIT } from './helpers/constants';
 import Config from './helpers/config';
 import THEME from './styles/variables';
@@ -63,6 +63,9 @@ if(!__DEV__){
 class SplitCloudApp extends Component {
   constructor(props){
     super(props);
+    this.state = {
+      isStoreReady: false,
+    }
     this.configureScene = this.configureScene.bind(this);
     this.onSceneDidFocus = this.onSceneDidFocus.bind(this);
     this.onSceneWillFocus = this.onSceneWillFocus.bind(this);
@@ -70,11 +73,18 @@ class SplitCloudApp extends Component {
     this.setStylesGlobalOvverides();
     this.initPushNotifications();
     this.bindNotificationListeners();
+    this.onStoreReady();
   }
   componentDidMount(){
     // register notification handlers after we 
     // rendered and got a ref to the navigator instance
     this.processInitialNotification();
+  }
+  onStoreReady() {
+    storeReady.then(() => {
+      console.log('mark store as ready and render app');
+      this.setState({isStoreReady: true})
+    });
   }
   processInitialNotification(){
     console.log('processing initial notification');
@@ -181,9 +191,10 @@ class SplitCloudApp extends Component {
     return store.getState().mode;
   }
   render() {
+    const { isStoreReady } = this.state;
     return (
         <Provider store={store} >
-            <Navigator
+            {isStoreReady ? <Navigator
                 initialRoute={{ 
                   title: 'MainSceneContainer', 
                   name:'MainSceneContainer',
@@ -214,7 +225,8 @@ class SplitCloudApp extends Component {
                   }</NetworkAvailability>
                 }}
                 configureScene={ this.configureScene }
-              />
+              /> :
+              <Text>Loading data...</Text>}
         </Provider>
     );
   }

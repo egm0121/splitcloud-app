@@ -20,7 +20,7 @@ const StoreReviewRequestor = store => {
           store.dispatch(reviewCountDoneAction());
         }
         if ( 
-          state.actionCounter === MAX_INTERACTION_COUNT ||
+          (state.actionCounter === MAX_INTERACTION_COUNT  && !state.shared) ||
           state.dailyActionCounter === MAX_DAILY_INTERACTION_COUNT
         ) {
           console.log('max songs reached  - block inflight change track action')

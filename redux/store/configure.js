@@ -20,6 +20,8 @@ const createStoreWithDebug = withLog => {
   if(__DEV__ && withLog){
     middlewareList.push(devLogger);
   }
+  let resolveStoreReady;
+  const storeReady = new Promise((res) => resolveStoreReady = res);
   const migration = createMigration(migrations, VERSION_REDUCER_KEY)
   let enhancer = compose(migration,autoRehydrate());
   let store = createStore(rootReducer,applyMiddleware(...middlewareList),enhancer);
@@ -27,8 +29,11 @@ const createStoreWithDebug = withLog => {
   let persistor = persistStore(store, {
     blacklist: ['notifications','playbackStatus','preview'],
     storage: AsyncStorage
-  }, () => console.log('rehydration complete'));
-  return [store, persistor];
+  }, () => {
+    console.log('rehydration complete');
+    resolveStoreReady(true);
+  });
+  return [store, persistor, storeReady];
 }
-export let [store , persistor] = createStoreWithDebug(true);
+export let [store , persistor, storeReady] = createStoreWithDebug(true);
 export default store;

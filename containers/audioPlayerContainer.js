@@ -289,25 +289,21 @@ class AudioPlayerContainer extends Component {
     });
   }
   playCurrentTrack(){
-    if(this.isCurrentMutedSide() || !this.getCurrentTrackUrl()){
-      console.log('playCurrentTrack attempted on muted or empty player');
+    if(this.isCurrentMutedSide() || !this.getCurrentTrackId()){
       return false;
     }
     this.musicPlayer.getStatus((err,playbackStatus) => {
       if(playbackStatus.status === audioPlayerStates.PAUSED ){
-        console.log('onPlayToggle status PAUSED call .resume()')
         this.musicPlayer.resume()
       }
       if(playbackStatus.status === audioPlayerStates.STOPPED){
-        console.log('onPlayToggle status STOPPED call .play()')
         this.musicPlayer.play();
       }
       this.updateComponentPlayerState();
     });
   }
   pauseCurrentTrack(){
-    if(this.isCurrentMutedSide() || !this.getCurrentTrackUrl()){
-      console.log('pauseCurrentTrack attempted on muted or empty player');
+    if(this.isCurrentMutedSide() || !this.getCurrentTrackId()){
       return false;
     }
     this.musicPlayer.getStatus((err,playbackStatus) => {
@@ -592,19 +588,6 @@ class AudioPlayerContainer extends Component {
   getCurrentTrackId(){
     return this.getCurrentTrackObj().id;
   }
-  getCurrentTrackUrl(){
-    if (isLocalTrack(this.getCurrentTrackObj())) {
-      return this.getCurrentTrackObj().streamUrl;
-    }
-    //every time we use a stream api request 
-    //let's check for updating the current streamClient token.
-    StreamTokenManager.checkActiveToken();
-    const streamUrl = this.scApi.resolvePlayableStreamForTrackId(
-      this.getCurrentTrackObj().id
-    );
-    console.log('getCurrentTrackUrl',streamUrl);
-    return streamUrl;
-  }
   getCurrentTrackTitle() {
     return this.getCurrentTrackObj().label;
   }
@@ -688,15 +671,9 @@ const mapStateToProps = (state, props) => {
 };
 const mapDispatchToProps = (dispatch, props) => {
   return {
-    goToNextTrack: (playlistId,isShuffle) => {
-      dispatch(incrementCurrentPlayIndex(props.side,playlistId,isShuffle))
-    },
-    goToPrevTrack: (playlistId,isShuffle) => {
-      dispatch(decrementCurrentPlayIndex(props.side,playlistId,isShuffle))
-    },
-    setPlaybackStatus: (status) => {
-      dispatch(setPlaybackStatus(props.side,status));
-    },
+    goToNextTrack: (playlistId,isShuffle) => dispatch(incrementCurrentPlayIndex(props.side,playlistId,isShuffle)),
+    goToPrevTrack: (playlistId,isShuffle) => dispatch(decrementCurrentPlayIndex(props.side,playlistId,isShuffle)),
+    setPlaybackStatus: (status) => dispatch(setPlaybackStatus(props.side,status)),
     onOpenUploaderProfile : (url) => dispatch(updateLastUploaderProfile(props.side,url)),
     onSetPlaylistShuffleMode : (isActive) => dispatch(setPlaylistShuffleMode(props.side,isActive)),
     onSetRepeatMode : (isActive) => dispatch(togglePlayerRepeat(props.side,isActive)),
