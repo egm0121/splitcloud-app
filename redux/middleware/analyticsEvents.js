@@ -1,6 +1,7 @@
 import AnalyticsService from '../../modules/Analytics';
 import { actionTypes } from '../constants/actions';
 import { getCurrentTrackBySide } from '../selectors/playlistSelector';
+import { getPlaybackMode } from '../selectors/playbackModeSelector';
 import { incrementPositiveAction } from '../actions/storeReviewAction';
 import { PLAYBACK_COMPLETE_HIT, PLAYBACK_MIN_TIME } from '../../helpers/constants';
 import { isObject } from '../../helpers/utils';
@@ -37,7 +38,7 @@ const getCategoryFromAction = (action) => {
 
 let lastPlayingTrack = {};
 let lastPlayRef = {};
-const schedulePlaybackHit = (track,action,cb = () => {} ) => {
+const schedulePlaybackHit = (track, action, playbackMode, cb = () => {} ) => {
   console.log('schedule playback hit for track',track);
   return setTimeout(() => {
     console.log('send completed playback hit for track',track);
@@ -49,7 +50,8 @@ const schedulePlaybackHit = (track,action,cb = () => {} ) => {
       dimensions: {
         'cd1': track.id,
         'cd2': AnalyticsService.uniqueClientId,
-        'cd3': (new Date).toISOString()
+        'cd3': (new Date).toISOString(),
+        'cd5': playbackMode,
       }
     });
     cb(track);
@@ -77,15 +79,18 @@ const AnalyticsMiddleware = store => {
       let result = next(action);
       if(action.side){
         let currPlayingTrack = getCurrentTrackBySide(store.getState(),action.side);
+        const playbackMode = getPlaybackMode(store.getState());
         if(
           currPlayingTrack &&
           lastPlayingTrack[action.side] !== currPlayingTrack
         ) {
           if(lastPlayRef[action.side]) clearTimeout(lastPlayRef[action.side]);
-          lastPlayRef[action.side] = schedulePlaybackHit(currPlayingTrack,action,
-          () => {
-            store.dispatch(incrementPositiveAction());
-          });
+          lastPlayRef[action.side] = schedulePlaybackHit(
+            currPlayingTrack, 
+            action,
+            playbackMode,
+            () => store.dispatch(incrementPositiveAction()),
+            );
           lastPlayingTrack[action.side] = currPlayingTrack;
         }  
       }

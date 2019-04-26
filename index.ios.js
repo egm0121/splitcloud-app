@@ -225,8 +225,7 @@ class SplitCloudApp extends Component {
                   }</NetworkAvailability>
                 }}
                 configureScene={ this.configureScene }
-              /> :
-              <Text>Loading data...</Text>}
+              /> : <View></View>}
         </Provider>
     );
   }

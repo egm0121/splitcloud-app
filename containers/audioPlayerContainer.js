@@ -463,7 +463,16 @@ class AudioPlayerContainer extends Component {
   findRouteByName(name){
     return this.props.navigator.getCurrentRoutes().find((route) => route.name == name);
   }
-  componentWillReceiveProps(newProps){
+  componentDidMount(){
+    console.log('component did mount with initial track',this.props.currentTrackIndex);
+    if (this.props.currentTrackIndex) {
+      this.setState({playbackIndex: this.props.currentTrackIndex});
+    }
+    if(this.props.mode == playbackModeTypes.SPLIT){
+      this.setNowPlayingDescription({isSplit:true});
+    }
+  }
+  componentWillReceiveProps(newProps) {
     const newStatus = newProps.playbackStatus;
     const currStatus = this.props.playbackStatus;
     if( newStatus.status != currStatus.status &&

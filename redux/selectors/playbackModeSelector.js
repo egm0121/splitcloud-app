@@ -1,0 +1,1 @@
+export const getPlaybackMode = (state) => state.mode;

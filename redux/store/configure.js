@@ -10,6 +10,7 @@ import tracksLocalCache from '../middleware/tracksLocalCache';
 import storeReviewRequestorMiddleware from '../middleware/storeReviewRequestor';
 import migrations from './migrations';
 import {VERSION_REDUCER_KEY} from '../../helpers/constants';
+import {actionTypes} from '../constants/actions';
 
 const createStoreWithDebug = withLog => {
   let middlewareList = [
@@ -18,7 +19,7 @@ const createStoreWithDebug = withLog => {
     storeReviewRequestorMiddleware
   ];
   if(__DEV__ && withLog){
-    middlewareList.push(devLogger);
+    middlewareList.push(devLogger([actionTypes.SET_PLAYBACK_STATUS]));
   }
   let resolveStoreReady;
   const storeReady = new Promise((res) => resolveStoreReady = res);
