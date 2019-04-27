@@ -102,6 +102,7 @@ class TrackListContainer extends Component {
         onTrackPreviewEnd={this.props.onTrackPreviewEnd}
         currentTrack={this.props.currentPlayingTrack}
         currentPreviewTrack={this.props.currentPreviewTrack}
+        scrollEnabled={!this.props.currentPreviewTrack}
         onSelected={this.onTrackSelected}
         onPlaylistSelected={this.onPlaylistSelected}
       />
@@ -115,6 +116,7 @@ class TrackListContainer extends Component {
           onTrackActionRender={this.onTrackActionRender}
           currentTrack={this.props.currentPlayingTrack}
           currentPreviewTrack={this.props.currentPreviewTrack}
+          scrollEnabled={!this.props.currentPreviewTrack}
           onTrackSelected={this.onTrackSelected}
           onTrackPreviewStart={this.props.onTrackPreviewStart}
           onTrackPreviewEnd={this.props.onTrackPreviewEnd}

@@ -41,7 +41,10 @@ function HorizontalTrackListing(props){
   if(!playlistSubset.length) return null;
   return <View style={styles.container}>
     <AppText bold={true} style={styles.titleText}>{props.title}</AppText>
-    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+    <ScrollView 
+      horizontal={true} 
+      showsHorizontalScrollIndicator={false} 
+      scrollEnabled={props.scrollEnabled}>
       {playlistSubset.map((track,key) => 
       <TrackItem 
         style={{flex:0,width:200,marginBottom:0,marginTop:0,height:70}}

@@ -138,6 +138,7 @@ class TrackList extends Component {
     return (
       <View style={styles.container}>
         <ListView contentContainerStyle={styles.list}
+          scrollEnabled={this.props.scrollEnabled}
           dataSource={this.state.renderList}
           removeClippedSubviews={false}
           renderHeader={this.props.onHeaderRender}
@@ -153,7 +154,8 @@ TrackList.defaultProps = {
   emptyLabel : 'No songs found...',
   isLoading: false,
   onEndThreshold: 150,
-  listRef : () => {}
+  listRef : () => {},
+  scrollEnabled: true,
 };
 TrackList.propTypes = {
   tracksData : PropTypes.array.isRequired,
