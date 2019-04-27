@@ -52,10 +52,9 @@ function didPlayAllTracks(queue,history){
   if( result ) console.log('didPlayAllTracks',true);
   return result;
 }
-function getRandomVisibleIndex(queue,excludeArr){
-  
+function getRandomVisibleIndex(queue,historyIdsArr){
   let filteredQueue = queue
-  .filter((e,idx) => !excludeArr.includes(idx))
+  .filter(e => !historyIdsArr.includes(e.id))
   .filter(e => e.isVisible);
   const randIndex = getRandMax(filteredQueue.length - 1);
   const randTrack = filteredQueue[randIndex]; 
