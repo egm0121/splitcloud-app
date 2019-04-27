@@ -77,5 +77,5 @@ export const SC_STREAM_TOKEN_HIT = 'SC_STREAM_TOKEN_HIT';
 console.warn('using _DEV_ MAX_INTERACTION_COUNT to 4');
 export const MAX_INTERACTION_COUNT = __DEV__ ? 4 : 10; //global playback cap
 console.warn('using _DEV_ MAX_DAILY_INTERACTION to 10');
-export const MAX_DAILY_INTERACTION_COUNT = __DEV__ ? 10 : 35; //daily playback cap 
-export const MAX_REVIEW_POSITIVE_ACTIONS = 40;
+export const MAX_DAILY_INTERACTION_COUNT = __DEV__ ? 10 : 30; //daily playback cap 
+export const MAX_REVIEW_POSITIVE_ACTIONS = 35;
